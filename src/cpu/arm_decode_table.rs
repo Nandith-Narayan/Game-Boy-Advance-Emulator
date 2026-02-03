@@ -19,8 +19,10 @@ pub fn generate_decode_table() -> [ARMInstruction; 4096] {
             _ if (high & 0b11100000) == 0b01000000 => SingleDataTransferImmediate,
             (_, 0b1001) if (high & 0xFC) == 0  => Multiply,
             (_, 0b1001) if ((high & 0xF8) >> 3) == 1  => MultiplyLong,
-            _ if (high & 0b1110000000000000) == 0 => DataProcessingReg,
-            _ if (high & 0b1100000000000000) == 0 => DataProcessingImmediate,
+            _ if (high & 0b11111011) == 0b00110010 => PSRTransferImmediate,
+            _ if (high & 0b11111001) == 0b00010000 => PSRTransferReg,
+            _ if (high & 0b11100000) == 0 => DataProcessingReg,
+            _ if (high & 0b11000000) == 0 => DataProcessingImmediate,
             _ => UNREACHABLE,
         };
         decode_table[i] = inst;

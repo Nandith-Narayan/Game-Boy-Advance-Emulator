@@ -1,4 +1,4 @@
-use crate::cpu::enums::{ARMCondition, ARMInstruction, InstructionSet};
+use crate::cpu::enums::{ARMCondition, ARMInstruction, CPUMode, InstructionSet};
 use InstructionSet::{ARM, THUMB};
 use crate::cpu::enums::ARMCondition::AL;
 use crate::cpu::enums::ARMInstruction::NOP;
@@ -7,7 +7,6 @@ mod arm_instructions;
 mod arm;
 mod enums;
 mod arm_decode_table;
-
 pub struct Cpu{
     pub r: [u32; 16],
     pub memory: memory::Memory,
@@ -21,8 +20,16 @@ pub struct Cpu{
     pub c: bool,
     pub n: bool,
     pub v: bool,
+    pub mode: CPUMode,
     // ARM instruction decode table
     arm_decode_table: [ARMInstruction; 4096],
+
+    // Banked registers
+    pub r_irq: [u32; 16],
+    pub spsr_irq: u32,
+    pub r_fiq: [u32; 16],
+    pub spsr_fiq: u32,
+
 }
 
 pub fn init(path: &str) -> Cpu{
@@ -41,12 +48,22 @@ pub fn init(path: &str) -> Cpu{
         n: false,
         v: false,
         // ARM instruction decode table
-        arm_decode_table: arm_decode_table::generate_decode_table(),
-    };
 
-    cpu.load_rom(path.to_string());
+        mode: CPUMode::USER,
+        arm_decode_table: arm_decode_table::generate_decode_table(),
+        r_irq: [0; 16],
+        spsr_irq: 0,
+        r_fiq: [0; 16],
+        spsr_fiq: 0,
+    };
+    if(path.to_string().eq("skip")){
+        //println!("Skipping ROM Loading");
+    }else{
+        cpu.load_rom(path.to_string());
+    }
 
     // Set PC to cartridge entry point
+
     cpu.r[15] = 0x8000000;
     return cpu;
 }
@@ -59,7 +76,11 @@ impl Cpu{
                 self.fetch_arm();
 
 
-                self.r[15] += 4;
+
+
+
+
+
             },
             THUMB => {
                 println!("THUMB Mode is unsupported");

@@ -4,7 +4,7 @@ mod reads;
 pub struct Memory{
     // General Memory
     bios: [u8; 1<<14],
-    pub wram_on_board: [u8; 1<<18],
+    pub wram_on_board: Vec<u8>,
     pub wram_on_chip: [u8; 1<<15],
 
     // Display Memory
@@ -22,7 +22,7 @@ pub fn init() -> Memory{
     return Memory{
         // General Memory
         bios: [0; 1<<14],
-        wram_on_board: [0; 1<<18],
+        wram_on_board: vec![0; 1<<18],
         wram_on_chip: [0; 1<<15],
 
         // Display Memory
