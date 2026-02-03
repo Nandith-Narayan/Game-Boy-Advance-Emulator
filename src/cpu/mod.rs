@@ -6,7 +6,8 @@ use crate::memory;
 mod arm_instructions;
 mod arm;
 mod enums;
-mod arm_decode_table;
+mod arm_decode;
+
 pub struct Cpu{
     pub r: [u32; 16],
     pub memory: memory::Memory,
@@ -21,8 +22,6 @@ pub struct Cpu{
     pub n: bool,
     pub v: bool,
     pub mode: CPUMode,
-    // ARM instruction decode table
-    arm_decode_table: [ARMInstruction; 4096],
 
     // Banked registers
     pub r_irq: [u32; 16],
@@ -50,7 +49,6 @@ pub fn init(path: &str) -> Cpu{
         // ARM instruction decode table
 
         mode: CPUMode::USER,
-        arm_decode_table: arm_decode_table::generate_decode_table(),
         r_irq: [0; 16],
         spsr_irq: 0,
         r_fiq: [0; 16],

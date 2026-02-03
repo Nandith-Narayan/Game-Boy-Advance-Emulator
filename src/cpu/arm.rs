@@ -1,3 +1,4 @@
+use crate::cpu::arm_decode::decode_instruction;
 use crate::cpu::enums::ARMCondition::*;
 use crate::cpu::enums::ARMInstruction::*;
 use crate::cpu::enums::CPUMode;
@@ -35,9 +36,10 @@ impl Cpu{
             14 => AL,
             _ => {println!("UNDEFINED CONDITION ON INSTRUCTION {}", inst); AL},
         };
-        let low = (inst & 0xF0) >> 4;
+        /*let low = (inst & 0xF0) >> 4;
         let high = (inst & 0x0FF00000) >> 20;
-        self.decode_arm = self.arm_decode_table[((high << 4) | low) as usize];
+        self.decode_arm = self.arm_decode_table[((high << 4) | low) as usize];*/
+        self.decode_arm = decode_instruction(inst);
         if inst == 0{
             self.decode_arm = NOP;
         }
