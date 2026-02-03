@@ -23,7 +23,7 @@ pub enum ARMInstruction {
     DataProcessingReg,
     DataProcessingImmediate,
     PSRTransferReg,
-    PSRTransferImmediate,
+    PSRTransferFlagsOnly,
     BranchAndExchange,
     Branch,
     BranchWithLink,

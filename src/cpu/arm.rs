@@ -92,7 +92,7 @@ impl Cpu{
             SingleDataSwap => self.single_data_swap(self.inst_arm),
             SingleDataTransferReg => self.single_data_transfer_register_operand(self.inst_arm),
             SingleDataTransferImmediate => self.single_data_transfer_immediate_operand(self.inst_arm),
-            PSRTransferImmediate => self.program_status_register_transfer_immediate_operand(self.inst_arm),
+            PSRTransferFlagsOnly => self.program_status_register_transfer_flags_only(self.inst_arm),
             _ => println!("Unimplemented ARM instruction: {:?}", self.decode_arm),
         };
     }

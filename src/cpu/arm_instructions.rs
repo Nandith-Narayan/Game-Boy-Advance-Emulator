@@ -1,3 +1,4 @@
+use crate::cpu::enums::CPUMode::*;
 use super::Cpu;
 
 
@@ -502,19 +503,38 @@ impl Cpu {
         }
     }
 
-    pub fn program_status_register_transfer_immediate_operand(&mut self, inst: u32) {
-        let write_to_flags = (inst & (1<<19)) != 0;
-        let rotate = (inst & 0xF00) >> 8;
-        let immediate = inst & 0xFF;
-        let operand = immediate.rotate_right(rotate*2);
+    pub fn program_status_register_transfer_flags_only(&mut self, inst: u32) {
+        let operand_is_immediate = (inst & (1 << 25)) != 0;
+        let operand;
 
-        if write_to_flags {
+        if operand_is_immediate {
+            let rotate = (inst & 0xF00) >> 8;
+            let immediate = inst & 0xFF;
+            operand = immediate.rotate_right(rotate * 2);
+        }else{
+            let rm = inst & 0xF;
+            operand = self.r[rm as usize];
+        }
+
+        let destination_is_cpsr = (inst & (1 << 22)) == 0;
+
+        if destination_is_cpsr {
             self.n = (operand & (1 << 31)) != 0;
             self.z = (operand & (1 << 30)) != 0;
             self.c = (operand & (1 << 29)) != 0;
             self.v = (operand & (1 << 28)) != 0;
+        }else{
+            match self.mode{
+                USER => {println!("CPU user mode doesn't have a SPSR");},
+                FIQ => {
+                    self.spsr_fiq = (self.spsr_fiq & 0x0FFFFFFF) | (operand & 0xF0000000);
+                },
+                IRQ => {
+                    self.spsr_irq = (self.spsr_irq & 0x0FFFFFFF) | (operand & 0xF0000000);
+                },
+                _ => {println!("failed to set CPU {:?} mode's SPSR.", self.mode);},
+            }
         }
-
     }
 
 }
