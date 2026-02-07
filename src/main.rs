@@ -22,6 +22,9 @@ fn main() {
         println!("R[0] = {:#4x}, PC = {:#4x}, Carry Flag: {}", cpu.r[0], cpu.r[15], cpu.c);
         //println!("R[0] = {:#4x} ({})", cpu.r[0], cpu.r[0]);
         cpu.tick_cycle();
+        if (cpu.r[12] ==224){
+            break;
+        }
     }
     let val = now.elapsed().as_nanos();
     println!("Took {} ns to execute {} instructions. ({} ns per instruction)", val, n, val/n);

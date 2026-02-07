@@ -2,6 +2,7 @@ use crate::cpu::enums::{ARMCondition, ARMInstruction, CPUMode, InstructionSet};
 use InstructionSet::{ARM, THUMB};
 use crate::cpu::enums::ARMCondition::AL;
 use crate::cpu::enums::ARMInstruction::NOP;
+use crate::cpu::enums::CPUMode::SUPERVISOR;
 use crate::memory;
 mod arm_instructions;
 mod arm;
@@ -46,9 +47,8 @@ pub fn init(path: &str) -> Cpu{
         c: false,
         n: false,
         v: false,
-        // ARM instruction decode table
-
-        mode: CPUMode::USER,
+        
+        mode: SUPERVISOR,
         r_irq: [0; 16],
         spsr_irq: 0,
         r_fiq: [0; 16],

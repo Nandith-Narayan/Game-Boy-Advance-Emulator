@@ -80,7 +80,15 @@ impl Cpu{
         if !condition{
             self.decode_arm = CondIsFalse;
         }
-        //println!("{:?}", self.decode_arm);
+        println!("{:?}", self.decode_arm);
+        let mut x = self.inst_arm;
+        let str = format!("{:032b}",x);
+
+        print!("Instruction: {:?} ( ", self.decode_arm);
+        for i in 0..8{
+            print!("{} ", str.get(i*4..i*4+4).unwrap());
+        }
+        println!(") ({:#x})", x);
         match self.decode_arm{
             CondIsFalse => {}
             NOP => {},
@@ -92,7 +100,8 @@ impl Cpu{
             SingleDataSwap => self.single_data_swap(self.inst_arm),
             SingleDataTransferReg => self.single_data_transfer_register_operand(self.inst_arm),
             SingleDataTransferImmediate => self.single_data_transfer_immediate_operand(self.inst_arm),
-            PSRTransferFlagsOnly => self.program_status_register_transfer_flags_only(self.inst_arm),
+            TransferToPSR => self.transfer_to_program_status_register(self.inst_arm),
+            PSRTransferFromReg => self.program_status_register_transfer_from_register(self.inst_arm),
             _ => println!("Unimplemented ARM instruction: {:?}", self.decode_arm),
         };
     }
@@ -111,6 +120,8 @@ impl Cpu{
         self.z = (cpsr & (1 << 30)) != 0;
         self.c = (cpsr & (1 << 29)) != 0;
         self.v = (cpsr & (1 << 28)) != 0;
+
+
     }
     // Helper function to convert CPU status into a bit field
     pub fn get_cpsr(&mut self) -> u32{

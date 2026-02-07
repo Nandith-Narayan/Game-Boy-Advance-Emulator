@@ -1,3 +1,4 @@
+use crate::cpu::enums::CPUMode;
 use crate::cpu::enums::CPUMode::*;
 use super::Cpu;
 
@@ -501,12 +502,29 @@ impl Cpu {
             },
             _ => {}
         }
+
+        if rd == 15{
+            if set_flags{
+                match self.mode{
+                    FIQ =>{
+                        self.set_cpsr(self.spsr_fiq);
+                        let new_mode = self.num_to_cpu_mode(self.spsr_fiq & 0x1F);
+                        self.switch_mode(new_mode);
+                    },
+                    _ => {println!("Unimplemented situation: Rd = 15, S-bit is set, and CPU is in {:?} mode.", self.mode);}
+                }
+            self.flush_pipeline();
+            }
+        }
+
     }
 
-    pub fn program_status_register_transfer_flags_only(&mut self, inst: u32) {
+    pub fn transfer_to_program_status_register(&mut self, inst: u32) {
         let operand_is_immediate = (inst & (1 << 25)) != 0;
+        let set_flags = (inst & (1 << 19)) != 0;
+        let write_to_control_bits = (inst & (1 << 16)) != 0;
         let operand;
-
+        println!("set_flags {}", set_flags);
         if operand_is_immediate {
             let rotate = (inst & 0xF00) >> 8;
             let immediate = inst & 0xFF;
@@ -519,22 +537,119 @@ impl Cpu {
         let destination_is_cpsr = (inst & (1 << 22)) == 0;
 
         if destination_is_cpsr {
-            self.n = (operand & (1 << 31)) != 0;
-            self.z = (operand & (1 << 30)) != 0;
-            self.c = (operand & (1 << 29)) != 0;
-            self.v = (operand & (1 << 28)) != 0;
+            if set_flags {
+                self.n = (operand & (1 << 31)) != 0;
+                self.z = (operand & (1 << 30)) != 0;
+                self.c = (operand & (1 << 29)) != 0;
+                self.v = (operand & (1 << 28)) != 0;
+            }
+            if write_to_control_bits {
+                let new_mode = self.num_to_cpu_mode(operand & 0x01F);
+                self.switch_mode(new_mode);
+            }
+
         }else{
+            // Mask off bits we want to set. Use the negation of this mask to select the bits we want to keep.
+            let mut mask = 0u32;
+            if set_flags {
+                mask |= 0xF0000000;
+            }
+            if write_to_control_bits {
+                mask |= 0x000000FF
+            }
+
+
             match self.mode{
                 USER => {println!("CPU user mode doesn't have a SPSR");},
                 FIQ => {
-                    self.spsr_fiq = (self.spsr_fiq & 0x0FFFFFFF) | (operand & 0xF0000000);
+                    self.spsr_fiq = (self.spsr_fiq & (!mask)) | (operand & mask);
                 },
                 IRQ => {
-                    self.spsr_irq = (self.spsr_irq & 0x0FFFFFFF) | (operand & 0xF0000000);
+                    self.spsr_irq = (self.spsr_irq & (!mask)) | (operand & mask);
                 },
                 _ => {println!("failed to set CPU {:?} mode's SPSR.", self.mode);},
             }
         }
+    }
+
+    pub fn program_status_register_transfer_from_register(&mut self, inst: u32) {
+        println!("EEEE");
+        let destination_is_cpsr = (inst & (1 << 22)) == 0;
+        let rm = inst & 0xF;
+        let operand = self.r[rm as usize];
+
+        if destination_is_cpsr{
+            self.n = (operand & (1 << 31)) != 0;
+            self.z = (operand & (1 << 30)) != 0;
+            self.c = (operand & (1 << 29)) != 0;
+            self.v = (operand & (1 << 28)) != 0;
+
+            let new_mode = self.num_to_cpu_mode(operand & 0x1F);
+
+            self.switch_mode(new_mode);
+
+
+        }else{
+            match self.mode{
+                USER => {println!("CPU user mode doesn't have a SPSR");},
+                FIQ => {
+                    self.spsr_fiq = operand;
+                },
+                IRQ => {
+                    self.spsr_irq = operand;
+                },
+                _ => {println!("failed to set CPU {:?} mode's SPSR.", self.mode);},
+            }
+        }
+
+    }
+
+    pub fn num_to_cpu_mode(&mut self, n: u32) -> CPUMode{
+       return match n{
+            0b10000 => USER,
+            0b10001 => FIQ,
+            0b10010 => IRQ,
+            0b10011 => SUPERVISOR,
+            0b10111 => ABORT,
+            0b11011 => UNDEFINED,
+            0b11111 => SYSTEM,
+            _ => UNDEFINED,
+        }
+    }
+
+    pub fn switch_mode(&mut self, new_mode: CPUMode){
+
+        println!("Mode swap triggered: {:?} -> {:?}", self.mode, new_mode);
+
+        let mode_swap = if new_mode == USER || new_mode == SYSTEM {self.mode} else {new_mode};
+
+        match mode_swap{
+            FIQ => {
+                std::mem::swap(&mut self.r[8], &mut self.r_fiq[8]);
+                std::mem::swap(&mut self.r[9], &mut self.r_fiq[9]);
+                std::mem::swap(&mut self.r[10], &mut self.r_fiq[10]);
+                std::mem::swap(&mut self.r[11], &mut self.r_fiq[11]);
+                std::mem::swap(&mut self.r[12], &mut self.r_fiq[12]);
+                std::mem::swap(&mut self.r[13], &mut self.r_fiq[13]);
+                std::mem::swap(&mut self.r[14], &mut self.r_fiq[14]);
+
+                let temp = self.get_cpsr();
+                self.set_cpsr(self.spsr_fiq);
+                self.spsr_fiq = temp;
+            },
+            IRQ => {
+                std::mem::swap(&mut self.r[13], &mut self.r_fiq[13]);
+                std::mem::swap(&mut self.r[14], &mut self.r_fiq[14]);
+
+                let temp = self.get_cpsr();
+                self.set_cpsr(self.spsr_fiq);
+                self.spsr_fiq = temp;
+            },
+
+            _ => {println!("Failed to switch to mode {:?}", new_mode);}
+        }
+
+        self.mode = new_mode;
     }
 
 }
