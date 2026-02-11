@@ -1,7 +1,6 @@
 use crate::cpu::arm_decode::decode_instruction;
 use crate::cpu::enums::ARMCondition::*;
 use crate::cpu::enums::ARMInstruction::*;
-use crate::cpu::enums::CPUMode;
 use super::Cpu;
 
 // Implementation of functions related to ARM mode of the CPU
