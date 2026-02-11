@@ -8,6 +8,9 @@ use super::Cpu;
 impl Cpu{
     // Fetch ARM instruction
     pub fn fetch_arm(&mut self){
+        if self.fetch_arm != 0{
+            return;
+        }
         self.fetch_arm = self.memory.read_32(self.r[15]);
         self.r[15] += 4;
     }
@@ -17,6 +20,7 @@ impl Cpu{
             return;
         }
         let inst = self.fetch_arm;
+        self.fetch_arm = 0;
         // decode condition
         self.condition_arm = match (inst & 0xF0000000)>>28{
             0 => EQ,
@@ -80,7 +84,7 @@ impl Cpu{
         if !condition{
             self.decode_arm = CondIsFalse;
         }
-        println!("{:?}", self.decode_arm);
+        /*println!("{:?}", self.decode_arm);
         let mut x = self.inst_arm;
         let str = format!("{:032b}",x);
 
@@ -88,7 +92,7 @@ impl Cpu{
         for i in 0..8{
             print!("{} ", str.get(i*4..i*4+4).unwrap());
         }
-        println!(") ({:#x})", x);
+        println!(") ({:#x})", x);*/
         match self.decode_arm{
             CondIsFalse => {}
             NOP => {},
@@ -101,7 +105,9 @@ impl Cpu{
             SingleDataTransferReg => self.single_data_transfer_register_operand(self.inst_arm),
             SingleDataTransferImmediate => self.single_data_transfer_immediate_operand(self.inst_arm),
             TransferToPSR => self.transfer_to_program_status_register(self.inst_arm),
-            PSRTransferFromReg => self.program_status_register_transfer_from_register(self.inst_arm),
+            TransferFromPSR => self.transfer_from_program_status_register(self.inst_arm),
+            Multiply => self.multiply(self.inst_arm),
+            MultiplyLong => self.multiply_long(self.inst_arm),
             _ => println!("Unimplemented ARM instruction: {:?}", self.decode_arm),
         };
     }

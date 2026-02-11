@@ -47,7 +47,7 @@ pub fn init(path: &str) -> Cpu{
         c: false,
         n: false,
         v: false,
-        
+
         mode: SUPERVISOR,
         r_irq: [0; 16],
         spsr_irq: 0,
@@ -69,10 +69,14 @@ impl Cpu{
     pub fn tick_cycle(&mut self){
         match self.instruction_set {
             ARM => {
+
                 self.execute_arm();
+
                 self.decode_arm();
+
                 self.fetch_arm();
 
+    
 
 
 

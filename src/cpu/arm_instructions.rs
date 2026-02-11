@@ -19,7 +19,9 @@ impl Cpu {
     pub fn branch_with_link(&mut self, inst: u32) {
         let mut offset: i32 = (((inst & 0x00FFFFFF) << 8) as i32) >> 8;
         offset <<= 2;
-        self.r[14] = self.r[15];
+        // Compensate for instruction prefetching.
+        // The link register should have the address of the instruction right after the branch instruction
+        self.r[14] = self.r[15]-4;
         self.r[15] = ((self.r[15] as i32) + offset) as u32;
         self.flush_pipeline();
     }
@@ -171,7 +173,7 @@ impl Cpu {
         let rd = (inst & 0xF000) >> 12;
         let rm = inst & 0xF;
 
-        let operand1 = self.r[rn as usize];
+        let mut operand1 = self.r[rn as usize];
         let mut operand2 = self.r[rm as usize];
 
         let set_flags = (inst & (1 << 20)) != 0;
@@ -184,9 +186,21 @@ impl Cpu {
             let shift_amount = (shift_inst >> 3) & 0x1F;
             operand2 = self.perform_shift_op_immediate_shift(shift_type, shift_amount, operand2);
         }else{
+            // Shifting normally takes longer to execute,
+            // so the instruction pipeline would've incremented the PC by 4.
+            // If the PC (R[15]) is one of the operands,
+            // then increase the operand by 4 to compensate.
+            if rn == 15{
+                operand1 += 4;
+
+            }else if rm == 15{
+                operand2 += 4;
+            }
             // shift by register value
             operand2 = self.perform_shift_op_register_shift(shift_inst, operand2);
         }
+
+
 
 
         self.alu_operations(inst, operand1, operand2, rd, set_flags);
@@ -319,7 +333,7 @@ impl Cpu {
         let mut immediate = inst & 0xFF;
         let rotate = (inst & 0xF00)>> 8;
 
-        let operand1 = self.r[rn as usize];
+        let mut operand1 = self.r[rn as usize];
         let operand2 = immediate.rotate_right(rotate*2);
         // update the carry flag only if the shifter was used to rotate the immediate value
         if rotate != 0{
@@ -327,6 +341,7 @@ impl Cpu {
         }
 
         let set_flags = (inst & (1 << 20)) != 0;
+
 
         self.alu_operations(inst, operand1, operand2, rd, set_flags);
     }
@@ -451,7 +466,6 @@ impl Cpu {
                 // CMP
                 let result = operand1 as i64 - operand2 as i64;
                 if set_flags {
-
                     self.z = result as u32 == 0;
                     self.n = (result & 0x80000000) != 0;
                     self.c = (result & 0x100000000) != 0;
@@ -472,7 +486,6 @@ impl Cpu {
             12 => {
                 // ORR
                 let result = operand1 | operand2;
-
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
                 self.r[rd as usize] = result;
@@ -524,7 +537,6 @@ impl Cpu {
         let set_flags = (inst & (1 << 19)) != 0;
         let write_to_control_bits = (inst & (1 << 16)) != 0;
         let operand;
-        println!("set_flags {}", set_flags);
         if operand_is_immediate {
             let rotate = (inst & 0xF00) >> 8;
             let immediate = inst & 0xFF;
@@ -544,6 +556,7 @@ impl Cpu {
                 self.v = (operand & (1 << 28)) != 0;
             }
             if write_to_control_bits {
+                println!("operand = {:#4x}", operand);
                 let new_mode = self.num_to_cpu_mode(operand & 0x01F);
                 self.switch_mode(new_mode);
             }
@@ -572,36 +585,66 @@ impl Cpu {
         }
     }
 
-    pub fn program_status_register_transfer_from_register(&mut self, inst: u32) {
-        println!("EEEE");
-        let destination_is_cpsr = (inst & (1 << 22)) == 0;
-        let rm = inst & 0xF;
-        let operand = self.r[rm as usize];
+    pub fn transfer_from_program_status_register(&mut self, inst: u32) {
+        let source_is_cpsr = (inst & (1 << 22)) == 0;
+        let rd = (inst >> 12) & 0xF;
 
-        if destination_is_cpsr{
-            self.n = (operand & (1 << 31)) != 0;
-            self.z = (operand & (1 << 30)) != 0;
-            self.c = (operand & (1 << 29)) != 0;
-            self.v = (operand & (1 << 28)) != 0;
-
-            let new_mode = self.num_to_cpu_mode(operand & 0x1F);
-
-            self.switch_mode(new_mode);
-
-
-        }else{
-            match self.mode{
-                USER => {println!("CPU user mode doesn't have a SPSR");},
-                FIQ => {
-                    self.spsr_fiq = operand;
-                },
-                IRQ => {
-                    self.spsr_irq = operand;
-                },
-                _ => {println!("failed to set CPU {:?} mode's SPSR.", self.mode);},
-            }
+        if(source_is_cpsr){
+            println!("TRANSFER FROM SPSR NOT IMPLEMENTED");
         }
 
+        self.r[rd as usize] = self.get_cpsr();
+
+    }
+
+    pub fn multiply(&mut self, inst: u32){
+        let accumulate = (inst & (1<<21)) != 0;
+        let set_flags = (inst & (1<<20)) != 0;
+
+        let rd = (inst >> 16) & 0xF;
+        let rn = (inst >> 12) & 0xF;
+        let rs = (inst >> 8) & 0xF;
+        let rm = inst & 0xF;
+
+        let result;
+        if accumulate{
+            result = (((self.r[rm as usize] as u64 * self.r[rs as usize] as u64) & 0xFFFFFFFF) as u32).wrapping_add(self.r[rn as usize]);
+        }else{
+            result = ((self.r[rm as usize] as u64 * self.r[rs as usize] as u64) & 0xFFFFFFFF) as u32;
+        }
+
+        if set_flags{
+            self.z = result == 0;
+            self.n = (result & 0x80000000) != 0;
+        }
+
+        self.r[rd as usize] = result;
+    }
+
+    pub fn multiply_long(&mut self, inst: u32){
+        let is_signed = (inst & (1<<22)) != 0;
+        let accumulate = (inst & (1<<21)) != 0;
+        let set_flags = (inst & (1<<20)) != 0;
+
+        let rd_high = (inst >> 16) & 0xF;
+        let rd_low = (inst >> 12) & 0xF;
+        let rs = (inst >> 8) & 0xF;
+        let rm = inst & 0xF;
+
+        let mut result;
+
+        result = self.r[rm as usize] as u64 * self.r[rs as usize] as u64;
+        if accumulate {
+            result = result.wrapping_add(((self.r[rd_high as usize] as u64) << 32) | self.r[rd_low as usize] as u64);
+        }
+
+        if set_flags{
+            self.z = result == 0;
+            self.n = (result & (1 << 31)) != 0;
+        }
+
+        self.r[rd_high as usize] = ((result >> 32) & 0xFFFFFFFF) as u32;
+        self.r[rd_low as usize] = (result & 0xFFFFFFFF) as u32;
     }
 
     pub fn num_to_cpu_mode(&mut self, n: u32) -> CPUMode{

@@ -71,7 +71,7 @@ mod run_tests {
         for i in 0..N{
             let success = run_test(i, &d[i]);
 
-            // assert!(success);
+            assert!(success);
         }
 
 
@@ -88,11 +88,7 @@ mod run_tests {
         cpu.c = (cspr & (1 << 29)) != 0;
         cpu.v = (cspr & (1 << 28)) != 0;
         cpu.fetch_arm = data.opcode;
-
-        cpu.fetch_arm();
-        cpu.fetch_arm = data.opcode;
-        cpu.decode_arm();
-        cpu.execute_arm();
+        cpu.tick_cycle();
 
         let mut same = true;
         for i in 0..16 {
