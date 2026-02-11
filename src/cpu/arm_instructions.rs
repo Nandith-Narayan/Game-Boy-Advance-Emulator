@@ -633,9 +633,20 @@ impl Cpu {
 
         let mut result;
 
-        result = self.r[rm as usize] as u64 * self.r[rs as usize] as u64;
-        if accumulate {
-            result = result.wrapping_add(((self.r[rd_high as usize] as u64) << 32) | self.r[rd_low as usize] as u64);
+        if is_signed{
+            let mut signed_result: i64;
+            // Need to first cast to i32 and then i64, to sign-extend the 32bit number to 64bits.
+            signed_result = (self.r[rm as usize] as i32 as i64).wrapping_mul(self.r[rs as usize] as i32 as i64);
+            if accumulate {
+                signed_result = signed_result.wrapping_add((((self.r[rd_high as usize] as u64) << 32) | self.r[rd_low as usize] as u64) as i64);
+            }
+            result = signed_result as u64;
+
+        }else {
+            result = self.r[rm as usize] as u64 * self.r[rs as usize] as u64;
+            if accumulate {
+                result = result.wrapping_add(((self.r[rd_high as usize] as u64) << 32) | self.r[rd_low as usize] as u64);
+            }
         }
 
         if set_flags{
