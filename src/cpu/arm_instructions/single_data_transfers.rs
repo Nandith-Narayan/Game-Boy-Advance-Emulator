@@ -134,10 +134,6 @@ impl Cpu{
                 self.memory.write_32(address, self.r[rd as usize]);
             }
         }
-        // Write address back to base register
-        if write_back{
-            self.r[rn as usize] = address;
-        }
 
         if !add_before_transfer{
             if add_offset{
@@ -145,6 +141,11 @@ impl Cpu{
             }else{
                 address -= offset;
             }
+        }
+
+        // Write address back to base register
+        if write_back{
+            self.r[rn as usize] = address;
         }
 
     }
