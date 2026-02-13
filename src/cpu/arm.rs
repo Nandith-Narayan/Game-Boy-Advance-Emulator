@@ -47,14 +47,14 @@ impl Cpu{
             self.decode_arm = NOP;
         }
         self.inst_arm = inst;
-        /*let mut x = self.inst_arm;
+        let mut x = self.inst_arm;
         let str = format!("{:032b}",x);
 
         print!("Instruction: {:?} ( ", self.decode_arm);
         for i in 0..8{
             print!("{} ", str.get(i*4..i*4+4).unwrap());
         }
-        println!(") ({:#x})", x);*/
+        println!(") ({:#x})", x);
         //println!("{:?}", self.r);
     }
     // Execute ARM instruction

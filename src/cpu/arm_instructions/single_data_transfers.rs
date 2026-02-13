@@ -35,6 +35,9 @@ impl Cpu{
         let shift_amount = (shift & 0xF8) >> 3;
         let mut offset = self.r[rm as usize];
 
+        offset = self.perform_shift_op_immediate_shift((shift>>1) & 0b011, shift_amount, offset);
+
+        /*
         // Handle 4 shift types
         match (shift & 0b110) >> 1 {
             0 => {
@@ -95,7 +98,7 @@ impl Cpu{
                 }
             }
             _ => {}
-        }
+        }*/
         // execute the rest of the instruction using the offset
         self.single_data_transfer_with_offset(inst, offset);
 
@@ -124,14 +127,25 @@ impl Cpu{
             if load_data{
                 self.r[rd as usize] = self.memory.read_8(address) as u32;
             }else{
-                self.memory.write_8(address, self.r[rd as usize] as u8);
+                let mut val = self.r[rd as usize];
+                if rd == 15{
+                    val += 4;
+                }
+                self.memory.write_8(address, val as u8);
             }
 
         }else{
             if load_data{
-                self.r[rd as usize] = self.memory.read_32(address);
+                // Non-aligned loads rotate the read in byte
+                let val = self.memory.read_32(address & 0xFFFFFFFC);
+                self.r[rd as usize] = val.rotate_right((address & 0b11) * 8);
             }else{
-                self.memory.write_32(address, self.r[rd as usize]);
+                address &= 0xFFFFFFFC; // Must be aligned to 4-byte blocks
+                let mut val = self.r[rd as usize];
+                if rd == 15{
+                    val += 4;
+                }
+                self.memory.write_32(address, val);
             }
         }
 
@@ -144,7 +158,9 @@ impl Cpu{
         }
 
         // Write address back to base register
-        if write_back{
+        // in case of post-indexing, always write back
+        if write_back || !add_before_transfer {
+           if load_data && rd==rn {return;} // If the same register is used, and it is a load, then don't write back
             self.r[rn as usize] = address;
         }
 

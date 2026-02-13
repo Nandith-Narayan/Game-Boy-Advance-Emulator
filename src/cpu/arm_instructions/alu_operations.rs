@@ -173,11 +173,11 @@ impl Cpu{
             },
             10 => {
                 // CMP
-                let result = operand1 as i64 - operand2 as i64;
+                let result = operand1 as i64 - operand2  as i64;
                 if set_flags {
                     self.z = result as u32 == 0;
                     self.n = (result & 0x80000000) != 0;
-                    self.c = (result & 0x100000000) != 0;
+                    self.c = !((result & 0x100000000) != 0); // Carry Flag on subtraction (CMP) is reversed
                     self.v = (((operand1 as i64 & 0x7FFFFFFF) - (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
                 }
             },
@@ -241,7 +241,7 @@ impl Cpu{
 
     }
 
-    pub fn perform_shift_op_immediate_shift(&mut self,shift_type: u32, shift_amount:u32, value: u32) -> u32{
+    pub fn perform_shift_op_immediate_shift(&mut self, shift_type: u32, shift_amount:u32, value: u32) -> u32{
         // Handle 4 shift types
         match shift_type {
             0 => {

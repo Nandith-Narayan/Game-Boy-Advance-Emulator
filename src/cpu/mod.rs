@@ -76,13 +76,6 @@ impl Cpu{
 
                 self.fetch_arm();
 
-    
-
-
-
-
-
-
             },
             THUMB => {
                 println!("THUMB Mode is unsupported");
