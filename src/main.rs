@@ -19,7 +19,7 @@ fn main() {
 
     for _ in 1..n{
         println!("R[12] = {:#4x} ({})", cpu.r[12], cpu.r[12]);
-        println!("R[0] = {:#4x}, PC = {:#4x}, Carry Flag: {}", cpu.r[0], cpu.r[15], cpu.c);
+        println!("R[0] = {:#4x}, R[1] = {:#4x}, PC = {:#4x}, Carry Flag: {}", cpu.r[0], cpu.r[1], cpu.r[15], cpu.c);
         //println!("R[0] = {:#4x} ({})", cpu.r[0], cpu.r[0]);
         cpu.tick_cycle();
         if (cpu.r[12] ==224){

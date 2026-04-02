@@ -35,6 +35,7 @@ impl Cpu{
         let shift_amount = (shift & 0xF8) >> 3;
         let mut offset = self.r[rm as usize];
 
+
         offset = self.perform_shift_op_immediate_shift((shift>>1) & 0b011, shift_amount, offset);
 
         /*
@@ -109,6 +110,10 @@ impl Cpu{
         let rd = (inst & 0xF000) >> 12;
 
         let mut address = self.r[rn as usize];
+        if rn == 15{
+            address +=0;
+        }
+
 
         let add_before_transfer = (inst & (1 << 24)) != 0;
         let add_offset = (inst & (1 << 23)) != 0;

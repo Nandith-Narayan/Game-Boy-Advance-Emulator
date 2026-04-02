@@ -195,16 +195,19 @@ impl Cpu{
             12 => {
                 // ORR
                 let result = operand1 | operand2;
-                self.z = result == 0;
-                self.n = (result & 0x80000000) != 0;
+                if set_flags {
+                    self.z = result == 0;
+                    self.n = (result & 0x80000000) != 0;
+                }
                 self.r[rd as usize] = result;
             },
             13 => {
                 // MOV
                 let result = operand2;
-
-                self.z = result == 0;
-                self.n = (result & 0x80000000) != 0;
+                if set_flags{
+                    self.z = result == 0;
+                    self.n = (result & 0x80000000) != 0;
+                }
                 self.r[rd as usize] = result;
             },
             14 => {

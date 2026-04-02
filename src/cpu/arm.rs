@@ -50,11 +50,11 @@ impl Cpu{
         let mut x = self.inst_arm;
         let str = format!("{:032b}",x);
 
-        print!("Instruction: {:?} ( ", self.decode_arm);
+        /*print!("Instruction: {:?} ( ", self.decode_arm);
         for i in 0..8{
             print!("{} ", str.get(i*4..i*4+4).unwrap());
         }
-        println!(") ({:#x})", x);
+        println!(") ({:#x})", x);*/
         //println!("{:?}", self.r);
     }
     // Execute ARM instruction
@@ -83,7 +83,7 @@ impl Cpu{
         if !condition{
             self.decode_arm = CondIsFalse;
         }
-        /*println!("{:?}", self.decode_arm);
+        println!("{:?}", self.decode_arm);
         let mut x = self.inst_arm;
         let str = format!("{:032b}",x);
 
@@ -91,7 +91,7 @@ impl Cpu{
         for i in 0..8{
             print!("{} ", str.get(i*4..i*4+4).unwrap());
         }
-        println!(") ({:#x})", x);*/
+        println!(") ({:#x})", x);
         match self.decode_arm{
             CondIsFalse => {}
             NOP => {},
