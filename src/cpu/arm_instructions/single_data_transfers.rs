@@ -14,8 +14,10 @@ impl Cpu{
             self.r[rd as usize] = value as u32;
         }else{
             // Swap 32-bit quantity
-            let value = mem.read_32(self.r[rn as usize]);
-            mem.write_32(self.r[rn as usize], self.r[rm as usize]);
+            let mut value = mem.read_32(self.r[rn as usize] & 0xFFFFFFFE);
+            mem.write_32(self.r[rn as usize] & 0xFFFFFFFE, self.r[rm as usize]);
+            value = value.rotate_right((self.r[rn as usize] & 0b11) * 8); // Account for Misaligned reads
+
             self.r[rd as usize] = value;
         }
     }
