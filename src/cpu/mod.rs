@@ -4,6 +4,8 @@ use crate::cpu::enums::ARMCondition::AL;
 use crate::cpu::enums::ARMInstruction::NOP;
 use crate::cpu::enums::CPUMode::SUPERVISOR;
 use crate::memory;
+use crate::memory::Memory;
+
 mod arm_instructions;
 mod arm;
 mod enums;
@@ -11,7 +13,7 @@ mod arm_decode;
 
 pub struct Cpu{
     pub r: [u32; 16],
-    pub memory: memory::Memory,
+    //pub memory: memory::Memory,
     pub fetch_arm: u32,
     pub inst_arm: u32,
     pub decode_arm: ARMInstruction,
@@ -32,11 +34,11 @@ pub struct Cpu{
 
 }
 
-pub fn init(path: &str) -> Cpu{
+pub fn init() -> Cpu{
     println!("Initializing CPU...");
     let mut cpu = Cpu{
         r: [0; 16],
-        memory: memory::init(),
+        //memory: memory::init(),
         fetch_arm: 0,
         inst_arm: 0,
         decode_arm: NOP,
@@ -54,11 +56,11 @@ pub fn init(path: &str) -> Cpu{
         r_fiq: [0; 16],
         spsr_fiq: 0,
     };
-    if(path.to_string().eq("skip")){
+    /*if(path.to_string().eq("skip")){
         //println!("Skipping ROM Loading");
     }else{
         cpu.load_rom(path.to_string());
-    }
+    }*/
 
     // Set PC to cartridge entry point
 
@@ -66,15 +68,15 @@ pub fn init(path: &str) -> Cpu{
     return cpu;
 }
 impl Cpu{
-    pub fn tick_cycle(&mut self){
+    pub fn tick_cycle(&mut self, mem: &mut Memory){
         match self.instruction_set {
             ARM => {
 
-                self.execute_arm();
+                self.execute_arm(mem);
 
-                self.decode_arm();
+                self.decode_arm(mem);
 
-                self.fetch_arm();
+                self.fetch_arm(mem);
 
             },
             THUMB => {
@@ -82,13 +84,7 @@ impl Cpu{
             }
         }
     }
-    pub fn load_rom(&mut self, rom_file: String) {
-        println!("Loading Rom File [{}]", rom_file);
-        let data = std::fs::read(rom_file).unwrap();
-        for (i,val) in data.iter().enumerate(){
-            self.memory.rom[i] = *val;
-        }
-    }
+
 
 }
 

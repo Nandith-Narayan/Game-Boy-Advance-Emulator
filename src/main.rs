@@ -8,8 +8,9 @@ use std::thread;
 use std::time::Duration;
 
 fn main() {
-
-    let mut cpu = cpu::init("C:/GBA roms/arm.gba");
+    let mut mem = memory::init();
+    mem.load_rom(String::from("C:/GBA roms/arm.gba"));
+    let mut cpu = cpu::init();
     let now = Instant::now();
     let n = 1000;
     /*for address in 0..4{
@@ -21,7 +22,7 @@ fn main() {
         println!("R[12] = {:#4x} ({})", cpu.r[12], cpu.r[12]);
         println!("R[0] = {:#4x}, R[1] = {:#4x}, PC = {:#4x}, Carry Flag: {}", cpu.r[0], cpu.r[1], cpu.r[15], cpu.c);
         //println!("R[0] = {:#4x} ({})", cpu.r[0], cpu.r[0]);
-        cpu.tick_cycle();
+        cpu.tick_cycle(&mut mem);
         if (cpu.r[12] ==224){
             break;
         }
@@ -30,7 +31,7 @@ fn main() {
     println!("Took {} ns to execute {} instructions. ({} ns per instruction)", val, n, val/n);
     println!("R[12] = {:#4x} ({})", cpu.r[12], cpu.r[12]);
     for address in 0..=0x30{
-        print!("{:#4x}", cpu.memory.wram_on_board[address])
+        print!("{:#4x}", mem.wram_on_board[address])
     }
     println!();
 }

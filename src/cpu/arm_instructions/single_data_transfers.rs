@@ -1,30 +1,31 @@
+use crate::memory::Memory;
 use super::Cpu;
 
 impl Cpu{
 
-    pub fn single_data_swap(&mut self, inst: u32){
+    pub fn single_data_swap(&mut self, inst: u32, mem: &mut Memory){
         let rn = (inst & 0xF0000) >> 16;
         let rd = (inst & 0xF000) >> 12;
         let rm = inst & 0xF;
         if inst&(1<<22) != 0{
             // Swap 8-bit quantity
-            let value = self.memory.read_8(self.r[rn as usize]);
-            self.memory.write_8(self.r[rn as usize], self.r[rm as usize] as u8);
+            let value = mem.read_8(self.r[rn as usize]);
+            mem.write_8(self.r[rn as usize], self.r[rm as usize] as u8);
             self.r[rd as usize] = value as u32;
         }else{
             // Swap 32-bit quantity
-            let value = self.memory.read_32(self.r[rn as usize]);
-            self.memory.write_32(self.r[rn as usize], self.r[rm as usize]);
+            let value = mem.read_32(self.r[rn as usize]);
+            mem.write_32(self.r[rn as usize], self.r[rm as usize]);
             self.r[rd as usize] = value;
         }
     }
 
-    pub fn single_data_transfer_immediate_operand(&mut self, inst: u32){
+    pub fn single_data_transfer_immediate_operand(&mut self, inst: u32, mem: &mut Memory){
         let offset = inst & 0xFFF;
-        self.single_data_transfer_with_offset(inst, offset);
+        self.single_data_transfer_with_offset(inst, offset, mem);
     }
 
-    pub fn single_data_transfer_register_operand(&mut self, inst: u32){
+    pub fn single_data_transfer_register_operand(&mut self, inst: u32, mem: &mut Memory){
         // compute offset
         let rm = inst & 0xF;
 
@@ -101,11 +102,11 @@ impl Cpu{
             _ => {}
         }*/
         // execute the rest of the instruction using the offset
-        self.single_data_transfer_with_offset(inst, offset);
+        self.single_data_transfer_with_offset(inst, offset, mem);
 
     }
 
-    pub fn single_data_transfer_with_offset(&mut self, inst: u32, offset:u32){
+    pub fn single_data_transfer_with_offset(&mut self, inst: u32, offset:u32, mem: &mut Memory){
         let rn = (inst & 0xF0000) >> 16;
         let rd = (inst & 0xF000) >> 12;
 
@@ -130,19 +131,19 @@ impl Cpu{
         // Do transfer
         if transfer_byte{
             if load_data{
-                self.r[rd as usize] = self.memory.read_8(address) as u32;
+                self.r[rd as usize] = mem.read_8(address) as u32;
             }else{
                 let mut val = self.r[rd as usize];
                 if rd == 15{
                     val += 4;
                 }
-                self.memory.write_8(address, val as u8);
+                mem.write_8(address, val as u8);
             }
 
         }else{
             if load_data{
                 // Non-aligned loads rotate the read in byte
-                let val = self.memory.read_32(address & 0xFFFFFFFC);
+                let val = mem.read_32(address & 0xFFFFFFFC);
                 self.r[rd as usize] = val.rotate_right((address & 0b11) * 8);
             }else{
                 address &= 0xFFFFFFFC; // Must be aligned to 4-byte blocks
@@ -150,7 +151,7 @@ impl Cpu{
                 if rd == 15{
                     val += 4;
                 }
-                self.memory.write_32(address, val);
+                mem.write_32(address, val);
             }
         }
 

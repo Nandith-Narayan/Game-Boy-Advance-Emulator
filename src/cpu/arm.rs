@@ -1,20 +1,21 @@
 use crate::cpu::arm_decode::decode_instruction;
 use crate::cpu::enums::ARMCondition::*;
 use crate::cpu::enums::ARMInstruction::*;
+use crate::memory::Memory;
 use super::Cpu;
 
 // Implementation of functions related to ARM mode of the CPU
 impl Cpu{
     // Fetch ARM instruction
-    pub fn fetch_arm(&mut self){
+    pub fn fetch_arm(&mut self, mem: &mut Memory) {
         if self.fetch_arm != 0{
             return;
         }
-        self.fetch_arm = self.memory.read_32(self.r[15]);
+        self.fetch_arm = mem.read_32(self.r[15]);
         self.r[15] += 4;
     }
     // Decode ARM instruction
-    pub fn decode_arm(&mut self){
+    pub fn decode_arm(&mut self, mem: &mut Memory){
         if self.fetch_arm == 0 {
             return;
         }
@@ -58,7 +59,7 @@ impl Cpu{
         //println!("{:?}", self.r);
     }
     // Execute ARM instruction
-    pub fn execute_arm(&mut self){
+    pub fn execute_arm(&mut self, mem: &mut Memory){
         if self.decode_arm == EMPTY{
             return;
         }
@@ -100,9 +101,9 @@ impl Cpu{
             BranchWithLink => self.branch_with_link(self.inst_arm),
             DataProcessingReg => self.data_processing_register_operand(self.inst_arm),
             DataProcessingImmediate => self.data_processing_immediate_operand(self.inst_arm),
-            SingleDataSwap => self.single_data_swap(self.inst_arm),
-            SingleDataTransferReg => self.single_data_transfer_register_operand(self.inst_arm),
-            SingleDataTransferImmediate => self.single_data_transfer_immediate_operand(self.inst_arm),
+            SingleDataSwap => self.single_data_swap(self.inst_arm, mem),
+            SingleDataTransferReg => self.single_data_transfer_register_operand(self.inst_arm, mem),
+            SingleDataTransferImmediate => self.single_data_transfer_immediate_operand(self.inst_arm, mem),
             TransferToPSR => self.transfer_to_program_status_register(self.inst_arm),
             TransferFromPSR => self.transfer_from_program_status_register(self.inst_arm),
             Multiply => self.multiply(self.inst_arm),

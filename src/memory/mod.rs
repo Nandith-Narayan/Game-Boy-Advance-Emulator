@@ -36,3 +36,12 @@ pub fn init() -> Memory{
     };
 }
 
+impl Memory{
+    pub fn load_rom(&mut self, rom_file: String) {
+        println!("Loading Rom File [{}]", rom_file);
+        let data = std::fs::read(rom_file).unwrap();
+        for (i,val) in data.iter().enumerate(){
+            self.rom[i] = *val;
+        }
+    }
+}
