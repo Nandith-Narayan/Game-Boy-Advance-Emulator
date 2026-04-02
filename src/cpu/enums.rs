@@ -24,8 +24,6 @@ pub enum ARMInstruction {
     DataProcessingImmediate,
     TransferToPSR,
     TransferFromPSR,
-    PSRTransferFromReg,
-    PSRTransferFlagsOnly,
     BranchAndExchange,
     Branch,
     BranchWithLink,
@@ -34,6 +32,10 @@ pub enum ARMInstruction {
     SingleDataSwap,
     SingleDataTransferReg,
     SingleDataTransferImmediate,
+    HalfWordTransferReg,
+    HalfWordTransferImmediate,
+    BlockDataTransferLoad,
+    BlockDataTransferStore,
 }
 
 #[derive(Debug)]

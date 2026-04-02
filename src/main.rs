@@ -33,19 +33,19 @@ fn main() {
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
-    let n = 1000;
+    let n = 2000;
     /*for address in 0..4{
         print!("{:#4x}", cpu.memory.read_8(address+0x8000000))
     }
     println!("\n {:#x}",cpu.memory.read_32(0x8000000));*/
 
     for _ in 1..n {
-        //println!("R[12] = {:#4x} ({})", cpu.r[12], cpu.r[12]);
-        //println!("R[0] = {:#4x}, R[1] = {:#4x}, PC = {:#4x}, Carry Flag: {}", cpu.r[0], cpu.r[1], cpu.r[15], cpu.c);
+        println!("R[12] = {:#4x} ({})", cpu.r[12], cpu.r[12]);
+        println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, PC = {:#4x}, Carry Flag: {}", cpu.r[0], cpu.r[1], cpu.r[2], cpu.r[3], cpu.r[15], cpu.c);
         //println!("R[0] = {:#4x} ({})", cpu.r[0], cpu.r[0]);
         cpu.tick_cycle(&mut mem);
         ppu.tick_cycle(&mut mem);
-        if (cpu.r[12] == 224) {
+        if (cpu.r[12] == 406) {
             break;
         }
     }
@@ -53,9 +53,9 @@ fn main() {
         buffer[i] = ((ppu.r[i] as u32) << 24)| ((ppu.g[i] as u32) << 16) | ((ppu.g[i] as u32) << 8) | 0x00000000;
 
     }
-    while window.is_open() && !window.is_key_down(Key::Escape) {
+    /*while window.is_open() && !window.is_key_down(Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
-    }
+    }*/
 
     /*let val = now.elapsed().as_nanos();
     println!("Took {} ns to execute {} instructions. ({} ns per instruction)", val, n, val/n);*/
