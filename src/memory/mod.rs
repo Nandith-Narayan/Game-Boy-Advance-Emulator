@@ -9,8 +9,17 @@ pub struct Memory{
 
     // Display Memory
     palette_ram: [u8; 1<<10],
-    vram: [u8; 3*(1<<15)],
+    pub vram: [u8; 3*(1<<15)],
     oam: [u8; 1<<10],
+
+    // IO Control Registers
+    // LCD Control (0x4000000)
+    pub lcd_bg_mode: u8,
+    pub v_blank: bool,
+    pub h_blank: bool,
+
+    // Vertical Counter (0x4000006)
+    pub vertical_count: u8,
 
     // Game Pak
     pub rom: Vec<u8>,
@@ -29,6 +38,11 @@ pub fn init() -> Memory{
         palette_ram: [0; 1<<10],
         vram: [0; 3*(1<<15)],
         oam: [0; 1<<10],
+
+        lcd_bg_mode: 0,
+        vertical_count: 0,
+        v_blank: false,
+        h_blank: false,
 
         // Game Pak Memory
         rom: vec![0; 3*(1<<25)],
