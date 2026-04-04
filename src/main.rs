@@ -60,8 +60,8 @@ fn main() {
     /*let val = now.elapsed().as_nanos();
     println!("Took {} ns to execute {} instructions. ({} ns per instruction)", val, n, val/n);*/
     println!("R[12] = {:#4x} ({})", cpu.r[12], cpu.r[12]);
-    for address in 0..=0x30{
+    /*for address in 0..=0x30{
         print!("{:#4x}", mem.wram_on_board[address])
     }
-    println!();
+    println!();*/
 }

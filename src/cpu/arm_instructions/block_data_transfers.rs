@@ -59,12 +59,16 @@ impl Cpu{
             address += 4;
         }
 
-        for i in 0..16{
+        for i in 0..15{
             if register_list & 0x1 != 0{
                 mem.write_32(address, self.r[i]);
                 address += 4;
             }
             register_list >>= 1;
+        }
+        // Handle R[15] (PC)
+        if register_list & 0x1 != 0{
+            mem.write_32(address, self.r[15]+4);
         }
 
         if write_back {
