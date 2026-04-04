@@ -1,3 +1,4 @@
+use crate::cpu::enums::CPUMode;
 use crate::memory::Memory;
 use super::Cpu;
 
@@ -6,10 +7,21 @@ impl Cpu{
         let rn = (inst >> 16) & 0x0F;
         let is_pre_indexing = inst & (1 << 24) != 0;
         let is_increment = inst & (1 << 23) != 0;
+        let s_bit = inst & (1 << 22) != 0;
         let write_back = inst & (1 << 21) != 0;
 
 
         let mut register_list = inst & 0xFFFF;
+        // Handle special case if the register list is empty
+        if register_list == 0{
+            // Load PC
+            self.r[15] = mem.read_32(self.r[rn as usize]);
+            // Increment base register as if the register list was full
+            self.r[rn as usize] += 0x40;
+            // PC has been updated, so the pipeline has to be flushed
+            self.flush_pipeline();
+            return;
+        }
         let reg_count = register_list.count_ones();
 
         let base_address = self.r[rn as usize];
@@ -21,14 +33,8 @@ impl Cpu{
             address += 4;
         }
 
-        for i in 0..16{
-            if register_list & 0x1 != 0{
-                self.r[i] = mem.read_32(address);
-                address += 4;
-            }
-            register_list >>= 1;
-        }
-
+        // Perform write back first, because if the write back register is in the list,
+        // then write back register will be overwritten by the load
         if write_back {
             let mut new_address = base_address;
             if is_increment{
@@ -38,16 +44,39 @@ impl Cpu{
             }
             self.r[rn as usize] = new_address;
         }
+
+        for i in 0..16{
+            if register_list & 0x1 != 0{
+                if !s_bit {
+                    self.r[i] = mem.read_32(address);
+                }else{
+                    self.set_mode_specific_reg(i, mem.read_32(address));
+                }
+                address += 4;
+            }
+            register_list >>= 1;
+        }
+
+
     }
 
     pub fn block_data_transfer_store(&mut self, inst: u32, mem: &mut Memory){
         let rn = (inst >> 16) & 0x0F;
         let is_pre_indexing = inst & (1 << 24) != 0;
         let is_increment = inst & (1 << 23) != 0;
+        let s_bit = inst & (1 << 22) != 0;
         let write_back = inst & (1 << 21) != 0;
 
 
         let mut register_list = inst & 0xFFFF;
+        // Handle special case if the register list is empty
+        if register_list == 0{
+            // Store PC
+            mem.write_32(self.r[rn as usize], self.r[15]+4);
+            // Increment base register as if the register list was full
+            self.r[rn as usize] += 0x40;
+            return;
+        }
         let reg_count = register_list.count_ones();
 
         let base_address = self.r[rn as usize];
@@ -61,7 +90,11 @@ impl Cpu{
 
         for i in 0..15{
             if register_list & 0x1 != 0{
-                mem.write_32(address, self.r[i]);
+                if !s_bit {
+                    mem.write_32(address, self.r[i]);
+                }else{
+                    mem.write_32(address, self.get_mode_specific_reg(i));
+                }
                 address += 4;
             }
             register_list >>= 1;
@@ -80,5 +113,25 @@ impl Cpu{
             }
             self.r[rn as usize] = new_address;
         }
+    }
+
+    fn get_mode_specific_reg(&mut self, reg: usize) -> u32{
+        return match (self.mode, reg) {
+            (_, 0..=7) => self.r[reg],
+            (CPUMode::USER|CPUMode::SYSTEM, _) => self.r[reg],
+            (CPUMode::FIQ, 8..=14) => self.r_fiq[reg],
+            (CPUMode::IRQ, 13|14) => self.r_irq[reg],
+            _ => self.r[reg],
+        };
+    }
+
+    fn set_mode_specific_reg(&mut self, reg: usize, value: u32){
+        match (self.mode, reg) {
+            (_, 0..=7) => self.r[reg] = value,
+            (CPUMode::USER|CPUMode::SYSTEM, _) => self.r[reg] = value,
+            (CPUMode::FIQ, 8..=14) => self.r_fiq[reg] = value,
+            (CPUMode::IRQ, 13|14) => self.r_irq[reg] = value,
+            _ => self.r[reg] = value,
+        };
     }
 }
