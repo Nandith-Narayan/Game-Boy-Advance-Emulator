@@ -4,6 +4,7 @@ mod psr_transfers;
 mod multiply;
 mod single_data_transfers;
 mod half_word_transfers;
+mod block_data_transfers;
 
 use crate::cpu::enums::CPUMode;
 use crate::cpu::enums::CPUMode::*;

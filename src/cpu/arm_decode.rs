@@ -19,7 +19,10 @@ pub fn decode_instruction(inst: u32) -> ARMInstruction {
 
     if (inst & 0x0D_B0_F0_00) == 0b0000_0001__0010_0000__1111_0000__0000_0000 {return TransferToPSR;}
     if (inst & 0x0F_BF_0F_FF) == 0b0000_0001__0000_1111__0000_0000__0000_0000 {return TransferFromPSR;}
-    
+
+    if (inst & 0x0E_10_00_00) == 0b0000_1000__0001_0000__0000_0000__0000_0000 {return BlockDataTransferLoad;}
+    if (inst & 0x0E_10_00_00) == 0b0000_1000__0000_0000__0000_0000__0000_0000 {return BlockDataTransferStore;}
+
     if (inst & 0x0E_00_00_00) == 0b0000_0000__0000_0000__0000_0000__0000_0000 {return DataProcessingReg;}
     if (inst & 0x0C_00_00_00) == 0b0000_0000__0000_0000__0000_0000__0000_0000 {return DataProcessingImmediate;}
 

@@ -106,6 +106,8 @@ impl Cpu{
             SingleDataTransferImmediate => self.single_data_transfer_immediate_operand(self.inst_arm, mem),
             HalfWordTransferReg => self.half_word_transfer_register(self.inst_arm, mem),
             HalfWordTransferImmediate => self.half_word_transfer_immediate(self.inst_arm, mem),
+            BlockDataTransferLoad => self.block_data_transfer_load(self.inst_arm, mem),
+            BlockDataTransferStore => self.block_data_transfer_store(self.inst_arm, mem),
             TransferToPSR => self.transfer_to_program_status_register(self.inst_arm),
             TransferFromPSR => self.transfer_from_program_status_register(self.inst_arm),
             Multiply => self.multiply(self.inst_arm),
