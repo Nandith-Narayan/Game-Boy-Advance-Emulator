@@ -147,6 +147,10 @@ impl Cpu{
                 // Non-aligned loads rotate the read in byte
                 let val = mem.read_32(address & 0xFFFFFFFC);
                 self.r[rd as usize] = val.rotate_right((address & 0b11) * 8);
+                // If PC is updated, flush the pipeline
+                if rd == 15{
+                    self.flush_pipeline();
+                }
             }else{
                 address &= 0xFFFFFFFC; // Must be aligned to 4-byte blocks
                 let mut val = self.r[rd as usize];

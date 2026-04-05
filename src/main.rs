@@ -45,7 +45,7 @@ fn main() {
         //println!("R[0] = {:#4x} ({})", cpu.r[0], cpu.r[0]);
         cpu.tick_cycle(&mut mem);
         ppu.tick_cycle(&mut mem);
-        if (cpu.r[12] > 200) {
+        if (cpu.r[12] > 100) {
             break;
         }
     }
