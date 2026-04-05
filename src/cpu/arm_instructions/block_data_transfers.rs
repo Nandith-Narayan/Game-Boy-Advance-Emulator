@@ -88,14 +88,41 @@ impl Cpu{
             address += 4;
         }
 
+        let mut base_reg_in_list = false;
+        let mut is_first = true;
+        let mut base_reg_destination_addr = base_address;
         for i in 0..15{
             if register_list & 0x1 != 0{
+                if i == rn as usize {
+                    base_reg_in_list = true;
+                    base_reg_destination_addr = address;
+                }
+
                 if !s_bit {
                     mem.write_32(address, self.r[i]);
+                    // To handle weird edge cases when the base register is first in the list,
+                    // write back immediately after storing the first register
+                    // Cases:
+                    //     Rn not in list: Write back occurs after storing unrelated register
+                    //     Rn first in list: Write back occurs after storing Rn,
+                    //                       stack has og value
+                    //     Rn not first in list: Write back occurs before storing Rn,
+                    //                           stack has new value
+                    if write_back && is_first{
+                        if is_increment {
+                            self.r[rn as usize] = base_address + reg_count*4;
+                        }else{
+                            self.r[rn as usize] = base_address - reg_count*4;
+                        }
+                    }
+
                 }else{
                     mem.write_32(address, self.get_mode_specific_reg(i));
                 }
+
                 address += 4;
+
+                is_first = false;
             }
             register_list >>= 1;
         }
@@ -104,15 +131,6 @@ impl Cpu{
             mem.write_32(address, self.r[15]+4);
         }
 
-        if write_back {
-            let mut new_address = base_address;
-            if is_increment{
-                new_address += reg_count*4;
-            }else{
-                new_address -= reg_count*4;
-            }
-            self.r[rn as usize] = new_address;
-        }
     }
 
     fn get_mode_specific_reg(&mut self, reg: usize) -> u32{
