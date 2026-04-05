@@ -86,7 +86,7 @@ impl Cpu{
                 },
                 (true, true) =>{ // Increment Before
                     mem.write_32(self.r[rn as usize]+4, self.r[15]+4);
-                    self.r[rn as usize] += 0x44;
+                    self.r[rn as usize] += 0x40;
                 },
             }
             return;
