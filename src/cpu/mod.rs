@@ -63,8 +63,9 @@ pub fn init() -> Cpu{
     }*/
 
     // Set PC to cartridge entry point
-
     cpu.r[15] = 0x8000000;
+    // Init Stack Pointer
+    cpu.r[13] = 0x3007F00;
     return cpu;
 }
 impl Cpu{

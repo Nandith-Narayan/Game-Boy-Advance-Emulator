@@ -238,8 +238,9 @@ impl Cpu{
                     },
                     _ => {println!("Unimplemented situation: Rd = 15, S-bit is set, and CPU is in {:?} mode.", self.mode);}
                 }
-                self.flush_pipeline();
+
             }
+            self.flush_pipeline();
         }
 
     }
