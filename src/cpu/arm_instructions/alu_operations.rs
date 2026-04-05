@@ -12,6 +12,12 @@ impl Cpu{
         let mut operand2 = self.r[rm as usize];
 
         let set_flags = (inst & (1 << 20)) != 0;
+        let alu_op = (inst & 0x1E00000) >> 21;
+
+        let use_carry_from_barrel_shifter = match alu_op {
+            2 /*SUB*/| 4 /*ADD*/| 5 /*ADC*/| 6 /*SBC*/| 10 /*CMP*/| 11 /*CMN*/ => false,
+            _ => true,
+        };
 
         // register shift
         let shift_inst = (inst & 0xFF0) >> 4;
@@ -19,7 +25,7 @@ impl Cpu{
             // shift by immediate value
             let shift_type = (shift_inst>>1) & 0b11;
             let shift_amount = (shift_inst >> 3) & 0x1F;
-            operand2 = self.perform_shift_op_immediate_shift(shift_type, shift_amount, operand2);
+            operand2 = self.perform_shift_op_immediate_shift(shift_type, shift_amount, operand2, use_carry_from_barrel_shifter);
         }else{
             // Shifting normally takes longer to execute,
             // so the instruction pipeline would've incremented the PC by 4.
@@ -32,7 +38,7 @@ impl Cpu{
                 operand2 += 4;
             }
             // shift by register value
-            operand2 = self.perform_shift_op_register_shift(shift_inst, operand2);
+            operand2 = self.perform_shift_op_register_shift(shift_inst, operand2, use_carry_from_barrel_shifter);
         }
 
         self.alu_operations(inst, operand1, operand2, rd, set_flags);
@@ -47,12 +53,22 @@ impl Cpu{
 
         let operand1 = self.r[rn as usize];
         let operand2 = immediate.rotate_right(rotate*2);
-        // update the carry flag only if the shifter was used to rotate the immediate value
-        if rotate != 0{
-            self.c = (operand2 & 0x80000000) != 0;
-        }
 
+        let alu_op = (inst & 0x1E00000) >> 21;
+
+        let use_carry_from_barrel_shifter = match alu_op {
+            2 /*SUB*/| 4 /*ADD*/| 5 /*ADC*/| 6 /*SBC*/| 10 /*CMP*/| 11 /*CMN*/ => false,
+            _ => true,
+        };
+        if use_carry_from_barrel_shifter {
+            // update the carry flag only if the shifter was used to rotate the immediate value & the operation wasn't arithmetic
+            if rotate != 0 {
+                self.c = (operand2 & 0x80000000) != 0;
+            }
+        }
         self.alu_operations(inst, operand1, operand2, rd, set_flags);
+
+
     }
 
     pub fn alu_operations(&mut self, inst:u32, operand1:u32, operand2:u32, rd:u32, set_flags:bool){
@@ -245,16 +261,17 @@ impl Cpu{
 
     }
 
-    pub fn perform_shift_op_immediate_shift(&mut self, shift_type: u32, shift_amount:u32, value: u32) -> u32{
+    pub fn perform_shift_op_immediate_shift(&mut self, shift_type: u32, shift_amount:u32, value: u32, set_flags: bool) -> u32{
         // Handle 4 shift types
         match shift_type {
             0 => {
                 // Logical Shift Left
                 let mut shifted_val: u64 = value as u64;
                 shifted_val <<= shift_amount;
-
-                // carry flag is maintained for special case of LSL #0
-                self.c = (shifted_val & 0x100000000) != 0;
+                if set_flags {
+                    // carry flag is maintained for special case of LSL #0
+                    self.c = (shifted_val & 0x100000000) != 0;
+                }
                 return shifted_val as u32;
             }
             1 => {
@@ -267,11 +284,15 @@ impl Cpu{
                 shifted_val >>= shift_amount;
                 // special case LSR #0 encodes LSR #32
                 if shift_amount == 0{
-                    self.c = (shifted_val& (1<<32)) != 0;
+                    if set_flags {
+                        self.c = (shifted_val & (1 << 32)) != 0;
+                    }
                     return 0;
                 }
 
-                self.c = (shifted_val & 0x1) != 0;
+                if set_flags {
+                    self.c = (shifted_val & 0x1) != 0;
+                }
 
                 return (shifted_val>>1) as u32;
             }
@@ -284,11 +305,15 @@ impl Cpu{
                 shifted_val >>= shift_amount;
                 // special case ASR #0 encodes ASR #32
                 if shift_amount == 0{
-                    self.c = (shifted_val& (1<<32)) != 0;
+                    if set_flags {
+                        self.c = (shifted_val & (1 << 32)) != 0;
+                    }
                     return if (shifted_val& (1<<32)) != 0 {0xFFFFFFFF} else {0};
                 }
 
-                self.c = (shifted_val & 0x1) != 0;
+                if set_flags {
+                    self.c = (shifted_val & 0x1) != 0;
+                }
 
                 return (shifted_val >> 1) as u32;
             }
@@ -300,12 +325,15 @@ impl Cpu{
                     if self.c {
                         carry_in = 0x80000000;
                     }
-
-                    self.c = (value & 0x1) != 0;
+                    if set_flags {
+                        self.c = (value & 0x1) != 0;
+                    }
                     return (value >> 1) | carry_in;
                 } else {
                     // Normal Rotate Right
-                    self.c = (value.rotate_right(shift_amount) & 0x80000000) != 0;
+                    if set_flags {
+                        self.c = (value.rotate_right(shift_amount) & 0x80000000) != 0;
+                    }
                     return value.rotate_right(shift_amount);
                 }
             }
@@ -316,7 +344,7 @@ impl Cpu{
 
     }
 
-    pub fn perform_shift_op_register_shift(&mut self, shift_inst: u32, value: u32) -> u32{
+    pub fn perform_shift_op_register_shift(&mut self, shift_inst: u32, value: u32, set_flags: bool) -> u32{
         let shift_type = (shift_inst>>1) & 0b11;
         let selected_reg = (shift_inst>>4) & 0xF;
         let mut shift_amount = self.r[selected_reg as usize] & 0xFF;
@@ -334,7 +362,7 @@ impl Cpu{
         }
         // if shift amount is between 1 and 31, then shift as normal
         if shift_amount < 32{
-            return self.perform_shift_op_immediate_shift(shift_type, shift_amount, value);
+            return self.perform_shift_op_immediate_shift(shift_type, shift_amount, value, set_flags);
         }
 
         // special case when shift amount >= 32

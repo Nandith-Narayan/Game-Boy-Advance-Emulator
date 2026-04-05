@@ -39,7 +39,7 @@ impl Cpu{
         let mut offset = self.r[rm as usize];
 
 
-        offset = self.perform_shift_op_immediate_shift((shift>>1) & 0b011, shift_amount, offset);
+        offset = self.perform_shift_op_immediate_shift((shift>>1) & 0b011, shift_amount, offset, set_flags);
 
         /*
         // Handle 4 shift types
