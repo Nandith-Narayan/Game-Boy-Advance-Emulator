@@ -71,10 +71,24 @@ impl Cpu{
         let mut register_list = inst & 0xFFFF;
         // Handle special case if the register list is empty
         if register_list == 0{
-            // Store PC
-            mem.write_32(self.r[rn as usize], self.r[15]+4);
-            // Increment base register as if the register list was full
-            self.r[rn as usize] += 0x40;
+            match (is_increment, is_pre_indexing){
+                (false, false) =>{ // Decrement After
+                    mem.write_32(self.r[rn as usize]-0x3C, self.r[15]+4);
+                    self.r[rn as usize] -= 0x40;
+                },
+                (false, true) =>{ // Decrement Before
+                    mem.write_32(self.r[rn as usize]-0x40, self.r[15]+4);
+                    self.r[rn as usize] -= 0x40;
+                },
+                (true, false) =>{ // Increment After
+                    mem.write_32(self.r[rn as usize], self.r[15]+4);
+                    self.r[rn as usize] += 0x40;
+                },
+                (true, true) =>{ // Increment Before
+                    mem.write_32(self.r[rn as usize]+4, self.r[15]+4);
+                    self.r[rn as usize] += 0x44;
+                },
+            }
             return;
         }
         let reg_count = register_list.count_ones();
