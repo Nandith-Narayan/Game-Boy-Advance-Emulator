@@ -45,7 +45,7 @@ impl Cpu{
             self.r[rn as usize] = new_address;
         }
 
-        for i in 0..16{
+        for i in 0..15{
             if register_list & 0x1 != 0{
                 if !s_bit {
                     self.r[i] = mem.read_32(address);
@@ -55,6 +55,11 @@ impl Cpu{
                 address += 4;
             }
             register_list >>= 1;
+        }
+        // Handle R[15] (PC)
+        if register_list & 0x1 != 0{
+            self.r[15] = mem.read_32(address);
+            self.flush_pipeline();
         }
 
 
