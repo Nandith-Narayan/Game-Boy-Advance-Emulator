@@ -1,24 +1,31 @@
-use crate::cpu::enums::{ARMCondition, ARMInstruction, CPUMode, InstructionSet};
+use crate::cpu::enums::{ARMCondition, ARMInstruction, CPUMode, InstructionSet, THUMBInstruction};
 use InstructionSet::{ARM, THUMB};
 use crate::cpu::enums::ARMCondition::AL;
-use crate::cpu::enums::ARMInstruction::NOP;
 use crate::cpu::enums::CPUMode::SUPERVISOR;
-use crate::memory;
 use crate::memory::Memory;
 
 mod arm_instructions;
 mod arm;
 mod enums;
 mod arm_decode;
+mod thumb;
+mod thumb_decode;
 
 pub struct Cpu{
     pub r: [u32; 16],
-    //pub memory: memory::Memory,
+    pub instruction_set: InstructionSet,
+
+    // ARM
     pub fetch_arm: u32,
     pub inst_arm: u32,
     pub decode_arm: ARMInstruction,
     pub condition_arm: ARMCondition,
-    pub instruction_set: InstructionSet,
+
+    // THUMB
+    pub fetch_thumb: u16,
+    pub inst_thumb: u16,
+    pub decode_thumb: THUMBInstruction,
+
     // Flags (CPSR)
     pub z: bool,
     pub c: bool,
@@ -38,12 +45,17 @@ pub fn init() -> Cpu{
     println!("Initializing CPU...");
     let mut cpu = Cpu{
         r: [0; 16],
+        instruction_set: ARM,
         //memory: memory::init(),
         fetch_arm: 0,
         inst_arm: 0,
-        decode_arm: NOP,
+        decode_arm: ARMInstruction::EMPTY,
         condition_arm: AL,
-        instruction_set: ARM,
+
+        fetch_thumb: 0,
+        inst_thumb: 0,
+        decode_thumb: THUMBInstruction::EMPTY,
+
         // Flags cleared
         z: false,
         c: false,
@@ -81,7 +93,11 @@ impl Cpu{
 
             },
             THUMB => {
-                println!("THUMB Mode is unsupported");
+                self. execute_thumb(mem);
+
+                self.decode_thumb(mem);
+
+                self.fetch_thumb(mem);
             }
         }
     }

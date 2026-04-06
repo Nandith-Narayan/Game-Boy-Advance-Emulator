@@ -1,11 +1,16 @@
+use crate::cpu::enums::InstructionSet::THUMB;
 use super::Cpu;
 
 impl Cpu{
 
     pub fn branch_and_exchange(&mut self, inst: u32) {
         let mut rn: usize = (inst & 0xF) as usize;
+        if self.r[rn] & 0x1 != 0{
+            self.instruction_set = THUMB;
+        }
         self.r[15] = self.r[rn]&0xFFFFFFFC;
         self.flush_pipeline();
+
     }
 
     pub fn branch(&mut self, inst: u32) {

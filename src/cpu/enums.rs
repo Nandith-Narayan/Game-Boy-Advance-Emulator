@@ -56,3 +56,21 @@ pub enum ARMCondition {
     LE, // z set or N not equal to V
     AL, // Always
 }
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum THUMBInstruction {
+    UNREACHABLE,
+    NOP,
+    EMPTY,
+    MoveShiftedRegister,
+    AddOrSubtract,
+    MoveImmediate,
+    CompareImmediate,
+    AddImmediate,
+    SubtractImmediate,
+    ALUOperation,
+    HighRegisterOperation,
+    BranchAndExchange,
+    PCRelativeLoad,
+    
+}

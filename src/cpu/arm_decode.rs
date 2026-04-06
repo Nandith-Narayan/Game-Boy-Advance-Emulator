@@ -28,5 +28,4 @@ pub fn decode_instruction(inst: u32) -> ARMInstruction {
 
     return UNREACHABLE;
 
-
 }
