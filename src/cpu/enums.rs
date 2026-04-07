@@ -75,3 +75,11 @@ pub enum THUMBInstruction {
 
     ConditionalBranch,
 }
+
+#[derive(Clone, Copy, PartialEq, Debug)]
+pub enum ShiftType {
+    LogicalShiftLeft,
+    LogicalShiftRight,
+    ArithmeticShiftRight,
+    RotateRight,
+}

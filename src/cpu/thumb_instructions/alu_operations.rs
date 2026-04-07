@@ -1,3 +1,4 @@
+use crate::cpu::enums::ShiftType::*;
 use crate::memory::Memory;
 use super::Cpu;
 
@@ -27,6 +28,97 @@ impl Cpu{
             self.c = (result & 0x100000000) != 0;
             self.v = (((operand1 as i64 & 0x7FFFFFFF) + (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
         }
+
+    }
+
+    pub fn alu_operation(&mut self, inst: u16, mem: &mut Memory){
+        let rd = inst & 0b111;
+        let rs = (inst >> 3) & 0b111;
+        let op = (inst >> 6) & 0xF;
+
+        let operand1 = self.r[rd as usize];
+        let operand2 = self.r[rs as usize];
+
+        let result: u32;
+
+        match op{
+            0 => {
+                // AND
+                result = operand1 & operand2;
+
+                self.z = result == 0;
+                self.n = (result & 0x80000000) != 0;
+            },
+            1 => {
+                // XOR
+                result = operand1 ^ operand2;
+
+                self.z = result == 0;
+                self.n = (result & 0x80000000) != 0;
+            },
+            2 => {
+                // Logical Shift Left
+                result = self.perform_shift_op_immediate_shift(LogicalShiftLeft, operand2, operand1, true);
+
+                self.z = result == 0;
+                self.n = (result & 0x80000000) != 0;
+            },
+            3 => {
+                // Logical Shift Right
+                result = self.perform_shift_op_immediate_shift(LogicalShiftRight, operand2, operand1, true);
+
+                self.z = result == 0;
+                self.n = (result & 0x80000000) != 0;
+            },
+            4 => {
+                // Arithmetic Shift Right
+                result = self.perform_shift_op_immediate_shift(ArithmeticShiftRight, operand2, operand1, true);
+
+                self.z = result == 0;
+                self.n = (result & 0x80000000) != 0;
+            },
+            5 => {
+                // ADC
+                let mut carry = 0;
+                if self.c{
+                    carry = 1;
+                }
+                let result_64_bit = operand1 as i64 + operand2 as i64 + carry;
+
+                self.z = result_64_bit as u32 == 0;
+                self.n = (result_64_bit & 0x80000000) != 0;
+                self.c = (result_64_bit & 0x100000000) != 0;
+                self.v = (((operand1 as i64 & 0x7FFFFFFF) + (operand2 as i64 & 0x7FFFFFFF) + carry) & 0x80000000) != 0;
+
+                result = result_64_bit as u32;
+            },
+            6 => {
+            // SBC
+                let mut carry = 0;
+                if self.c{
+                    carry = 1;
+                }
+                let result_64_bit =  operand1 as i64 - operand2 as i64 + carry - 1;
+
+                self.z = result_64_bit as u32 == 0;
+                self.n = (result_64_bit & 0x80000000) != 0;
+                self.c = (result_64_bit & 0x100000000) == 0; // SBC Carry flag is reversed
+                self.v = (((operand1 as i64 & 0x7FFFFFFF) - (operand2 as i64 & 0x7FFFFFFF) + carry -1) & 0x80000000) != 0;
+
+                result = result_64_bit as u32;
+            },
+            7 => {
+                // Rotate Right
+                result = self.perform_shift_op_immediate_shift(RotateRight, operand2, operand1, true);
+
+                self.z = result == 0;
+                self.n = (result & 0x80000000) != 0;
+            },
+
+            _ => { result = operand1;},
+        };
+
+        self.r[rd as usize] = result;
 
     }
 }

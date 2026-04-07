@@ -1,3 +1,4 @@
+use crate::cpu::enums::ShiftType::{ArithmeticShiftRight, LogicalShiftLeft, LogicalShiftRight, RotateRight};
 use crate::memory::Memory;
 use super::Cpu;
 
@@ -38,8 +39,15 @@ impl Cpu{
         let shift_amount = (shift & 0xF8) >> 3;
         let mut offset = self.r[rm as usize];
 
-
-        offset = self.perform_shift_op_immediate_shift((shift>>1) & 0b011, shift_amount, offset, set_flags);
+        let shift_type_bits = (shift>>1) & 0b011;
+        let shift_type = match shift_type_bits{
+            0 => LogicalShiftLeft,
+            1 => LogicalShiftRight,
+            2 => ArithmeticShiftRight,
+            3 => RotateRight,
+            _ => LogicalShiftLeft,
+        };
+        offset = self.perform_shift_op_immediate_shift(shift_type, shift_amount, offset, set_flags);
 
         /*
         // Handle 4 shift types

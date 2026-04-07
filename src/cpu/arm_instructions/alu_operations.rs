@@ -1,4 +1,6 @@
 use crate::cpu::enums::CPUMode::FIQ;
+use crate::cpu::enums::ShiftType;
+use crate::cpu::enums::ShiftType::*;
 use super::Cpu;
 
 impl Cpu{
@@ -23,8 +25,16 @@ impl Cpu{
         let shift_inst = (inst & 0xFF0) >> 4;
         if shift_inst & 0x1 == 0{
             // shift by immediate value
-            let shift_type = (shift_inst>>1) & 0b11;
+
+            let shift_type_bits = (shift_inst>>1) & 0b11;
             let shift_amount = (shift_inst >> 3) & 0x1F;
+            let shift_type = match shift_type_bits{
+                0 => LogicalShiftLeft,
+                1 => LogicalShiftRight,
+                2 => ArithmeticShiftRight,
+                3 => RotateRight,
+                _ => LogicalShiftLeft,
+            };
             operand2 = self.perform_shift_op_immediate_shift(shift_type, shift_amount, operand2, use_carry_from_barrel_shifter);
         }else{
             // Shifting normally takes longer to execute,
@@ -261,10 +271,10 @@ impl Cpu{
 
     }
 
-    pub fn perform_shift_op_immediate_shift(&mut self, shift_type: u32, shift_amount:u32, value: u32, set_flags: bool) -> u32{
+    pub fn perform_shift_op_immediate_shift(&mut self, shift_type: ShiftType, shift_amount:u32, value: u32, set_flags: bool) -> u32{
         // Handle 4 shift types
         match shift_type {
-            0 => {
+            LogicalShiftLeft => {
                 // Logical Shift Left
                 let mut shifted_val: u64 = value as u64;
                 shifted_val <<= shift_amount;
@@ -273,8 +283,8 @@ impl Cpu{
                     self.c = (shifted_val & 0x100000000) != 0;
                 }
                 return shifted_val as u32;
-            }
-            1 => {
+            },
+            LogicalShiftRight => {
                 // Logical Shift Right
                 let mut shifted_val: u64 = (value as u64) << 1;
                 /*if self.c {
@@ -295,8 +305,8 @@ impl Cpu{
                 }
 
                 return (shifted_val>>1) as u32;
-            }
-            2 => {
+            },
+            ArithmeticShiftRight => {
                 // Arithmetic Shift Right
                 let mut shifted_val: i64 = (((value as i64) << 32) >> 32) << 1;
                 if self.c {
@@ -316,8 +326,8 @@ impl Cpu{
                 }
 
                 return (shifted_val >> 1) as u32;
-            }
-            3 => {
+            },
+            RotateRight => {
                 // Rotate Right
                 if shift_amount == 0 {
                     // Rotate Right Extended
@@ -337,20 +347,25 @@ impl Cpu{
                     return value.rotate_right(shift_amount);
                 }
             }
-            _ => {
-                return value;
-            }
         };
 
     }
 
     pub fn perform_shift_op_register_shift(&mut self, shift_inst: u32, value: u32, set_flags: bool) -> u32{
-        let shift_type = (shift_inst>>1) & 0b11;
+        let shift_type_bits = (shift_inst>>1) & 0b11;
         let selected_reg = (shift_inst>>4) & 0xF;
         let mut shift_amount = self.r[selected_reg as usize] & 0xFF;
 
+        let shift_type = match shift_type_bits{
+            0 => LogicalShiftLeft,
+            1 => LogicalShiftRight,
+            2 => ArithmeticShiftRight,
+            3 => RotateRight,
+            _ => LogicalShiftLeft,
+        };
+
         // special case if shift type is rotate right and n >32, result is the same as n-32.
-        if shift_type == 3{
+        if shift_type == RotateRight{
             while shift_amount > 32{
                 shift_amount -= 32;
             }
@@ -368,22 +383,22 @@ impl Cpu{
         // special case when shift amount >= 32
         match shift_type {
             // Logical Left Shift
-            0 => {
+            LogicalShiftLeft => {
                 self.c = if shift_amount == 32 {(value & 0x1) != 0} else {false};
                 return 0;
             },
             // Logical Right Shift
-            1 => {
+            LogicalShiftRight => {
                 self.c = if shift_amount == 32 {(value & (1<<31)) != 0} else {false};
                 return 0;
             }
             // Arithmetic Right Shift
-            2 => {
+            ArithmeticShiftRight => {
                 self.c = (value & (1<<31)) != 0;
                 return if (value & (1<<31)) != 0 {0xFFFFFFFF} else {0};
             }
             // Rotate Right
-            3 => {
+            RotateRight => {
                 self.c = (value & (1<<31)) != 0;
                 return value;
             }
