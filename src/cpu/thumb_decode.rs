@@ -33,6 +33,9 @@ pub fn decode_instruction(inst: u16) -> THUMBInstruction{
 
     if inst & 0b1111_1111__0000_0000 == 0b1011_0000__0000_0000 {return AddOffsetToSP;}
 
+    if inst & 0b1111_1110__0000_0000 == 0b1011_0100__0000_0000 {return PushRegisters;}
+    if inst & 0b1111_1110__0000_0000 == 0b1011_1100__0000_0000 {return PopRegisters;}
+
 
 
 

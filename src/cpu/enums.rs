@@ -79,6 +79,8 @@ pub enum THUMBInstruction {
     SPRelativeLoadOrStore,
     LoadAddress,
     AddOffsetToSP,
+    PushRegisters,
+    PopRegisters,
 
     ConditionalBranch,
 
