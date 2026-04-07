@@ -114,6 +114,76 @@ impl Cpu{
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
             },
+            8 => {
+                // TST
+                let temp_result = operand1 & operand2;
+
+                self.z = temp_result == 0;
+                self.n = (temp_result & 0x80000000) != 0;
+
+                result = operand1;
+            },
+            9 => {
+                // NEG (Reverse Subtract Rd, Rs, #0)
+                let result_64_bit = operand2 as i64 - operand1 as i64;
+
+                self.z = result_64_bit as u32 == 0;
+                self.n = (result_64_bit & 0x80000000) != 0;
+                self.c = (result_64_bit & 0x100000000) != 0;
+                self.v = (((operand2 as i64 & 0x7FFFFFFF) - (operand1 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
+
+                result = result_64_bit as u32;
+            },
+            10 => {
+                // CMP
+                let result_64_bit = operand1 as i64 - operand2 as i64;
+
+                self.z = result_64_bit as u32 == 0;
+                self.n = (result_64_bit & 0x80000000) != 0;
+                self.c = !((result_64_bit & 0x100000000) != 0); // Carry Flag on subtraction is reversed
+                self.v = (((operand1 as i64 & 0x7FFFFFFF) - (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
+
+                result = operand1;
+            },
+            11 => {
+                // CMN
+                let result_64_bit = operand1 as i64 + operand2 as i64;
+
+                self.z = result_64_bit as u32 == 0;
+                self.n = (result_64_bit & 0x80000000) != 0;
+                self.c = (result_64_bit & 0x100000000) != 0;
+                self.v = (((operand1 as i64 & 0x7FFFFFFF) + (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
+
+                result = operand1;
+            },
+            12 => {
+                // OR
+                result = operand1 | operand2;
+
+                self.z = result == 0;
+                self.n = (result & 0x80000000) != 0;
+            },
+            13 => {
+                // MUL
+                result = ((operand1 as u64 * operand2 as u64) & 0xFFFFFFFF) as u32;
+
+                self.z = result == 0;
+                self.n = (result & 0x80000000) != 0;
+            },
+            14 => {
+                // BIC
+                result = operand1 & (!operand2);
+
+                self.z = result == 0;
+                self.n = (result & 0x80000000) != 0;
+            },
+            15 => {
+                // MVN
+                result = !operand2;
+
+                self.z = result == 0;
+                self.n = (result & 0x80000000) != 0;
+            },
 
             _ => { result = operand1;},
         };
