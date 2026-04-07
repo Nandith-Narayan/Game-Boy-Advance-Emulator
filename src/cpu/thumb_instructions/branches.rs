@@ -1,4 +1,4 @@
-use crate::cpu::enums::ARMCondition::{CC, CS, EQ, GE, GT, HI, LE, LS, LT, MI, NE, PL, VC, VS};
+use crate::cpu::enums::InstructionSet::{ARM};
 use crate::memory::Memory;
 use super::Cpu;
 
@@ -29,5 +29,14 @@ impl Cpu {
             self.r[15] = (self.r[15] as i32 + offset) as u32;
             self.flush_pipeline();
         }
+    }
+    pub fn thumb_branch_and_exchange(&mut self, inst: u16, mem: &mut Memory) {
+        let rs = ((inst >> 4) & 0b1000)| ((inst >> 3) & 0b111);
+        if self.r[rs as usize] & 0x1 == 0{
+            self.instruction_set = ARM;
+        }
+        self.r[15] = self.r[rs as usize] & 0xFFFFFFFE;
+        self.flush_pipeline();
+
     }
 }

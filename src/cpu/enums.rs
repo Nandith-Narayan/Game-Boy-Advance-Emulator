@@ -69,8 +69,8 @@ pub enum THUMBInstruction {
     AddImmediate,
     SubtractImmediate,
     ALUOperation,
-    HighRegisterOperation,
     BranchAndExchange,
+    HighRegisterOperation,
     PCRelativeLoad,
 
     ConditionalBranch,

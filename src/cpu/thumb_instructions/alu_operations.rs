@@ -191,4 +191,33 @@ impl Cpu{
         self.r[rd as usize] = result;
 
     }
+
+    pub fn high_register_operation(&mut self, inst: u16, mem: &mut Memory){
+        let rd = ((inst >> 5) & 0b1000)| (inst & 0b111);
+        let rs = ((inst >> 4) & 0b1000)| ((inst >> 3) & 0b111);
+        let op = (inst >> 8) & 0b11;
+
+        match op{
+            0 => {
+                // ADD
+                self.r[rd as usize] = self.r[rd as usize] + self.r[rs as usize];
+            },
+            1 => {
+                // CMP
+                let operand1 = self.r[rd as usize];
+                let operand2 = self.r[rs as usize];
+                let result = operand1 as i64 - operand2 as i64;
+
+                self.z = result as u32 == 0;
+                self.n = (result & 0x80000000) != 0;
+                self.c = !((result & 0x100000000) != 0); // Carry Flag on subtraction is reversed
+                self.v = (((operand1 as i64 & 0x7FFFFFFF) - (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
+            },
+            2 => {
+                // MOV
+                self.r[rd as usize] = self.r[rs as usize];
+            },
+            _ => {}
+        };
+    }
 }
