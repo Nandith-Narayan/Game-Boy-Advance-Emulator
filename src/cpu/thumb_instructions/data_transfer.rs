@@ -99,4 +99,18 @@ impl Cpu {
 
         }
     }
+
+    pub fn sp_relative_load_or_store(&mut self, inst: u16, mem: &mut Memory){
+        let offset = inst & 0xFF;
+        let rd = (inst >> 8) & 0b111;
+        let is_load = (inst >> 11) & 0x1 != 0;
+
+        let address = self.r[7] + ((offset as u32) << 2) ;
+
+        if is_load {
+            self.r[rd as usize] = mem.read_32(address);
+        }else{
+            mem.write_32(address, self.r[rd as usize]);
+        }
+    }
 }
