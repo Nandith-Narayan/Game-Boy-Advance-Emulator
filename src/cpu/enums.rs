@@ -73,7 +73,7 @@ pub enum THUMBInstruction {
     HighRegisterOperation,
     PCRelativeLoad,
     SingleDataTransfer,
-    HalfWordTransferWithRegisterOffset,
+    LoadOrStoreSignExtendedHalfWord,
     SingleDataTransferWithImmediateOffset,
     HalfWordTransferWithImmediateOffset,
     SPRelativeLoadOrStore,

@@ -55,6 +55,9 @@ impl Cpu{
             HighRegisterOperation => self.high_register_operation(self.inst_thumb, mem),
             PCRelativeLoad => self.pc_relative_load(self.inst_thumb, mem),
             SingleDataTransfer => self.single_data_transfer(self.inst_thumb, mem),
+            LoadOrStoreSignExtendedHalfWord => self.load_or_store_sign_extended_halfword_or_byte(self.inst_thumb, mem),
+            SingleDataTransferWithImmediateOffset => self.load_or_store_with_immediate_offset(self.inst_thumb, mem),
+            HalfWordTransferWithImmediateOffset => self.load_or_store_halfword(self.inst_thumb, mem),
 
             ConditionalBranch => self.conditional_branch(self.inst_thumb, mem),
             _ => println!("Unimplemented THUMB instruction: {:?}", self.decode_thumb),
