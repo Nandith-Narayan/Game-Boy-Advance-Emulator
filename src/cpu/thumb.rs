@@ -59,6 +59,8 @@ impl Cpu{
             SingleDataTransferWithImmediateOffset => self.load_or_store_with_immediate_offset(self.inst_thumb, mem),
             HalfWordTransferWithImmediateOffset => self.load_or_store_halfword(self.inst_thumb, mem),
             SPRelativeLoadOrStore => self.sp_relative_load_or_store(self.inst_thumb, mem),
+            LoadAddress => self.load_address(self.inst_thumb, mem),
+            AddOffsetToSP => self.add_offset_to_sp(self.inst_thumb, mem),
 
             ConditionalBranch => self.conditional_branch(self.inst_thumb, mem),
             _ => println!("Unimplemented THUMB instruction: {:?}", self.decode_thumb),

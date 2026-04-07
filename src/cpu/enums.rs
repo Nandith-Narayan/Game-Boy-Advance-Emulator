@@ -78,6 +78,7 @@ pub enum THUMBInstruction {
     HalfWordTransferWithImmediateOffset,
     SPRelativeLoadOrStore,
     LoadAddress,
+    AddOffsetToSP,
 
     ConditionalBranch,
 }

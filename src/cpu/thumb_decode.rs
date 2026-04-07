@@ -1,5 +1,5 @@
 use crate::cpu::enums::THUMBInstruction;
-use crate::cpu::enums::THUMBInstruction::{ALUOperation, AddImmediate, AddOrSubtract, BranchAndExchange, CompareImmediate, ConditionalBranch, HalfWordTransferWithImmediateOffset, LoadOrStoreSignExtendedHalfWord, HighRegisterOperation, LoadAddress, MoveImmediate, MoveShiftedRegister, PCRelativeLoad, SPRelativeLoadOrStore, SingleDataTransfer, SingleDataTransferWithImmediateOffset, SubtractImmediate, UNREACHABLE};
+use crate::cpu::enums::THUMBInstruction::{ALUOperation, AddImmediate, AddOrSubtract, BranchAndExchange, CompareImmediate, ConditionalBranch, HalfWordTransferWithImmediateOffset, LoadOrStoreSignExtendedHalfWord, HighRegisterOperation, LoadAddress, MoveImmediate, MoveShiftedRegister, PCRelativeLoad, SPRelativeLoadOrStore, SingleDataTransfer, SingleDataTransferWithImmediateOffset, SubtractImmediate, UNREACHABLE, AddOffsetToSP};
 
 pub fn decode_instruction(inst: u16) -> THUMBInstruction{
 
@@ -31,6 +31,7 @@ pub fn decode_instruction(inst: u16) -> THUMBInstruction{
 
     if inst & 0b1111_0000__0000_0000 == 0b1010_0000__0000_0000 {return LoadAddress;}
 
+    if inst & 0b1111_1111__0000_0000 == 0b1011_0000__0000_0000 {return AddOffsetToSP;}
 
 
 
