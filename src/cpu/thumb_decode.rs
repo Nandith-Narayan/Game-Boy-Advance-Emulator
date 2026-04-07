@@ -1,5 +1,5 @@
 use crate::cpu::enums::THUMBInstruction;
-use crate::cpu::enums::THUMBInstruction::{ALUOperation, AddImmediate, AddOrSubtract, BranchAndExchange, CompareImmediate, ConditionalBranch, HighRegisterOperation, MoveImmediate, MoveShiftedRegister, SubtractImmediate, UNREACHABLE};
+use crate::cpu::enums::THUMBInstruction::{ALUOperation, AddImmediate, AddOrSubtract, BranchAndExchange, CompareImmediate, ConditionalBranch, HighRegisterOperation, MoveImmediate, MoveShiftedRegister, PCRelativeLoad, SubtractImmediate, UNREACHABLE};
 
 pub fn decode_instruction(inst: u16) -> THUMBInstruction{
 
@@ -12,6 +12,7 @@ pub fn decode_instruction(inst: u16) -> THUMBInstruction{
     if inst & 0b1111_1100__0000_0000 == 0b0100_0000__0000_0000 {return ALUOperation;}
     if inst & 0b1111_1111__0000_0000 == 0b0100_0111__0000_0000 {return BranchAndExchange;}
     if inst & 0b1111_1100__0000_0000 == 0b0100_0100__0000_0000 {return HighRegisterOperation;}
+    if inst & 0b1111_1000__0000_0000 == 0b0100_1000__0000_0000 {return PCRelativeLoad;}
 
 
 

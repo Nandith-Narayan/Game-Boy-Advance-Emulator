@@ -53,6 +53,7 @@ impl Cpu{
             ALUOperation => self.alu_operation(self.inst_thumb, mem),
             BranchAndExchange => self.thumb_branch_and_exchange(self.inst_thumb, mem),
             HighRegisterOperation => self.high_register_operation(self.inst_thumb, mem),
+            PCRelativeLoad => self.pc_relative_load(self.inst_thumb, mem),
 
             ConditionalBranch => self.conditional_branch(self.inst_thumb, mem),
             _ => println!("Unimplemented THUMB instruction: {:?}", self.decode_thumb),
