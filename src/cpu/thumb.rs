@@ -50,6 +50,8 @@ impl Cpu{
             CompareImmediate => self.compare_immediate(self.inst_thumb, mem),
             SubtractImmediate => self.sub_immediate(self.inst_thumb, mem),
             AddImmediate => self.add_immediate(self.inst_thumb, mem),
+
+            ConditionalBranch => self.conditional_branch(self.inst_thumb, mem),
             _ => println!("Unimplemented THUMB instruction: {:?}", self.decode_thumb),
         };
     }

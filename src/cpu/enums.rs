@@ -72,5 +72,6 @@ pub enum THUMBInstruction {
     HighRegisterOperation,
     BranchAndExchange,
     PCRelativeLoad,
-    
+
+    ConditionalBranch,
 }
