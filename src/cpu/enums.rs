@@ -72,6 +72,12 @@ pub enum THUMBInstruction {
     BranchAndExchange,
     HighRegisterOperation,
     PCRelativeLoad,
+    SingleDataTransfer,
+    HalfWordTransferWithRegisterOffset,
+    SingleDataTransferWithImmediateOffset,
+    HalfWordTransferWithImmediateOffset,
+    SPRelativeLoadOrStore,
+    LoadAddress,
 
     ConditionalBranch,
 }
