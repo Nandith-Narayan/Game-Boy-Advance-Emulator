@@ -1,6 +1,7 @@
 use crate::cpu::arm_decode::decode_instruction;
 use crate::cpu::enums::ARMCondition::*;
 use crate::cpu::enums::ARMInstruction::*;
+use crate::cpu::enums::THUMBInstruction;
 use crate::memory::Memory;
 use super::Cpu;
 
@@ -122,6 +123,10 @@ impl Cpu{
         self.inst_arm = 0;
         self.decode_arm = EMPTY;
         self.condition_arm = AL;
+
+        self.fetch_thumb = 0;
+        self.inst_thumb = 0;
+        self.decode_thumb = THUMBInstruction::EMPTY;
     }
 
     // Helper function to populate CPU flags & control bits based on CPSR bytes

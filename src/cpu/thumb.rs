@@ -1,6 +1,6 @@
 use crate::cpu::thumb_decode::decode_instruction;
 use crate::cpu::Cpu;
-use crate::cpu::enums::THUMBInstruction::{EMPTY, NOP};
+use crate::cpu::enums::THUMBInstruction::*;
 use crate::memory::Memory;
 
 // Implementation of functions related to THUMB mode of the CPU
@@ -34,7 +34,7 @@ impl Cpu{
         }
 
         println!("{:?}", self.decode_thumb);
-        let mut x = self.inst_thumb;
+        let x = self.inst_thumb;
         let str = format!("{:016b}",x);
 
         print!("Instruction: {:?} ( ", self.decode_thumb);
@@ -42,7 +42,14 @@ impl Cpu{
             print!("{} ", str.get(i*4..i*4+4).unwrap());
         }
         println!(") ({:#x})", x);
+
         match self.decode_thumb {
+            MoveShiftedRegister => self.move_shifted_register(self.inst_thumb, mem),
+            AddOrSubtract => self.add_or_subtract(self.inst_thumb, mem),
+            MoveImmediate => self.move_immediate(self.inst_thumb, mem),
+            CompareImmediate => self.compare_immediate(self.inst_thumb, mem),
+            SubtractImmediate => self.sub_immediate(self.inst_thumb, mem),
+            AddImmediate => self.add_immediate(self.inst_thumb, mem),
             _ => println!("Unimplemented THUMB instruction: {:?}", self.decode_thumb),
         };
     }

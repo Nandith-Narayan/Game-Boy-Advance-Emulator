@@ -4,10 +4,11 @@ use crate::cpu::enums::ARMCondition::AL;
 use crate::cpu::enums::CPUMode::SUPERVISOR;
 use crate::memory::Memory;
 
+mod enums;
 mod arm_instructions;
 mod arm;
-mod enums;
 mod arm_decode;
+mod thumb_instructions;
 mod thumb;
 mod thumb_decode;
 
