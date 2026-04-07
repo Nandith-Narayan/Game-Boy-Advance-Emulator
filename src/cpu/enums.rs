@@ -81,6 +81,8 @@ pub enum THUMBInstruction {
     AddOffsetToSP,
 
     ConditionalBranch,
+
+    Branch,
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
