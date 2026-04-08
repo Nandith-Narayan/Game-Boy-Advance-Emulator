@@ -57,7 +57,7 @@ impl Cpu {
 
         if h_bit {
             let address = ((offset as u32) << 1) + self.r[14];
-            self.r[14] = self.r[15] | 0x1;
+            self.r[14] = self.r[15]-2 | 0x1;
             self.r[15] = address;
             self.flush_pipeline();
         }else{
