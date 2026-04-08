@@ -27,6 +27,7 @@ impl Cpu{
             self.n = (result & 0x80000000) != 0;
             self.c = (result & 0x100000000) != 0;
             self.v = (((operand1 as i64 & 0x7FFFFFFF) + (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
+            self.r[rd as usize] = result as u32;
         }
 
     }

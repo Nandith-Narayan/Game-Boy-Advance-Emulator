@@ -43,9 +43,8 @@ fn main() {
         println!("R[7] = {:#4x} ({})", cpu.r[7], cpu.r[7]);
         //println!("R[12] = {:#4x} ({})", cpu.r[12], cpu.r[12]);
         println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[4] = {:#4x}, R[5] = {:#4x}, PC = {:#4x}, Carry Flag: {}", cpu.r[0], cpu.r[1], cpu.r[2], cpu.r[3], cpu.r[4], cpu.r[5], cpu.r[15], cpu.c);
-        println!("{}", cpu.n);
 
-        if cpu.r[7]>=2{
+        if cpu.r[7]>0{
             break;
         }
         //println!("R[0] = {:#4x} ({})", cpu.r[0], cpu.r[0]);
