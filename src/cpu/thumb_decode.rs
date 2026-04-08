@@ -3,9 +3,9 @@ use crate::cpu::enums::THUMBInstruction::*;
 
 pub fn decode_instruction(inst: u16) -> THUMBInstruction{
 
-    if inst & 0b1110_0000__0000_0000 == 0b0000_0000__0000_0000 {return MoveShiftedRegister;}
-
     if inst & 0b1111_1000__0000_0000 == 0b0001_1000__0000_0000 {return AddOrSubtract;}
+
+    if inst & 0b1110_0000__0000_0000 == 0b0000_0000__0000_0000 {return MoveShiftedRegister;}
 
     if inst & 0b1111_1000__0000_0000 == 0b0010_0000__0000_0000 {return MoveImmediate;}
     if inst & 0b1111_1000__0000_0000 == 0b0010_1000__0000_0000 {return CompareImmediate;}
@@ -38,7 +38,7 @@ pub fn decode_instruction(inst: u16) -> THUMBInstruction{
 
     if inst & 0b1111_1000__0000_0000 == 0b1100_0000__0000_0000 {return MultipleStore;}
     if inst & 0b1111_1000__0000_0000 == 0b1100_1000__0000_0000 {return MultipleLoad;}
-    
+
     if inst & 0b1111_0000__0000_0000 == 0b1101_0000__0000_0000 {return ConditionalBranch;}
 
 
