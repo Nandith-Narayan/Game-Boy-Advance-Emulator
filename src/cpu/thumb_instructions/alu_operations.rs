@@ -202,6 +202,9 @@ impl Cpu{
             0 => {
                 // ADD
                 self.r[rd as usize] = self.r[rd as usize] + self.r[rs as usize];
+                if rd == 15{
+                    self.flush_pipeline();
+                }
             },
             1 => {
                 // CMP
@@ -217,6 +220,9 @@ impl Cpu{
             2 => {
                 // MOV
                 self.r[rd as usize] = self.r[rs as usize];
+                if rd == 15{
+                    self.flush_pipeline();
+                }
             },
             _ => {}
         };
