@@ -402,8 +402,6 @@ impl Cpu{
                 self.c = (value & (1<<31)) != 0;
                 return value;
             }
-
-            _ => {return value;}
         }
 
     }
