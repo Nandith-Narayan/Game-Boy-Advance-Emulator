@@ -1,3 +1,4 @@
+use crate::cpu::enums::ShiftType::{ArithmeticShiftRight, LogicalShiftLeft, LogicalShiftRight};
 use crate::memory::Memory;
 use super::Cpu;
 
@@ -13,23 +14,20 @@ impl Cpu {
         match op{
             // Logical Shift Left
             0 =>{
-                let val = op1 << offset;
-
+                let val = self.perform_shift_op_immediate_shift(LogicalShiftLeft, offset as u32, op1, true);
                 self.r[rd as usize] = val;
             },
 
             // Logical Shift Right
             1 =>{
-                let val = op1 >> offset;
-
+                let val = self.perform_shift_op_immediate_shift(LogicalShiftRight, offset as u32, op1, true);
                 self.r[rd as usize] = val;
             },
 
             // Arithmetic Shift Right
             2 =>{
-                let val = (op1 as i32) >> offset;
-
-                self.r[rd as usize] = val as u32;
+                let val = self.perform_shift_op_immediate_shift(ArithmeticShiftRight, offset as u32, op1, true);
+                self.r[rd as usize] = val;
             },
             _ => {}
         }
