@@ -45,6 +45,8 @@ pub fn decode_instruction(inst: u16) -> THUMBInstruction{
 
     if inst & 0b1111_1000__0000_0000 == 0b1110_0000__0000_0000 {return Branch;}
 
+    if inst & 0b1111_0000__0000_0000 == 0b1111_0000__0000_0000 {return BranchWithLink;}
+
 
     return UNREACHABLE;
 }

@@ -50,4 +50,19 @@ impl Cpu {
         self.r[15] = ((self.r[15] as i32) + (offset as i16 as i32)) as u32;
         self.flush_pipeline();
     }
+
+    pub fn branch_and_link(&mut self, inst: u16, mem: &mut Memory){
+        let offset = inst & 0x7FF;
+        let h_bit = (inst >> 11) & 0x1 != 0;
+
+        if h_bit {
+            let address = ((offset as u32) << 1) + self.r[14];
+            self.r[14] = self.r[15] | 0x1;
+            self.r[15] = address;
+            self.flush_pipeline();
+        }else{
+            let address = ((offset as u32) << 12) + self.r[15];
+            self.r[14] = address;
+        }
+    }
 }

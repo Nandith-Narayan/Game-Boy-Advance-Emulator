@@ -83,10 +83,10 @@ pub enum THUMBInstruction {
     PopRegisters,
     MultipleStore,
     MultipleLoad,
-
     ConditionalBranch,
 
     Branch,
+    BranchWithLink,
 }
 
 #[derive(Clone, Copy, PartialEq, Debug)]
