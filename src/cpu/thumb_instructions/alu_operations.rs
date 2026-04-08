@@ -221,6 +221,7 @@ impl Cpu{
                 // MOV
                 self.r[rd as usize] = self.r[rs as usize];
                 if rd == 15{
+                    self.r[15] &= !0x1;
                     self.flush_pipeline();
                 }
             },

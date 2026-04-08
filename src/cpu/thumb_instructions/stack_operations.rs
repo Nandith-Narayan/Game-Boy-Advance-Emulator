@@ -79,7 +79,7 @@ impl Cpu {
         }
         if r_bit{
             address += 4;
-            self.r[15] = mem.read_32(address);
+            self.r[15] = mem.read_32(address) & (!0x1);
             self.flush_pipeline();
 
         }
