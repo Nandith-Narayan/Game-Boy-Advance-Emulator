@@ -61,8 +61,12 @@ impl Cpu {
             self.r[15] = address;
             self.flush_pipeline();
         }else{
-            let address = ((offset as u32) << 12) + self.r[15];
-            self.r[14] = address;
+            let mut sign_extended_offset = offset;
+            if offset & 0x400 !=0{
+                sign_extended_offset |= 0xF800;
+            }
+            let address = ((sign_extended_offset as i16 as i32) << 12 )+ (self.r[15] as i32);
+            self.r[14] = address as u32;
         }
     }
 }

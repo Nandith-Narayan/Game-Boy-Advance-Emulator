@@ -33,7 +33,7 @@ fn main() {
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
-    let n = 2000;
+    let n = 500;
     /*for address in 0..4{
         print!("{:#4x}", cpu.memory.read_8(address+0x8000000))
     }
