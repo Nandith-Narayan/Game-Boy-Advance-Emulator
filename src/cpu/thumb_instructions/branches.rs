@@ -48,5 +48,6 @@ impl Cpu {
         }
 
         self.r[15] = ((self.r[15] as i32) + (offset as i16 as i32)) as u32;
+        self.flush_pipeline();
     }
 }
