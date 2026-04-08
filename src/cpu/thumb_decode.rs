@@ -23,7 +23,7 @@ pub fn decode_instruction(inst: u16) -> THUMBInstruction{
 
     if inst & 0b1111_0010__0000_0000 == 0b0101_0010__0000_0000 {return LoadOrStoreSignExtendedHalfWord;}
 
-    if inst & 0b0110_0000__0000_0000 == 0b0101_0010__0000_0000 {return SingleDataTransferWithImmediateOffset;}
+    if inst & 0b1110_0000__0000_0000 == 0b0110_0000__0000_0000 {return SingleDataTransferWithImmediateOffset;}
 
     if inst & 0b1111_0000__0000_0000 == 0b1000_0000__0000_0000 {return HalfWordTransferWithImmediateOffset;}
 
