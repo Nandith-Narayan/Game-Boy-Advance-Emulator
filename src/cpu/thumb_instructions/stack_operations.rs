@@ -86,4 +86,39 @@ impl Cpu {
 
         self.r[13] = address;
     }
+
+    pub fn store_registers(&mut self, inst: u16, mem: &mut Memory){
+        let mut register_list = inst & 0xFF;
+        let rb = (inst >> 8) & 0b111;
+
+        let mut address = self.r[rb as usize];
+
+        for i in 0..=7{
+            if register_list & 0x1 != 0{
+                mem.write_32(address, self.r[i]);
+                address += 4;
+            }
+            register_list >>= 1;
+        }
+
+        self.r[rb as usize] = address;
+    }
+
+    pub fn load_registers(&mut self, inst: u16, mem: &mut Memory){
+        let mut register_list = inst & 0xFF;
+        let rb = (inst >> 8) & 0b111;
+
+        let mut address = self.r[rb as usize];
+
+        for i in 0..=7{
+            if register_list & 0x1 != 0{
+                address -= 4;
+                self.r[i] = mem.read_32(address);
+
+            }
+            register_list >>= 1;
+        }
+
+        self.r[rb as usize] = address;
+    }
 }

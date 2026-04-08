@@ -36,9 +36,9 @@ pub fn decode_instruction(inst: u16) -> THUMBInstruction{
     if inst & 0b1111_1110__0000_0000 == 0b1011_0100__0000_0000 {return PushRegisters;}
     if inst & 0b1111_1110__0000_0000 == 0b1011_1100__0000_0000 {return PopRegisters;}
 
-
-
-
+    if inst & 0b1111_1000__0000_0000 == 0b1100_0000__0000_0000 {return MultipleStore;}
+    if inst & 0b1111_1000__0000_0000 == 0b1100_1000__0000_0000 {return MultipleLoad;}
+    
     if inst & 0b1111_0000__0000_0000 == 0b1101_0000__0000_0000 {return ConditionalBranch;}
 
 

@@ -81,6 +81,8 @@ pub enum THUMBInstruction {
     AddOffsetToSP,
     PushRegisters,
     PopRegisters,
+    MultipleStore,
+    MultipleLoad,
 
     ConditionalBranch,
 

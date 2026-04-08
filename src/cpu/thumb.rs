@@ -63,7 +63,8 @@ impl Cpu{
             AddOffsetToSP => self.add_offset_to_sp(self.inst_thumb, mem),
             PushRegisters => self.push_registers(self.inst_thumb, mem),
             PopRegisters => self.pop_registers(self.inst_thumb, mem),
-
+            MultipleStore => self.store_registers(self.inst_thumb, mem),
+            MultipleLoad => self.load_registers(self.inst_thumb, mem),
             ConditionalBranch => self.conditional_branch(self.inst_thumb, mem),
 
             Branch => self.thumb_branch(self.inst_thumb, mem),
