@@ -37,9 +37,9 @@ impl Cpu {
         let sign_flag = (inst >> 7) & 0x1 != 0;
 
         if sign_flag{
-            self.r[13] = self.r[15] - offset as u32;
+            self.r[13] = self.r[13] - offset as u32;
         }else {
-            self.r[13] = self.r[15] + offset as u32;
+            self.r[13] = self.r[13] + offset as u32;
         }
     }
 
