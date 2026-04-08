@@ -31,7 +31,7 @@ impl Cpu {
         }
     }
     pub fn thumb_branch_and_exchange(&mut self, inst: u16, mem: &mut Memory) {
-        let rs = ((inst >> 4) & 0b1000)| ((inst >> 3) & 0b111);
+        let rs = ((inst >> 3) & 0b1000)| ((inst >> 3) & 0b111);
         if self.r[rs as usize] & 0x1 == 0{
             self.instruction_set = ARM;
         }
