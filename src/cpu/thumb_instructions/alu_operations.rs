@@ -194,8 +194,8 @@ impl Cpu{
     }
 
     pub fn high_register_operation(&mut self, inst: u16, mem: &mut Memory){
-        let rd = ((inst >> 5) & 0b1000)| (inst & 0b111);
-        let rs = ((inst >> 4) & 0b1000)| ((inst >> 3) & 0b111);
+        let rd = ((inst >> 4) & 0b1000) | (inst & 0b111);
+        let rs = ((inst >> 3) & 0b1000) | ((inst >> 3) & 0b111);
         let op = (inst >> 8) & 0b11;
 
         match op{
