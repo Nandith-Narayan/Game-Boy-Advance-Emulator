@@ -42,4 +42,48 @@ impl Cpu {
             self.r[13] = self.r[15] + offset as u32;
         }
     }
+
+    pub fn push_registers(&mut self, inst: u16, mem: &mut Memory){
+        let mut register_list = inst & 0xFF;
+        let r_bit = (inst >> 8) & 0x1 != 0;
+
+        let mut address = self.r[13];
+
+        for i in 7..=0usize{
+            if register_list & 0x80 != 0{
+                mem.write_32(address, self.r[i]);
+                address -= 4;
+            }
+            register_list <<= 1;
+        }
+        if r_bit{
+            mem.write_32(address, self.r[14]);
+            address -= 4;
+        }
+
+        self.r[13] = address;
+    }
+
+    pub fn pop_registers(&mut self, inst: u16, mem: &mut Memory){
+        let mut register_list = inst & 0xFF;
+        let r_bit = (inst >> 8) & 0x1 != 0;
+
+        let mut address = self.r[13];
+
+        for i in 7..=0usize{
+            if register_list & 0x80 != 0{
+                address += 4;
+                self.r[i] = mem.read_32(address);
+            }
+            register_list <<= 1;
+        }
+        if r_bit{
+            address += 4;
+            self.r[15] = mem.read_32(address);
+            self.flush_pipeline();
+
+        }
+
+        self.r[13] = address;
+    }
 }
