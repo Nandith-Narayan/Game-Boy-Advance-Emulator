@@ -43,8 +43,8 @@ impl Cpu {
     pub fn thumb_branch(&mut self, inst: u16, mem: &mut Memory) {
         let mut offset = (inst & 0x7FF) << 1;
         // Sign Extend 12 bit value
-        if offset & 0x1000 != 0{
-            offset |= 0xFE00;
+        if offset & 0x0800 != 0{
+            offset |= 0xF000;
         }
 
         self.r[15] = ((self.r[15] as i32) + (offset as i16 as i32)) as u32;
