@@ -5,10 +5,12 @@ impl Cpu{
 
     pub fn branch_and_exchange(&mut self, inst: u32) {
         let mut rn: usize = (inst & 0xF) as usize;
+        self.r[15] = self.r[rn]&0xFFFFFFFE;
         if self.r[rn] & 0x1 != 0{
+            self.r[15] -= 4;
             self.instruction_set = THUMB;
         }
-        self.r[15] = self.r[rn]&0xFFFFFFFC;
+
         self.flush_pipeline();
 
     }

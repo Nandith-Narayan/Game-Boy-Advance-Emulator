@@ -82,7 +82,8 @@ impl Cpu{
     }
 
     pub fn alu_operations(&mut self, inst:u32, operand1:u32, operand2:u32, rd:u32, set_flags:bool){
-        match (inst & 0x1E00000) >> 21 {
+        let opcode = (inst & 0x1E00000) >> 21;
+        match opcode{
             0 => {
                 // AND
                 let result = operand1 & operand2;
@@ -266,7 +267,10 @@ impl Cpu{
                 }
 
             }
-            self.flush_pipeline();
+            // TEST, TEQ, CMP, CMN don't flush the pipeline
+            if opcode != 8 && opcode != 9 && opcode != 10 && opcode != 11 {
+                self.flush_pipeline();
+            }
         }
 
     }
