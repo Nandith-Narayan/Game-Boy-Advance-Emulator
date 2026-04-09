@@ -23,7 +23,7 @@ impl Cpu {
             if transfer_byte {
                 self.r[rd as usize] = mem.read_8(address) as u32;
             }else {
-                self.r[rd as usize] = mem.read_32(address);
+                self.r[rd as usize] = mem.read_32(address & 0xFFFFFFFC).rotate_right((address & 0b11) * 8);
             }
         }else{
             if transfer_byte {
