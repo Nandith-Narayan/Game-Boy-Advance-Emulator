@@ -59,22 +59,33 @@ impl Cpu{
             },
             2 => {
                 // Logical Shift Left
-                result = self.perform_shift_op_immediate_shift(LogicalShiftLeft, operand2, operand1, true);
+                if operand2 !=0 {
+                    result = self.perform_shift_op_immediate_shift(LogicalShiftLeft, operand2, operand1, true);
+                }else {
+                    result = operand1;
+                }
 
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
             },
             3 => {
                 // Logical Shift Right
-                result = self.perform_shift_op_immediate_shift(LogicalShiftRight, operand2, operand1, true);
+                if operand2 !=0 {
+                    result = self.perform_shift_op_immediate_shift(LogicalShiftRight, operand2, operand1, true);
+                }else {
+                    result = operand1;
+                }
 
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
             },
             4 => {
                 // Arithmetic Shift Right
-                result = self.perform_shift_op_immediate_shift(ArithmeticShiftRight, operand2, operand1, true);
-
+                if operand2 !=0 {
+                    result = self.perform_shift_op_immediate_shift(ArithmeticShiftRight, operand2, operand1, true);
+                }else {
+                    result = operand1;
+                }
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
             },
@@ -110,8 +121,11 @@ impl Cpu{
             },
             7 => {
                 // Rotate Right
-                result = self.perform_shift_op_immediate_shift(RotateRight, operand2, operand1, true);
-
+                if operand2 !=0 {
+                    result = self.perform_shift_op_immediate_shift(RotateRight, operand2, operand1, true);
+                }else {
+                    result = operand1;
+                }
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
             },

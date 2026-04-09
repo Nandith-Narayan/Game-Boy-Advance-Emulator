@@ -29,7 +29,7 @@ fn main() {
         });
     window.set_target_fps(60);
     let mut mem = memory::init();
-    mem.load_rom(String::from("C:/GBA roms/arm.gba"));
+    mem.load_rom(String::from("C:/GBA roms/thumb.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
@@ -40,13 +40,13 @@ fn main() {
     println!("\n {:#x}",cpu.memory.read_32(0x8000000));*/
 
     for _ in 1..n {
-        //println!("R[7] = {:#4x} ({})", cpu.r[7], cpu.r[7]);
-        println!("R[12] = {:#4x} ({})", cpu.r[12], cpu.r[12]);
+        println!("R[7] = {:#4x} ({})", cpu.r[7], cpu.r[7]);
+        //println!("R[12] = {:#4x} ({})", cpu.r[12], cpu.r[12]);
         println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[4] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, PC = {:#4x}, Carry Flag: {}", cpu.r[0], cpu.r[1], cpu.r[2], cpu.r[3], cpu.r[4], cpu.r[5],cpu.r[13], cpu.r[15], cpu.c);
 
-        /*if cpu.r[12]>50{
+        if cpu.r[7]==68{
             break;
-        }*/
+        }
         //println!("R[0] = {:#4x} ({})", cpu.r[0], cpu.r[0]);
         cpu.tick_cycle(&mut mem);
         ppu.tick_cycle(&mut mem);
