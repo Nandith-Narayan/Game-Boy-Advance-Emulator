@@ -70,7 +70,11 @@ impl Cpu {
         let is_load = (inst >> 11) & 0x1 != 0;
         let transfer_byte = (inst >> 12) & 0x1 != 0;
 
-        let address = self.r[rb as usize] + offset as u32;
+        let address = if transfer_byte {
+            self.r[rb as usize] + offset as u32
+        }else{
+            self.r[rb as usize] + ((offset as u32) << 2)
+        };
 
         if is_load {
             if transfer_byte {
