@@ -54,7 +54,11 @@ impl Cpu {
                 self.r[rd as usize] = mem.read_8(address) as i8 as i32 as u32;
             },
             (true, true)=>{
-                self.r[rd as usize] = mem.read_16(address) as i16 as i32 as u32;
+                if address & 0x1 == 0 {
+                    self.r[rd as usize] = mem.read_16(address) as i16 as i32 as u32;
+                }else {
+                    self.r[rd as usize] = (mem.read_16(address & 0xFFFFFFFE) >> 8) as i8 as i16 as i32 as u32;
+                }
             },
         }
     }
