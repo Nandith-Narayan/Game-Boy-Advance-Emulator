@@ -110,6 +110,17 @@ impl Cpu {
         let mut register_list = inst & 0xFF;
         let rb = (inst >> 8) & 0b111;
 
+        // Handle special case if the register list is empty
+        if register_list == 0{
+            // Load PC
+            self.r[15] = mem.read_32(self.r[rb as usize]);
+            // Increment base register as if the register list was full
+            self.r[rb as usize] += 0x40;
+            // PC has been updated, so the pipeline has to be flushed
+            self.flush_pipeline();
+            return;
+        }
+
         let mut address = self.r[rb as usize];
 
         for i in 0..=7{
