@@ -92,6 +92,12 @@ impl Cpu {
         let mut register_list = inst & 0xFF;
         let rb = (inst >> 8) & 0b111;
 
+        // Handle special case if the register list is empty
+        if register_list == 0{
+            mem.write_32(self.r[rb as usize], self.r[15]+2);
+            self.r[rb as usize] += 0x40;
+            return;
+        }
         let mut address = self.r[rb as usize];
 
         for i in 0..=7{
