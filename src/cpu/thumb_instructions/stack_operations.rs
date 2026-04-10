@@ -49,16 +49,16 @@ impl Cpu {
 
         let mut address = self.r[13];
 
-        for i in 7..=0usize{
+        for i in (0..=7).rev(){
             if register_list & 0x80 != 0{
-                mem.write_32(address, self.r[i]);
                 address -= 4;
+                mem.write_32(address, self.r[i]);
             }
             register_list <<= 1;
         }
         if r_bit{
-            mem.write_32(address, self.r[14]);
             address -= 4;
+            mem.write_32(address, self.r[14]);
         }
 
         self.r[13] = address;
@@ -70,16 +70,17 @@ impl Cpu {
 
         let mut address = self.r[13];
 
-        for i in (0..=7).rev(){
-            if register_list & 0x80 != 0{
-                address += 4;
+        for i in 0..=7{
+            if register_list & 0x1 != 0{
                 self.r[i] = mem.read_32(address);
+                address += 4;
+
             }
-            register_list <<= 1;
+            register_list >>= 1;
         }
         if r_bit{
-            address += 4;
             self.r[15] = mem.read_32(address) & (!0x1);
+            address += 4;
             self.flush_pipeline();
 
         }
