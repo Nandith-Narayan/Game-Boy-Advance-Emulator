@@ -97,7 +97,7 @@ impl Cpu {
         let offset = (inst >> 6) & 0x1F;
         let is_load = (inst >> 11) & 0x1 != 0;
 
-        let address = self.r[rb as usize] + offset as u32;
+        let address = self.r[rb as usize] + ((offset as u32) << 1);
 
         if is_load {
                 self.r[rd as usize] = mem.read_16(address) as u32;
