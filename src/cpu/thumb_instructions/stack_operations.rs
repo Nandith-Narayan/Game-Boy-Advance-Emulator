@@ -70,7 +70,7 @@ impl Cpu {
 
         let mut address = self.r[13];
 
-        for i in 7..=0usize{
+        for i in (0..=7).rev(){
             if register_list & 0x80 != 0{
                 address += 4;
                 self.r[i] = mem.read_32(address);
