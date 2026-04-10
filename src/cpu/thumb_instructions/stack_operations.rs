@@ -98,6 +98,7 @@ impl Cpu {
             if register_list & 0x1 != 0{
                 mem.write_32(address, self.r[i]);
                 address += 4;
+
             }
             register_list >>= 1;
         }
@@ -113,8 +114,8 @@ impl Cpu {
 
         for i in 0..=7{
             if register_list & 0x1 != 0{
-                address -= 4;
                 self.r[i] = mem.read_32(address);
+                address += 4;
 
             }
             register_list >>= 1;
