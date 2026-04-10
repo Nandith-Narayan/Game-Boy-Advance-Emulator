@@ -69,7 +69,12 @@ impl Cpu {
         let r_bit = (inst >> 8) & 0x1 != 0;
 
         let mut address = self.r[13];
+        if r_bit{
+            self.r[15] = mem.read_32(address) & (!0x1);
+            address += 4;
+            self.flush_pipeline();
 
+        }
         for i in 0..=7{
             if register_list & 0x1 != 0{
                 self.r[i] = mem.read_32(address);
@@ -78,12 +83,7 @@ impl Cpu {
             }
             register_list >>= 1;
         }
-        if r_bit{
-            self.r[15] = mem.read_32(address) & (!0x1);
-            address += 4;
-            self.flush_pipeline();
 
-        }
 
         self.r[13] = address;
     }
