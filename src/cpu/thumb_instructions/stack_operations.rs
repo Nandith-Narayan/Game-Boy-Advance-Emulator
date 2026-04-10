@@ -11,7 +11,7 @@ impl Cpu {
         let address = self.r[13] + ((offset as u32) << 2) ;
 
         if is_load {
-            self.r[rd as usize] = mem.read_32(address);
+            self.r[rd as usize] = mem.read_32(address & 0xFFFFFFFE).rotate_right((address & 0b11) * 8);
         }else{
             mem.write_32(address, self.r[rd as usize]);
         }
