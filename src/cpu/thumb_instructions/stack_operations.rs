@@ -98,18 +98,20 @@ impl Cpu {
             self.r[rb as usize] += 0x40;
             return;
         }
+        let reg_count = register_list.count_ones();
         let mut address = self.r[rb as usize];
-
+        let mut is_first = true;
         for i in 0..=7{
             if register_list & 0x1 != 0{
                 mem.write_32(address, self.r[i]);
                 address += 4;
-
+                if is_first{
+                    self.r[rb as usize] = self.r[rb as usize] + reg_count*4;
+                }
+                is_first = false;
             }
             register_list >>= 1;
         }
-
-        self.r[rb as usize] = address;
     }
 
     pub fn load_registers(&mut self, inst: u16, mem: &mut Memory){
