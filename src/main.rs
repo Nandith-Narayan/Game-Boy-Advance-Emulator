@@ -9,7 +9,7 @@ mod run_tests;
 use std::time::Instant;
 use std::thread;
 use std::time::Duration;
-use minifb::{Key, Window, WindowOptions};
+use minifb::{Key, Scale, ScaleMode, Window, WindowOptions};
 
 const WIDTH: usize = 240;
 const HEIGHT: usize = 160;
@@ -17,12 +17,21 @@ const HEIGHT: usize = 160;
 fn main() {
 
     let mut buffer: Vec<u32> = vec![0x0; WIDTH * HEIGHT];
-
+    let window_options = WindowOptions {
+        borderless: false,
+        title: true,
+        resize: false,
+        scale: Scale::X4,
+        scale_mode: ScaleMode::Stretch,
+        topmost: false,
+        transparency: false,
+        none: false,
+    };
     let mut window = Window::new(
         "GBA Emulator",
         WIDTH,
         HEIGHT,
-        WindowOptions::default(),
+        window_options,
     )
         .unwrap_or_else(|e| {
             panic!("{}", e);
