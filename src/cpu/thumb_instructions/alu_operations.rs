@@ -215,7 +215,7 @@ impl Cpu{
         match op{
             0 => {
                 // ADD
-                self.r[rd as usize] = self.r[rd as usize] + self.r[rs as usize];
+                self.r[rd as usize] = self.r[rd as usize].wrapping_add(self.r[rs as usize]);
                 if rd == 15{
                     self.r[15] &= !0x1;
                     self.flush_pipeline();
