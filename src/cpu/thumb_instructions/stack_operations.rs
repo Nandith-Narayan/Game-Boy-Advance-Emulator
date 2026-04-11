@@ -48,7 +48,10 @@ impl Cpu {
         let r_bit = (inst >> 8) & 0x1 != 0;
 
         let mut address = self.r[13];
-
+        if r_bit{
+            address -= 4;
+            mem.write_32(address, self.r[14]);
+        }
         for i in (0..=7).rev(){
             if register_list & 0x80 != 0{
                 address -= 4;
@@ -56,10 +59,7 @@ impl Cpu {
             }
             register_list <<= 1;
         }
-        if r_bit{
-            address -= 4;
-            mem.write_32(address, self.r[14]);
-        }
+
 
         self.r[13] = address;
     }
