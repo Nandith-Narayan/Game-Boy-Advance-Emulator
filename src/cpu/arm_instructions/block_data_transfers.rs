@@ -107,15 +107,9 @@ impl Cpu{
             address += 4;
         }
 
-        let mut base_reg_in_list = false;
         let mut is_first = true;
-        let mut base_reg_destination_addr = base_address;
         for i in 0..15{
             if register_list & 0x1 != 0{
-                if i == rn as usize {
-                    base_reg_in_list = true;
-                    base_reg_destination_addr = address;
-                }
 
                 if !s_bit {
                     mem.write_32(address, self.r[i]);
