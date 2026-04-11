@@ -33,7 +33,7 @@ impl Cpu{
             return;
         }
 
-        println!("{:?}", self.decode_thumb);
+        /*println!("{:?}", self.decode_thumb);
         let x = self.inst_thumb;
         let str = format!("{:016b}",x);
 
@@ -41,7 +41,7 @@ impl Cpu{
         for i in 0..4{
             print!("{} ", str.get(i*4..i*4+4).unwrap());
         }
-        println!(") ({:#x})", x);
+        println!(") ({:#x})", x);*/
 
         match self.decode_thumb {
             MoveShiftedRegister => self.move_shifted_register(self.inst_thumb, mem),
