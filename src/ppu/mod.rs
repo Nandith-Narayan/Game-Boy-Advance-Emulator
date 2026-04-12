@@ -9,6 +9,7 @@ pub struct Ppu{
     pub r: Vec<u8>,
     pub g: Vec<u8>,
     pub b: Vec<u8>,
+    pub max:usize,
 }
 
 pub fn init() -> Ppu{
@@ -19,6 +20,7 @@ pub fn init() -> Ppu{
         r: vec![0; 240*160],
         g: vec![0; 240*160],
         b: vec![0; 240*160],
+        max:0,
     }
 }
 
@@ -27,7 +29,7 @@ impl Ppu {
         if self.x < 240 && mem.vertical_count < 160{
             self.draw_mode_3(mem);
         }
-        if self.x > 240 && self.x < (240+68){
+        if self.x >= 240 && self.x < (240+68){
             mem.h_blank = true;
         }
         if self.x >= (240+68){
@@ -46,9 +48,11 @@ impl Ppu {
                 self.idx = 0;
 
             }
+        }else{
+            self.x += 1;
         }
 
-        self.x += 1;
+
     }
 
 }
