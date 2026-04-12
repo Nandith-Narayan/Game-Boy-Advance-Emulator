@@ -1,3 +1,4 @@
+use crate::cpu::helper_functions::{compute_overflow_on_add, compute_overflow_on_sub};
 use crate::memory::Memory;
 use super::Cpu;
 
@@ -22,7 +23,7 @@ impl Cpu {
         self.z = result as u32 == 0;
         self.n = (result & 0x80000000) != 0;
         self.c = !((result & 0x100000000) != 0); // Carry Flag on subtraction (CMP) is reversed
-        self.v = (((operand1 as i64 & 0x7FFFFFFF) - (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
+        self.v = compute_overflow_on_sub(operand1 as i32, operand2 as i32, result as i32);
     }
 
     pub fn add_immediate(&mut self, inst: u16, mem: &mut Memory) {
@@ -35,7 +36,7 @@ impl Cpu {
         self.z = result as u32 == 0;
         self.n = (result & 0x80000000) != 0;
         self.c = (result & 0x100000000) != 0;
-        self.v = (((operand1 as i64 & 0x7FFFFFFF) + (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
+        self.v = compute_overflow_on_add(operand1 as i32, operand2 as i32, result as i32);
         self.r[rd] = result as u32;
     }
 
@@ -49,7 +50,7 @@ impl Cpu {
         self.z = result as u32 == 0;
         self.n = (result & 0x80000000) != 0;
         self.c = !((result & 0x100000000) != 0); // Carry Flag on subtraction is reversed
-        self.v = (((operand1 as i64 & 0x7FFFFFFF) - (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
+        self.v = compute_overflow_on_sub(operand1 as i32, operand2 as i32, result as i32);
         self.r[rd] = result as u32;
     }
 }

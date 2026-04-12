@@ -1,4 +1,5 @@
 use crate::cpu::enums::ShiftType::*;
+use crate::cpu::helper_functions::{compute_overflow_on_add, compute_overflow_on_sub};
 use crate::memory::Memory;
 use super::Cpu;
 
@@ -19,14 +20,14 @@ impl Cpu{
             self.z = result as u32 == 0;
             self.n = (result & 0x80000000) != 0;
             self.c = !((result & 0x100000000) != 0); // Carry Flag on subtraction is reversed
-            self.v = (((operand1 as i64 & 0x7FFFFFFF) - (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
+            self.v = compute_overflow_on_sub(operand1 as i32, operand2 as i32, result as i32);
             self.r[rd as usize] = result as u32;
         }else{
             let result = operand1 as i64 + operand2 as i64;
             self.z = result as u32 == 0;
             self.n = (result & 0x80000000) != 0;
             self.c = (result & 0x100000000) != 0;
-            self.v = (((operand1 as i64 & 0x7FFFFFFF) + (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
+            self.v = compute_overflow_on_add(operand1 as i32, operand2 as i32, result as i32);
             self.r[rd as usize] = result as u32;
         }
 
@@ -100,7 +101,7 @@ impl Cpu{
                 self.z = result_64_bit as u32 == 0;
                 self.n = (result_64_bit & 0x80000000) != 0;
                 self.c = (result_64_bit & 0x100000000) != 0;
-                self.v = (((operand1 as i64 & 0x7FFFFFFF) + (operand2 as i64 & 0x7FFFFFFF) + carry) & 0x80000000) != 0;
+                self.v = compute_overflow_on_add(operand1 as i32, operand2 as i32, result_64_bit as i32);
 
                 result = result_64_bit as u32;
             },
@@ -115,7 +116,7 @@ impl Cpu{
                 self.z = result_64_bit as u32 == 0;
                 self.n = (result_64_bit & 0x80000000) != 0;
                 self.c = (result_64_bit & 0x100000000) == 0; // SBC Carry flag is reversed
-                self.v = (((operand1 as i64 & 0x7FFFFFFF) - (operand2 as i64 & 0x7FFFFFFF) + carry -1) & 0x80000000) != 0;
+                self.v = compute_overflow_on_sub(operand1 as i32, operand2 as i32, result_64_bit as i32);
 
                 result = result_64_bit as u32;
             },
@@ -145,7 +146,7 @@ impl Cpu{
                 self.z = result_64_bit as u32 == 0;
                 self.n = (result_64_bit & 0x80000000) != 0;
                 self.c = (result_64_bit & 0x100000000) != 0;
-                self.v = ((operand2 as i64 & 0x7FFFFFFF) & 0x80000000) != 0;
+                self.v = compute_overflow_on_sub(0, operand2 as i32, result_64_bit as i32);
 
                 result = result_64_bit as u32;
             },
@@ -156,8 +157,7 @@ impl Cpu{
                 self.z = result_64_bit as u32 == 0;
                 self.n = (result_64_bit & 0x80000000) != 0;
                 self.c = !((result_64_bit & 0x100000000) != 0); // Carry Flag on subtraction is reversed
-                self.v = (((operand1 as i64 & 0x7FFFFFFF) - (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
-
+                self.v = compute_overflow_on_sub(operand1 as i32, operand2 as i32, result_64_bit as i32);
                 result = operand1;
             },
             11 => {
@@ -167,7 +167,7 @@ impl Cpu{
                 self.z = result_64_bit as u32 == 0;
                 self.n = (result_64_bit & 0x80000000) != 0;
                 self.c = (result_64_bit & 0x100000000) != 0;
-                self.v = (((operand1 as i64 & 0x7FFFFFFF) + (operand2 as i64 & 0x7FFFFFFF)) & 0x80000000) != 0;
+                self.v = compute_overflow_on_add(operand1 as i32, operand2 as i32, result_64_bit as i32);
 
                 result = operand1;
             },

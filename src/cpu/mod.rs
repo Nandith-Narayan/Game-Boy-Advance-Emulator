@@ -11,6 +11,7 @@ mod arm_decode;
 mod thumb_instructions;
 mod thumb;
 mod thumb_decode;
+mod helper_functions;
 
 pub struct Cpu{
     pub r: [u32; 16],
