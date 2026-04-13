@@ -7,6 +7,9 @@ impl Memory{
 
             0x6 => {self.vertical_count}, 0x7 => {0},
 
+
+            0x130 | 0x131 => {0},
+
             _ => {println!("Reading from unimplemented IO Reg @ {:#4x}", address); 0},
         }
     }
