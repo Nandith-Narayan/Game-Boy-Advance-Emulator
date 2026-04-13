@@ -11,6 +11,9 @@ impl Memory{
             // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
             0x03000000..=0x03007FFF => set_u32(&mut self.wram_on_chip, (address - 0x03000000) as usize, value),
 
+            // =============== IO Registers ===============
+            0x04000000..=0x040003FE => self.set_io_reg_32bit((address - 0x04000000) as usize, value),
+
             // =============== Display Memory ===============
             // 0x05000000-0x050003FF   BG/OBJ Palette RAM        (1 KByte)
             0x05000000..=0x050003FF => set_u32(&mut self.palette_ram, (address - 0x05000000) as usize, value),
@@ -37,6 +40,9 @@ impl Memory{
             // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
             0x03000000..=0x03007FFF => set_u16(&mut self.wram_on_chip, (address - 0x03000000) as usize, value),
 
+            // =============== IO Registers ===============
+            0x04000000..=0x040003FE => self.set_io_reg_16bit((address - 0x04000000) as usize, value),
+
             // =============== Display Memory ===============
             // 0x05000000-0x050003FF   BG/OBJ Palette RAM        (1 KByte)
             0x05000000..=0x050003FF => set_u16(&mut self.palette_ram, (address - 0x05000000) as usize, value),
@@ -62,6 +68,9 @@ impl Memory{
             0x02000000..=0x0203FFFF => set_u8(&mut self.wram_on_board, (address - 0x02000000) as usize, value),
             // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
             0x03000000..=0x03007FFF => set_u8(&mut self.wram_on_chip, (address - 0x03000000) as usize, value),
+
+            // =============== IO Registers ===============
+            0x04000000..=0x040003FE => self.write_io_register((address - 0x04000000) as usize, value),
 
             // =============== Display Memory ===============
             // 0x05000000-0x050003FF   BG/OBJ Palette RAM        (1 KByte)

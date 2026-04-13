@@ -33,4 +33,16 @@ impl Memory{
         let d = self.read_io_register(address + 3);
         return ((d as u32) << 24) | ((c as u32) << 16) | ((b as u32) << 8) | (a as u32);
     }
+
+    pub fn set_io_reg_16bit(&mut self, address: usize, val: u16){
+        self.write_io_register(address, (val & 0xFF) as u8);
+        self.write_io_register(address + 1, ((val >> 8) & 0xFF) as u8);
+    }
+
+    pub fn set_io_reg_32bit(&mut self, address: usize, val: u32){
+        self.write_io_register(address, (val & 0xFF) as u8);
+        self.write_io_register(address + 1, ((val >> 8) & 0xFF) as u8);
+        self.write_io_register(address + 2, ((val >> 16) & 0xFF) as u8);
+        self.write_io_register(address + 3, ((val >> 24) & 0xFF) as u8);
+    }
 }

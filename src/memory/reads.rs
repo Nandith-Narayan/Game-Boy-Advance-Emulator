@@ -11,6 +11,9 @@ impl Memory{
             // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
             0x03000000..=0x03007FFF => get_u32(&self.wram_on_chip, (address - 0x03000000) as usize),
 
+            // =============== IO Registers ===============
+            0x04000000..=0x040003FE => self.get_io_reg_32bit((address - 0x04000000) as usize),
+
             // =============== Display Memory ===============
             // 0x05000000-0x050003FF   BG/OBJ Palette RAM        (1 KByte)
             0x05000000..=0x050003FF => get_u32(&self.palette_ram, (address - 0x05000000) as usize),
@@ -36,6 +39,9 @@ impl Memory{
             0x02000000..=0x0203FFFF => get_u16(&self.wram_on_board, (address - 0x02000000) as usize),
             // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
             0x03000000..=0x03007FFF => get_u16(&self.wram_on_chip, (address - 0x03000000) as usize),
+
+            // =============== IO Registers ===============
+            0x04000000..=0x040003FE => self.get_io_reg_16bit((address - 0x04000000) as usize),
 
             // =============== Display Memory ===============
             // 0x05000000-0x050003FF   BG/OBJ Palette RAM        (1 KByte)
