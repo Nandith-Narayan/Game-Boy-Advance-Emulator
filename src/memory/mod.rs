@@ -16,6 +16,7 @@ pub struct Memory{
     // IO Control Registers
     // LCD Control (0x4000000)
     pub lcd_bg_mode: u8,
+    pub frame_select: bool,
     pub v_blank: bool,
     pub h_blank: bool,
 
@@ -41,6 +42,7 @@ pub fn init() -> Memory{
         oam: [0; 1<<10],
 
         lcd_bg_mode: 4,
+        frame_select: false,
         vertical_count: 0,
         v_blank: false,
         h_blank: false,

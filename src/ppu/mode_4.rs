@@ -3,7 +3,8 @@ use crate::ppu::Ppu;
 
 impl Ppu{
     pub fn draw_mode_4(&mut self, mem: &mut Memory){
-        let pixel_palette_idx = mem.vram[self.idx];
+
+        let pixel_palette_idx = if mem.frame_select {mem.vram[self.idx + 0xA000]} else {mem.vram[self.idx]};
         let p_low = mem.palette_ram[(pixel_palette_idx as usize) * 2];
         let p_high = mem.palette_ram[(pixel_palette_idx as usize) * 2 + 1];
 

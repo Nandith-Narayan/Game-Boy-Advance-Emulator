@@ -4,19 +4,21 @@ impl Memory{
 
     pub fn read_io_register(&self, address: usize) -> u8{
         return match address {
-
+            0x0 => {if self.frame_select{0b10000}else{0}},
+            0x4 => {0},
+            0x5 => {0},
             0x6 => {self.vertical_count}, 0x7 => {0},
 
 
-            0x130 | 0x131 => {0},
+            0x130 | 0x131 => {0xFF},
 
             _ => {println!("Reading from unimplemented IO Reg @ {:#4x}", address); 0},
         }
     }
     pub fn write_io_register(&mut self, address: usize, val: u8){
         match address {
-
-            0x6 => {self.vertical_count = val;}, 0x7 => {},
+            0x0 => {self.frame_select = (val & 0b10000) != 0;println!("{}",self.frame_select);},
+            //0x6 => {}, 0x7 => {},
 
             _ => {println!("Writing to unimplemented IO Reg @ {:#4x}, with value {:#x} ({})", address, val, val);},
         };
