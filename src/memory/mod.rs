@@ -9,7 +9,7 @@ pub struct Memory{
     pub wram_on_chip: [u8; 1<<15],
 
     // Display Memory
-    palette_ram: [u8; 1<<10],
+    pub palette_ram: [u8; 1<<10],
     pub vram: [u8; 3*(1<<15)],
     oam: [u8; 1<<10],
 
@@ -40,7 +40,7 @@ pub fn init() -> Memory{
         vram: [0; 3*(1<<15)],
         oam: [0; 1<<10],
 
-        lcd_bg_mode: 0,
+        lcd_bg_mode: 4,
         vertical_count: 0,
         v_blank: false,
         h_blank: false,

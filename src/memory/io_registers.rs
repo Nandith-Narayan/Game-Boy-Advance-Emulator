@@ -7,7 +7,7 @@ impl Memory{
 
             0x6 => {self.vertical_count}, 0x7 => {0},
 
-            _ => {println!("Reading from unimplemented IO Reg @ {:0x}", address); 0},
+            _ => {println!("Reading from unimplemented IO Reg @ {:#4x}", address); 0},
         }
     }
     pub fn write_io_register(&mut self, address: usize, val: u8){
@@ -15,7 +15,7 @@ impl Memory{
 
             0x6 => {self.vertical_count = val;}, 0x7 => {},
 
-            _ => {println!("Writing to unimplemented IO Reg @ {:0x}, with value {:0x} ({})", address, val, val);},
+            _ => {println!("Writing to unimplemented IO Reg @ {:#4x}, with value {:#x} ({})", address, val, val);},
         };
     }
 

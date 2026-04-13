@@ -1,6 +1,7 @@
 use crate::memory::Memory;
 
 mod mode_3;
+mod mode_4;
 
 pub struct Ppu{
     x: usize,
@@ -27,7 +28,11 @@ pub fn init() -> Ppu{
 impl Ppu {
     pub fn tick_cycle(&mut self, mem: &mut Memory){
         if self.x < 240 && mem.vertical_count < 160{
-            self.draw_mode_3(mem);
+            match mem.lcd_bg_mode {
+                3 => self.draw_mode_3(mem),
+                4 => self.draw_mode_4(mem),
+                _ => {},
+            }
         }
         if self.x >= 240 && self.x < (240+68){
             mem.h_blank = true;
