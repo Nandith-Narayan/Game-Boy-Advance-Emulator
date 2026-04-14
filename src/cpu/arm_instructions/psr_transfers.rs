@@ -51,6 +51,9 @@ impl Cpu{
                 IRQ => {
                     self.spsr_irq = (self.spsr_irq & (!mask)) | (operand & mask);
                 },
+                SUPERVISOR => {
+                    self.spsr_svc = (self.spsr_svc & (!mask)) | (operand & mask);
+                },
                 _ => {println!("failed to set CPU {:?} mode's SPSR.", self.mode);},
             }
         }
@@ -60,7 +63,7 @@ impl Cpu{
         let source_is_cpsr = (inst & (1 << 22)) == 0;
         let rd = (inst >> 12) & 0xF;
 
-        if source_is_cpsr {
+        if !source_is_cpsr {
             //println!("TRANSFER FROM SPSR NOT IMPLEMENTED");
             if self.mode == IRQ{
                 self.r[rd as usize] = self.spsr_irq;
