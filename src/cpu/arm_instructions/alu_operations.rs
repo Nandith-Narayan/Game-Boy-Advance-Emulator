@@ -120,7 +120,7 @@ impl Cpu{
 
                     self.z = result as u32 == 0;
                     self.n = (result & 0x80000000) != 0;
-                    self.c = (result & 0x100000000) != 0;
+                    self.c = !((result & 0x100000000) != 0);
                     self.v = compute_overflow_on_sub(operand2 as i32, operand1 as i32, result as i32);
                 }
                 self.r[rd as usize] = result as u32;
