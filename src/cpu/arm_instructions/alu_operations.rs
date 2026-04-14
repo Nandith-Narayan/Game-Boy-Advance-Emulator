@@ -18,7 +18,7 @@ impl Cpu{
         let alu_op = (inst & 0x1E00000) >> 21;
 
         let use_carry_from_barrel_shifter = match alu_op {
-            2 /*SUB*/| 4 /*ADD*/| 5 /*ADC*/| 6 /*SBC*/| 10 /*CMP*/| 11 /*CMN*/ => false,
+            2 /*SUB*/| 4 /*ADD*/| 5 /*ADC*/| 6 /*SBC*/| 7 /*RSC*/| 10 /*CMP*/| 11 /*CMN*/ => false,
             _ => true,
         };
 
@@ -180,7 +180,7 @@ impl Cpu{
 
                     self.z = result as u32 == 0;
                     self.n = (result & 0x80000000) != 0;
-                    self.c = (result & 0x100000000) != 0;
+                    self.c = !((result & 0x100000000) != 0);
                     self.v = compute_overflow_on_sub(operand2 as i32, operand1 as i32, result as i32);
                 }
                 self.r[rd as usize] = result as u32;
