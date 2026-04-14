@@ -1,4 +1,4 @@
-use crate::cpu::enums::CPUMode::{FIQ, IRQ, USER};
+use crate::cpu::enums::CPUMode::{FIQ, IRQ, SUPERVISOR, USER};
 use super::Cpu;
 
 impl Cpu{
@@ -61,10 +61,19 @@ impl Cpu{
         let rd = (inst >> 12) & 0xF;
 
         if source_is_cpsr {
-            println!("TRANSFER FROM SPSR NOT IMPLEMENTED");
+            //println!("TRANSFER FROM SPSR NOT IMPLEMENTED");
+            if self.mode == IRQ{
+                self.r[rd as usize] = self.spsr_irq;
+            }else if self.mode == FIQ {
+                self.r[rd as usize] = self.spsr_fiq;
+            }else if self.mode == SUPERVISOR {
+                self.r[rd as usize] = self.spsr_svc;
+            }else{
+                println!("TRANSFER FROM SPSR NOT IMPLEMENTED FOR MODE {:?}", self.mode);
+            }
+        }else {
+            self.r[rd as usize] = self.get_cpsr();
         }
-
-        self.r[rd as usize] = self.get_cpsr();
 
     }
 }

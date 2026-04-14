@@ -55,6 +55,14 @@ impl Cpu {
                 self.set_cpsr(self.spsr_fiq);
                 self.spsr_fiq = temp;
             },
+            SUPERVISOR => {
+                std::mem::swap(&mut self.r[13], &mut self.r_svc[13]);
+                std::mem::swap(&mut self.r[14], &mut self.r_svc[14]);
+
+                let temp = self.get_cpsr();
+                self.set_cpsr(self.spsr_svc);
+                self.spsr_svc = temp;
+            },
 
             _ => {println!("Failed to switch to mode {:?}", new_mode);}
         }

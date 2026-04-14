@@ -40,6 +40,8 @@ pub struct Cpu{
     pub spsr_irq: u32,
     pub r_fiq: [u32; 16],
     pub spsr_fiq: u32,
+    pub r_svc: [u32; 16],
+    pub spsr_svc: u32,
 
 }
 
@@ -69,6 +71,8 @@ pub fn init() -> Cpu{
         spsr_irq: 0,
         r_fiq: [0; 16],
         spsr_fiq: 0,
+        r_svc: [0; 16],
+        spsr_svc: 0,
     };
     /*if(path.to_string().eq("skip")){
         //println!("Skipping ROM Loading");
