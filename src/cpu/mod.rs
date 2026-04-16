@@ -55,7 +55,7 @@ pub fn init() -> Cpu{
         R12 as usize, R13 as usize, R14 as usize, R15 as usize];
 
     let mut cpu = Cpu{
-        regs: [0; 26],
+        regs: [0; 27],
         reg_map,
         instruction_set: ARM,
         //memory: memory::init(),
