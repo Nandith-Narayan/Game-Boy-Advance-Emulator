@@ -15,7 +15,7 @@ mod thumb_decode;
 mod helper_functions;
 
 pub struct Cpu{
-    pub regs: [u32; 26],
+    pub regs: [u32; 27],
     pub reg_map: [usize; 16],
     pub instruction_set: InstructionSet,
 
