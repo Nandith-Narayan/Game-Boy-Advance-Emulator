@@ -200,6 +200,8 @@ name = "gba_emu"
 version = "0.1.0"
 dependencies = [
  "minifb",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
