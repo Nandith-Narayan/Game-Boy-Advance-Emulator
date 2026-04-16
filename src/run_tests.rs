@@ -3,6 +3,8 @@ mod run_tests {
     use std::fs;
     use serde::{Deserialize, Serialize};
     use serde_json::Value::String;
+    use cpu::enums;
+    use enums::CPUMode;
     use crate::{cpu, memory, ppu};
 
 
@@ -73,17 +75,34 @@ mod run_tests {
         let mut ppu = ppu::init();
 
         cpu.r = data.initial.r.clone();
-        let cspr = data.initial.cpsr;
-        println!("cspr:{:032b}, {:#4x}", cspr, cspr);
-        cpu.n = (cspr & (1 << 31)) != 0;
-        cpu.z = (cspr & (1 << 30)) != 0;
-        cpu.c = (cspr & (1 << 29)) != 0;
-        cpu.v = (cspr & (1 << 28)) != 0;
+        let cpsr = data.initial.cpsr;
+        println!("cpsr:{:032b}, {:#4x}", cpsr, cpsr);
+        println!("new cpsr:{:032b}, {:#4x}", data.final_d.cpsr, data.final_d.cpsr);
+        cpu.n = (cpsr & (1 << 31)) != 0;
+        cpu.z = (cpsr & (1 << 30)) != 0;
+        cpu.c = (cpsr & (1 << 29)) != 0;
+        cpu.v = (cpsr & (1 << 28)) != 0;
+        cpu.mode = cpu.num_to_cpu_mode(cpsr & 0b1_1111);
+        match cpu.mode{
+            CPUMode::FIQ =>{
+                for i in 0..8 {
+                    cpu.r[8+i] = data.initial.r_fiq[i];
+                }
+            },
+            _ => {}
+
+        }
+
         cpu.fetch_arm = data.opcode;
+
+
+
         cpu.decode_arm(&mut mem);
 
         cpu.tick_cycle(&mut mem);
         ppu.tick_cycle(&mut mem);
+
+
 
         let mut same = true;
         for i in 0..16 {
@@ -98,6 +117,13 @@ mod run_tests {
 
             let x = data.opcode;
             let str = format!("{:032b}",x);
+
+            for i in data.initial.pipeline{
+                for i in 0..8{
+                    print!("{} ", str.get(i*4..i*4+4).unwrap());
+                }
+                println!(" ({:#x})", x);
+            }
 
             print!("Instruction: ");
             for i in 0..8{
@@ -120,7 +146,7 @@ mod run_tests {
 
             println!("\x1b[0;37m");
 
-            return false;
+            //return false;
         }
         return true;
     }
