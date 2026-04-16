@@ -80,6 +80,7 @@ mod run_tests {
         cpu.c = (cspr & (1 << 29)) != 0;
         cpu.v = (cspr & (1 << 28)) != 0;
         cpu.fetch_arm = data.opcode;
+        cpu.decode_arm(&mut mem);
 
         cpu.tick_cycle(&mut mem);
         ppu.tick_cycle(&mut mem);
