@@ -13,7 +13,7 @@ impl Cpu{
             return;
         }
         self.fetch_arm = mem.read_32(self.get_r(15));
-        self.set_r(15, self.get_r(15) + 4);
+        self.increment_r(15, 4);
     }
     // Decode ARM instruction
     pub fn decode_arm(&mut self, mem: &mut Memory){

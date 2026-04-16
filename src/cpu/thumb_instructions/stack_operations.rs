@@ -106,7 +106,7 @@ impl Cpu {
                 mem.write_32(address, self.get_r(i));
                 address += 4;
                 if is_first{
-                    self.set_r(rb as usize, self.get_r(rb as usize) + reg_count*4);
+                    self.increment_r(rb as usize, reg_count*4);
                 }
                 is_first = false;
             }
@@ -123,7 +123,7 @@ impl Cpu {
             // Load PC
             self.set_r(15, mem.read_32(self.get_r(rb as usize)));
             // Increment base register as if the register list was full
-            self.set_r(rb as usize, self.get_r(rb as usize) + 0x40);
+            self.increment_r(rb as usize, 0x40);
             // PC has been updated, so the pipeline has to be flushed
             self.flush_pipeline();
             return;

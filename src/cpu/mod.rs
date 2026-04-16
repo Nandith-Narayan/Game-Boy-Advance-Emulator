@@ -125,5 +125,13 @@ impl Cpu{
         return self.regs[self.reg_map[r]];
     }
 
+    #[inline(always)]
+    pub fn increment_r(&mut self, r: usize, val: u32){
+        self.regs[self.reg_map[r]] += val;
+    }
+    #[inline(always)]
+    pub fn decrement_r(&mut self, r: usize, val: u32){
+        self.regs[self.reg_map[r]] -= val;
+    }
 }
 

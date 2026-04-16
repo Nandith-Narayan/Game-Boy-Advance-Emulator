@@ -35,8 +35,7 @@ impl Cpu {
         self.set_r(15, self.get_r(rs as usize) & 0xFFFFFFFE);
         if self.get_r(rs as usize) & 0x1 == 0{
 
-            self.set_r(15, self.get_r(15) - 2);
-
+            self.decrement_r(15, 2);
 
             self.instruction_set = ARM;
         }

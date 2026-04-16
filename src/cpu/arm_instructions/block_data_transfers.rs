@@ -79,19 +79,19 @@ impl Cpu{
             match (is_increment, is_pre_indexing){
                 (false, false) =>{ // Decrement After
                     mem.write_32(self.get_r(rn as usize)-0x3C, self.get_r(15)+4);
-                    self.set_r(rn as usize, self.get_r(rn as usize) - 0x40);
+                    self.decrement_r(rn as usize, 0x40);
                 },
                 (false, true) =>{ // Decrement Before
                     mem.write_32(self.get_r(rn as usize)-0x40, self.get_r(15)+4);
-                    self.set_r(rn as usize, self.get_r(rn as usize) - 0x40);
+                    self.decrement_r(rn as usize, 0x40);
                 },
                 (true, false) =>{ // Increment After
                     mem.write_32(self.get_r(rn as usize), self.get_r(15)+4);
-                    self.set_r(rn as usize, self.get_r(rn as usize) + 0x40);
+                    self.increment_r(rn as usize, 0x40);
                 },
                 (true, true) =>{ // Increment Before
                     mem.write_32(self.get_r(rn as usize)+4, self.get_r(15)+4);
-                    self.set_r(rn as usize, self.get_r(rn as usize) + 0x40);
+                    self.increment_r(rn as usize, 0x40);
                 },
             }
             return;
