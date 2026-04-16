@@ -8,6 +8,7 @@ mod block_data_transfers;
 
 use crate::cpu::enums::CPUMode;
 use crate::cpu::enums::CPUMode::*;
+use crate::cpu::enums::RegisterName::*;
 use super::Cpu;
 
 
@@ -31,33 +32,50 @@ impl Cpu {
 
         println!("Mode swap triggered: {:?} -> {:?}", self.mode, new_mode);
 
-        let mode_swap = if new_mode == USER || new_mode == SYSTEM {self.mode} else {new_mode};
-
-        match mode_swap{
+        match new_mode{
+            USER | SYSTEM => {
+                self.reg_map[8] = R8 as usize;
+                self.reg_map[9] = R9 as usize;
+                self.reg_map[10] = R10 as usize;
+                self.reg_map[11] = R11 as usize;
+                self.reg_map[12] = R12 as usize;
+                self.reg_map[13] = R13 as usize;
+                self.reg_map[14] = R14 as usize;
+            }
             FIQ => {
-                std::mem::swap(&mut self.r[8], &mut self.r_fiq[8]);
-                std::mem::swap(&mut self.r[9], &mut self.r_fiq[9]);
-                std::mem::swap(&mut self.r[10], &mut self.r_fiq[10]);
-                std::mem::swap(&mut self.r[11], &mut self.r_fiq[11]);
-                std::mem::swap(&mut self.r[12], &mut self.r_fiq[12]);
-                std::mem::swap(&mut self.r[13], &mut self.r_fiq[13]);
-                std::mem::swap(&mut self.r[14], &mut self.r_fiq[14]);
+                self.reg_map[8] = R8FIQ as usize;
+                self.reg_map[9] = R9FIQ as usize;
+                self.reg_map[10] = R10FIQ as usize;
+                self.reg_map[11] = R11FIQ as usize;
+                self.reg_map[12] = R12FIQ as usize;
+                self.reg_map[13] = R13FIQ as usize;
+                self.reg_map[14] = R14FIQ as usize;
 
                 let temp = self.get_cpsr();
                 self.set_cpsr(self.spsr_fiq);
                 self.spsr_fiq = temp;
             },
             IRQ => {
-                std::mem::swap(&mut self.r[13], &mut self.r_fiq[13]);
-                std::mem::swap(&mut self.r[14], &mut self.r_fiq[14]);
+                self.reg_map[8] = R8 as usize;
+                self.reg_map[9] = R9 as usize;
+                self.reg_map[10] = R10 as usize;
+                self.reg_map[11] = R11 as usize;
+                self.reg_map[12] = R12 as usize;
+                self.reg_map[13] = R13IRQ as usize;
+                self.reg_map[14] = R14IRQ as usize;
 
                 let temp = self.get_cpsr();
                 self.set_cpsr(self.spsr_fiq);
                 self.spsr_fiq = temp;
             },
             SUPERVISOR => {
-                std::mem::swap(&mut self.r[13], &mut self.r_svc[13]);
-                std::mem::swap(&mut self.r[14], &mut self.r_svc[14]);
+                self.reg_map[8] = R8 as usize;
+                self.reg_map[9] = R9 as usize;
+                self.reg_map[10] = R10 as usize;
+                self.reg_map[11] = R11 as usize;
+                self.reg_map[12] = R12 as usize;
+                self.reg_map[13] = R13SVC as usize;
+                self.reg_map[14] = R14SVC as usize;
 
                 let temp = self.get_cpsr();
                 self.set_cpsr(self.spsr_svc);

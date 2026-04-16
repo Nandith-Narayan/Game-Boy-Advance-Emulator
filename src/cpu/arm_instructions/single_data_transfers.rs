@@ -10,16 +10,16 @@ impl Cpu{
         let rm = inst & 0xF;
         if inst&(1<<22) != 0{
             // Swap 8-bit quantity
-            let value = mem.read_8(self.r[rn as usize]);
-            mem.write_8(self.r[rn as usize], self.r[rm as usize] as u8);
-            self.r[rd as usize] = value as u32;
+            let value = mem.read_8(self.get_r(rn as usize));
+            mem.write_8(self.get_r(rn as usize), self.get_r(rm as usize) as u8);
+            self.set_r(rd as usize, value as u32);
         }else{
             // Swap 32-bit quantity
-            let mut value = mem.read_32(self.r[rn as usize] & 0xFFFFFFFE);
-            mem.write_32(self.r[rn as usize] & 0xFFFFFFFE, self.r[rm as usize]);
-            value = value.rotate_right((self.r[rn as usize] & 0b11) * 8); // Account for Misaligned reads
+            let mut value = mem.read_32(self.get_r(rn as usize) & 0xFFFFFFFE);
+            mem.write_32(self.get_r(rn as usize) & 0xFFFFFFFE, self.get_r(rm as usize));
+            value = value.rotate_right((self.get_r(rn as usize) & 0b11) * 8); // Account for Misaligned reads
 
-            self.r[rd as usize] = value;
+            self.set_r(rd as usize, value);
         }
     }
 
@@ -37,7 +37,7 @@ impl Cpu{
         // register shift
         let shift = (inst & 0xFF0) >> 4;
         let shift_amount = (shift & 0xF8) >> 3;
-        let mut offset = self.r[rm as usize];
+        let mut offset = self.get_r(rm as usize);
 
         let shift_type_bits = (shift>>1) & 0b011;
         let shift_type = match shift_type_bits{
@@ -120,7 +120,7 @@ impl Cpu{
         let rn = (inst & 0xF0000) >> 16;
         let rd = (inst & 0xF000) >> 12;
 
-        let mut address = self.r[rn as usize];
+        let mut address = self.get_r(rn as usize);
         if rn == 15{
             address +=0;
         }
@@ -141,9 +141,9 @@ impl Cpu{
         // Do transfer
         if transfer_byte{
             if load_data{
-                self.r[rd as usize] = mem.read_8(address) as u32;
+                self.set_r(rd as usize, mem.read_8(address) as u32);
             }else{
-                let mut val = self.r[rd as usize];
+                let mut val = self.get_r(rd as usize);
                 if rd == 15{
                     val += 4;
                 }
@@ -154,14 +154,14 @@ impl Cpu{
             if load_data{
                 // Non-aligned loads rotate the read in byte
                 let val = mem.read_32(address & 0xFFFFFFFC);
-                self.r[rd as usize] = val.rotate_right((address & 0b11) * 8);
+                self.set_r(rd as usize, val.rotate_right((address & 0b11) * 8));
                 // If PC is updated, flush the pipeline
                 if rd == 15{
                     self.flush_pipeline();
                 }
             }else{
                 address &= 0xFFFFFFFC; // Must be aligned to 4-byte blocks
-                let mut val = self.r[rd as usize];
+                let mut val = self.get_r(rd as usize);
                 if rd == 15{
                     val += 4;
                 }
@@ -181,7 +181,7 @@ impl Cpu{
         // in case of post-indexing, always write back
         if write_back || !add_before_transfer {
            if load_data && rd==rn {return;} // If the same register is used, and it is a load, then don't write back
-            self.r[rn as usize] = address;
+            self.set_r(rn as usize, address);
         }
 
     }

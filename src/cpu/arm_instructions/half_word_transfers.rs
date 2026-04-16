@@ -14,8 +14,8 @@ impl Cpu{
         let is_load = (inst & (1<<20)) != 0;
         let op_type = (inst >> 5) & 0b011;
 
-        let offset = self.r[rm as usize];
-        let base_address = self.r[rn as usize];
+        let offset = self.get_r(rm as usize);
+        let base_address = self.get_r(rn as usize);
         let new_address = if add_offset{ base_address + offset } else { base_address - offset };
 
         let address = if update_offset_before_transfer { new_address } else { base_address };
@@ -28,7 +28,7 @@ impl Cpu{
 
         if write_back || !update_offset_before_transfer{
             if !is_load || rd != rn{
-                self.r[rn as usize] = new_address;
+                self.set_r(rn as usize, new_address);
             }
         }
 
@@ -45,7 +45,7 @@ impl Cpu{
         let op_type = (inst >> 5) & 0b011;
 
         let offset = (((inst >> 4) & 0xF0) | (inst & 0xF)) & 0xFF;
-        let base_address = self.r[rn as usize];
+        let base_address = self.get_r(rn as usize);
         let new_address = if add_offset{ base_address + offset } else { base_address - offset };
 
         let address = if update_offset_before_transfer { new_address } else { base_address };
@@ -58,7 +58,7 @@ impl Cpu{
 
         if write_back || !update_offset_before_transfer{
             if !is_load || rd != rn{
-                self.r[rn as usize] = new_address;
+                self.set_r(rn as usize, new_address);
             }
         }
 
@@ -68,9 +68,9 @@ impl Cpu{
         match op_type{
             0 => {println!("This should be a SWP, but was decoded as a halfword transfer");},
             1 => {
-                self.r[rd] = mem.read_16(address & 0xFFFFFFFE) as u32;
+                self.set_r(rd, mem.read_16(address & 0xFFFFFFFE) as u32);
                 if address & 0x1 != 0{
-                    self.r[rd] = self.r[rd].rotate_right(8);
+                    self.set_r(rd, self.get_r(rd).rotate_right(8));
                 }
             },
             2 => {
@@ -78,7 +78,7 @@ impl Cpu{
                 if val & 0x80 != 0{
                     val |= 0xFFFFFF00;
                 }
-                self.r[rd] = val;
+                self.set_r(rd, val);
             },
             3 => {
                 if address & 0x1 ==0 {
@@ -86,7 +86,7 @@ impl Cpu{
                     if val & 0x8000 != 0 {
                         val |= 0xFFFF0000;
                     }
-                    self.r[rd] = val;
+                    self.set_r(rd, val);
                 }else{
                     // Handle Misaligned signed halfword load
                     let mut val = mem.read_16(address & 0xFFFFFFFE) as u32;
@@ -94,7 +94,7 @@ impl Cpu{
                     if val & 0x80 != 0 {
                         val |= 0xFFFFFF00;
                     }
-                    self.r[rd] = val;
+                    self.set_r(rd, val);
                 }
             },
             _ => {}
@@ -104,9 +104,9 @@ impl Cpu{
     fn half_word_stores(&mut self, rd: usize, op_type: u32, address: u32, mem: &mut Memory){
         match op_type{
             0 => {println!("This should be a SWP, but was decoded as a halfword transfer");},
-            1 | 3 => {mem.write_16(address & 0xFFFFFFFE, (self.r[rd] & 0xFFFF) as u16)},
+            1 | 3 => {mem.write_16(address & 0xFFFFFFFE, (self.get_r(rd) & 0xFFFF) as u16)},
             2 => {
-                mem.write_8(address & 0xFFFFFFFE, (self.r[rd] & 0xFF) as u8)
+                mem.write_8(address & 0xFFFFFFFE, (self.get_r(rd) & 0xFF) as u8)
             },
             _ => {}
         }

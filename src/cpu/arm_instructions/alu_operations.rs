@@ -1,3 +1,4 @@
+use std::process::exit;
 use crate::cpu::enums::CPUMode::FIQ;
 use crate::cpu::enums::ShiftType;
 use crate::cpu::enums::ShiftType::*;
@@ -11,8 +12,8 @@ impl Cpu{
         let rd = (inst & 0xF000) >> 12;
         let rm = inst & 0xF;
 
-        let mut operand1 = self.r[rn as usize];
-        let mut operand2 = self.r[rm as usize];
+        let mut operand1 = self.get_r(rn as usize);
+        let mut operand2 = self.get_r(rm as usize);
 
         let set_flags = (inst & (1 << 20)) != 0;
         let alu_op = (inst & 0x1E00000) >> 21;
@@ -62,7 +63,7 @@ impl Cpu{
         let immediate = inst & 0xFF;
         let rotate = (inst & 0xF00)>> 8;
 
-        let operand1 = self.r[rn as usize];
+        let operand1 = self.get_r(rn as usize);
         let operand2 = immediate.rotate_right(rotate*2);
 
         let alu_op = (inst & 0x1E00000) >> 21;
@@ -91,7 +92,7 @@ impl Cpu{
 
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
-                self.r[rd as usize] = result;
+                self.set_r(rd as usize, result);
             }
             1 => {
                 // XOR
@@ -99,7 +100,7 @@ impl Cpu{
 
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
-                self.r[rd as usize] = result;
+                self.set_r(rd as usize, result);
             }
             2 => {
                 // SUB
@@ -111,7 +112,7 @@ impl Cpu{
                     self.c = !((result & 0x100000000) != 0); // Carry Flag on subtraction is reversed
                     self.v = compute_overflow_on_sub(operand1 as i32, operand2 as i32, result as i32);
                 }
-                self.r[rd as usize] = result as u32;
+                self.set_r(rd as usize, result as u32);
             },
             3 => {
                 // RSB
@@ -123,7 +124,7 @@ impl Cpu{
                     self.c = !((result & 0x100000000) != 0);
                     self.v = compute_overflow_on_sub(operand2 as i32, operand1 as i32, result as i32);
                 }
-                self.r[rd as usize] = result as u32;
+                self.set_r(rd as usize, result as u32);
             },
             4 => {
                 // ADD
@@ -135,7 +136,7 @@ impl Cpu{
                     self.c = (result & 0x100000000) != 0;
                     self.v = compute_overflow_on_add(operand1 as i32, operand2 as i32, result as i32);
                 }
-                self.r[rd as usize] = result as u32;
+                self.set_r(rd as usize, result as u32);
             },
             5 => {
                 // ADC
@@ -151,7 +152,7 @@ impl Cpu{
                     self.c = (result & 0x100000000) != 0;
                     self.v = compute_overflow_on_add(operand1 as i32, operand2 as i32, result as i32);
                 }
-                self.r[rd as usize] = result as u32;
+                self.set_r(rd as usize, result as u32);
             },
             6 => {
                 // SBC
@@ -167,7 +168,7 @@ impl Cpu{
                     self.c = (result & 0x100000000) == 0; // SBC Carry flag is reversed
                     self.v = compute_overflow_on_sub(operand1 as i32, operand2 as i32, result as i32);
                 }
-                self.r[rd as usize] = result as u32;
+                self.set_r(rd as usize, result as u32);
             },
             7 => {
                 // RSC
@@ -183,7 +184,7 @@ impl Cpu{
                     self.c = !((result & 0x100000000) != 0);
                     self.v = compute_overflow_on_sub(operand2 as i32, operand1 as i32, result as i32);
                 }
-                self.r[rd as usize] = result as u32;
+                self.set_r(rd as usize, result as u32);
             },
             8 => {
                 // TST
@@ -227,7 +228,7 @@ impl Cpu{
                     self.z = result == 0;
                     self.n = (result & 0x80000000) != 0;
                 }
-                self.r[rd as usize] = result;
+                self.set_r(rd as usize, result);
             },
             13 => {
                 // MOV
@@ -236,7 +237,7 @@ impl Cpu{
                     self.z = result == 0;
                     self.n = (result & 0x80000000) != 0;
                 }
-                self.r[rd as usize] = result;
+                self.set_r(rd as usize, result);
             },
             14 => {
                 // BIC (Bit Clear)
@@ -244,14 +245,14 @@ impl Cpu{
 
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
-                self.r[rd as usize] = result;
+                self.set_r(rd as usize, result);
             },
             15 => {
                 // MVN
                 let result = !operand2;
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
-                self.r[rd as usize] = result;
+                self.set_r(rd as usize, result);
             },
             _ => {}
         }
@@ -359,7 +360,7 @@ impl Cpu{
     pub fn perform_shift_op_register_shift(&mut self, shift_inst: u32, value: u32, set_flags: bool) -> u32{
         let shift_type_bits = (shift_inst>>1) & 0b11;
         let selected_reg = (shift_inst>>4) & 0xF;
-        let mut shift_amount = self.r[selected_reg as usize] & 0xFF;
+        let mut shift_amount = self.get_r(selected_reg as usize) & 0xFF;
 
         let shift_type = match shift_type_bits{
             0 => LogicalShiftLeft,

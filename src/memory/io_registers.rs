@@ -11,6 +11,7 @@ impl Memory{
 
 
             0x130 | 0x131 => {0xFF},
+            0x132 | 0x133 => {0},
 
             _ => {println!("Reading from unimplemented IO Reg @ {:#4x}", address); 0},
         }

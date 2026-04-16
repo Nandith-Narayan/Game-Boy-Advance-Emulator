@@ -14,7 +14,7 @@ impl Cpu{
             operand = immediate.rotate_right(rotate * 2);
         }else{
             let rm = inst & 0xF;
-            operand = self.r[rm as usize];
+            operand = self.get_r(rm as usize);
         }
 
         let destination_is_cpsr = (inst & (1 << 22)) == 0;
@@ -66,16 +66,16 @@ impl Cpu{
         if !source_is_cpsr {
             //println!("TRANSFER FROM SPSR NOT IMPLEMENTED");
             if self.mode == IRQ{
-                self.r[rd as usize] = self.spsr_irq;
+                self.set_r(rd as usize, self.spsr_irq);
             }else if self.mode == FIQ {
-                self.r[rd as usize] = self.spsr_fiq;
+                self.set_r(rd as usize, self.spsr_fiq);
             }else if self.mode == SUPERVISOR {
-                self.r[rd as usize] = self.spsr_svc;
+                self.set_r(rd as usize, self.spsr_svc);
             }else{
                 println!("TRANSFER FROM SPSR NOT IMPLEMENTED FOR MODE {:?}", self.mode);
             }
         }else {
-            self.r[rd as usize] = self.get_cpsr();
+            self.set_r(rd as usize, self.get_cpsr());
         }
 
     }

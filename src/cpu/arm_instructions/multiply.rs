@@ -13,9 +13,9 @@ impl Cpu{
 
         let result;
         if accumulate{
-            result = (((self.r[rm as usize] as u64 * self.r[rs as usize] as u64) & 0xFFFFFFFF) as u32).wrapping_add(self.r[rn as usize]);
+            result = (((self.get_r(rm as usize) as u64 * self.get_r(rs as usize) as u64) & 0xFFFFFFFF) as u32).wrapping_add(self.get_r(rn as usize));
         }else{
-            result = ((self.r[rm as usize] as u64 * self.r[rs as usize] as u64) & 0xFFFFFFFF) as u32;
+            result = ((self.get_r(rm as usize) as u64 * self.get_r(rs as usize) as u64) & 0xFFFFFFFF) as u32;
         }
 
         if set_flags{
@@ -23,7 +23,7 @@ impl Cpu{
             self.n = (result & 0x80000000) != 0;
         }
 
-        self.r[rd as usize] = result;
+        self.set_r(rd as usize, result);
     }
 
     pub fn multiply_long(&mut self, inst: u32){
@@ -41,16 +41,16 @@ impl Cpu{
         if is_signed{
             let mut signed_result: i64;
             // Need to first cast to i32 and then i64, to sign-extend the 32bit number to 64bits.
-            signed_result = (self.r[rm as usize] as i32 as i64).wrapping_mul(self.r[rs as usize] as i32 as i64);
+            signed_result = (self.get_r(rm as usize) as i32 as i64).wrapping_mul(self.get_r(rs as usize) as i32 as i64);
             if accumulate {
-                signed_result = signed_result.wrapping_add((((self.r[rd_high as usize] as u64) << 32) | self.r[rd_low as usize] as u64) as i64);
+                signed_result = signed_result.wrapping_add((((self.get_r(rd_high as usize) as u64) << 32) | self.get_r(rd_low as usize) as u64) as i64);
             }
             result = signed_result as u64;
 
         }else {
-            result = self.r[rm as usize] as u64 * self.r[rs as usize] as u64;
+            result = self.get_r(rm as usize) as u64 * self.get_r(rs as usize) as u64;
             if accumulate {
-                result = result.wrapping_add(((self.r[rd_high as usize] as u64) << 32) | self.r[rd_low as usize] as u64);
+                result = result.wrapping_add(((self.get_r(rd_high as usize) as u64) << 32) | self.get_r(rd_low as usize) as u64);
             }
         }
 
@@ -59,8 +59,8 @@ impl Cpu{
             self.n = (result & (1 << 31)) != 0;
         }
 
-        self.r[rd_high as usize] = ((result >> 32) & 0xFFFFFFFF) as u32;
-        self.r[rd_low as usize] = (result & 0xFFFFFFFF) as u32;
+        self.set_r(rd_high as usize, ((result >> 32) & 0xFFFFFFFF) as u32);
+        self.set_r(rd_low as usize, (result & 0xFFFFFFFF) as u32);
     }
 
 }

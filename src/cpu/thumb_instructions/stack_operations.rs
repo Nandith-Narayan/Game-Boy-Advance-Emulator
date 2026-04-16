@@ -8,12 +8,12 @@ impl Cpu {
         let rd = (inst >> 8) & 0b111;
         let is_load = (inst >> 11) & 0x1 != 0;
 
-        let address = self.r[13] + ((offset as u32) << 2) ;
+        let address = self.get_r(13) + ((offset as u32) << 2) ;
 
         if is_load {
-            self.r[rd as usize] = mem.read_32(address & 0xFFFFFFFE).rotate_right((address & 0b11) * 8);
+            self.set_r(rd as usize, mem.read_32(address & 0xFFFFFFFE).rotate_right((address & 0b11) * 8));
         }else{
-            mem.write_32(address, self.r[rd as usize]);
+            mem.write_32(address, self.get_r(rd as usize));
         }
     }
 
@@ -23,12 +23,12 @@ impl Cpu {
         let use_sp = (inst >> 11) & 0x1 != 0;
 
         let address = if use_sp {
-            self.r[13] + ((offset as u32) << 2)
+            self.get_r(13) + ((offset as u32) << 2)
         }else {
-            (self.r[15] & (!0b10)) + ((offset as u32) << 2)
+            (self.get_r(15) & (!0b10)) + ((offset as u32) << 2)
         };
 
-        self.r[rd as usize] = address;
+        self.set_r(rd as usize, address);
 
     }
 
@@ -37,9 +37,9 @@ impl Cpu {
         let sign_flag = (inst >> 7) & 0x1 != 0;
 
         if sign_flag{
-            self.r[13] = self.r[13] - offset as u32;
+            self.set_r(13, self.get_r(13) - offset as u32);
         }else {
-            self.r[13] = self.r[13] + offset as u32;
+            self.set_r(13, self.get_r(13) + offset as u32);
         }
     }
 
@@ -47,37 +47,37 @@ impl Cpu {
         let mut register_list = inst & 0xFF;
         let r_bit = (inst >> 8) & 0x1 != 0;
 
-        let mut address = self.r[13];
+        let mut address = self.get_r(13);
         if r_bit{
             address -= 4;
-            mem.write_32(address, self.r[14]);
+            mem.write_32(address, self.get_r(14));
         }
         for i in (0..=7).rev(){
             if register_list & 0x80 != 0{
                 address -= 4;
-                mem.write_32(address, self.r[i]);
+                mem.write_32(address, self.get_r(i));
             }
             register_list <<= 1;
         }
 
 
-        self.r[13] = address;
+        self.set_r(13, address);
     }
 
     pub fn pop_registers(&mut self, inst: u16, mem: &mut Memory){
         let mut register_list = inst & 0xFF;
         let r_bit = (inst >> 8) & 0x1 != 0;
 
-        let mut address = self.r[13];
+        let mut address = self.get_r(13);
         if r_bit{
-            self.r[15] = mem.read_32(address) & (!0x1);
+            self.set_r(15, mem.read_32(address) & (!0x1));
             address += 4;
             self.flush_pipeline();
 
         }
         for i in 0..=7{
             if register_list & 0x1 != 0{
-                self.r[i] = mem.read_32(address);
+                self.set_r(i, mem.read_32(address));
                 address += 4;
 
             }
@@ -85,7 +85,7 @@ impl Cpu {
         }
 
 
-        self.r[13] = address;
+        self.set_r(13, address);
     }
 
     pub fn store_registers(&mut self, inst: u16, mem: &mut Memory){
@@ -94,19 +94,19 @@ impl Cpu {
 
         // Handle special case if the register list is empty
         if register_list == 0{
-            mem.write_32(self.r[rb as usize], self.r[15]+2);
-            self.r[rb as usize] += 0x40;
+            mem.write_32(self.get_r(rb as usize), self.get_r(15)+2);
+            self.set_r(rb as usize, self.get_r(rb as usize) + 0x40);
             return;
         }
         let reg_count = register_list.count_ones();
-        let mut address = self.r[rb as usize];
+        let mut address = self.get_r(rb as usize);
         let mut is_first = true;
         for i in 0..=7{
             if register_list & 0x1 != 0{
-                mem.write_32(address, self.r[i]);
+                mem.write_32(address, self.get_r(i));
                 address += 4;
                 if is_first{
-                    self.r[rb as usize] = self.r[rb as usize] + reg_count*4;
+                    self.set_r(rb as usize, self.get_r(rb as usize) + reg_count*4);
                 }
                 is_first = false;
             }
@@ -121,25 +121,25 @@ impl Cpu {
         // Handle special case if the register list is empty
         if register_list == 0{
             // Load PC
-            self.r[15] = mem.read_32(self.r[rb as usize]);
+            self.set_r(15, mem.read_32(self.get_r(rb as usize)));
             // Increment base register as if the register list was full
-            self.r[rb as usize] += 0x40;
+            self.set_r(rb as usize, self.get_r(rb as usize) + 0x40);
             // PC has been updated, so the pipeline has to be flushed
             self.flush_pipeline();
             return;
         }
 
-        let mut address = self.r[rb as usize];
+        let mut address = self.get_r(rb as usize);
 
         for i in 0..=7{
             if register_list & 0x1 != 0{
-                self.r[i] = mem.read_32(address);
+                self.set_r(i, mem.read_32(address));
                 address += 4;
 
             }
             register_list >>= 1;
         }
 
-        self.r[rb as usize] = address;
+        self.set_r(rb as usize, address);
     }
 }

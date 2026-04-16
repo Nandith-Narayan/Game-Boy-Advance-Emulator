@@ -12,8 +12,8 @@ impl Cpu{
         if self.fetch_arm != 0{
             return;
         }
-        self.fetch_arm = mem.read_32(self.r[15]);
-        self.r[15] += 4;
+        self.fetch_arm = mem.read_32(self.get_r(15));
+        self.set_r(15, self.get_r(15) + 4);
     }
     // Decode ARM instruction
     pub fn decode_arm(&mut self, mem: &mut Memory){
@@ -57,7 +57,7 @@ impl Cpu{
             print!("{} ", str.get(i*4..i*4+4).unwrap());
         }
         println!(") ({:#x})", x);*/
-        //println!("{:?}", self.r);
+        //println!("{:?}",
     }
     // Execute ARM instruction
     pub fn execute_arm(&mut self, mem: &mut Memory){
@@ -139,7 +139,7 @@ impl Cpu{
 
     }
     // Helper function to convert CPU status into a bit field
-    pub fn get_cpsr(&mut self) -> u32{
+    pub fn get_cpsr(&self) -> u32{
         let mut cpsr = 0;
 
         if self.n {cpsr |= 1<<31;}

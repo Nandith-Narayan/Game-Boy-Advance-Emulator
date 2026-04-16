@@ -2,9 +2,10 @@ use crate::cpu::enums::{ARMCondition, ARMInstruction, CPUMode, InstructionSet, T
 use InstructionSet::{ARM, THUMB};
 use crate::cpu::enums::ARMCondition::AL;
 use crate::cpu::enums::CPUMode::SUPERVISOR;
+use crate::cpu::enums::RegisterName::*;
 use crate::memory::Memory;
 
-mod enums;
+pub(crate) mod enums;
 mod arm_instructions;
 mod arm;
 mod arm_decode;
@@ -14,7 +15,8 @@ mod thumb_decode;
 mod helper_functions;
 
 pub struct Cpu{
-    pub r: [u32; 16],
+    pub regs: [u32; 26],
+    pub reg_map: [usize; 16],
     pub instruction_set: InstructionSet,
 
     // ARM
@@ -47,8 +49,14 @@ pub struct Cpu{
 
 pub fn init() -> Cpu{
     println!("Initializing CPU...");
+    let reg_map: [usize; 16] = [R0 as usize, R1 as usize, R2 as usize, R3 as usize,
+        R4 as usize, R5 as usize, R6 as usize, R7 as usize,
+        R8 as usize, R9 as usize, R10 as usize, R11 as usize,
+        R12 as usize, R13 as usize, R14 as usize, R15 as usize];
+
     let mut cpu = Cpu{
-        r: [0; 16],
+        regs: [0; 26],
+        reg_map,
         instruction_set: ARM,
         //memory: memory::init(),
         fetch_arm: 0,
@@ -81,9 +89,9 @@ pub fn init() -> Cpu{
     }*/
 
     // Set PC to cartridge entry point
-    cpu.r[15] = 0x8000000;
+    cpu.set_r(15,  0x8000000);
     // Init Stack Pointer
-    cpu.r[13] = 0x3007F00;
+    cpu.set_r(13,  0x3007F00);
     return cpu;
 }
 impl Cpu{
@@ -107,7 +115,15 @@ impl Cpu{
             }
         }
     }
+    #[inline(always)]
+    pub fn set_r(&mut self, r: usize, val: u32){
+        self.regs[self.reg_map[r]] = val;
+    }
 
+    #[inline(always)]
+    pub fn get_r(&self, r: usize) -> u32{
+        return self.regs[self.reg_map[r]];
+    }
 
 }
 

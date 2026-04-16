@@ -9,8 +9,8 @@ impl Cpu{
         if self.fetch_thumb != 0{
             return;
         }
-        self.fetch_thumb = mem.read_16(self.r[15]);
-        self.r[15] += 2;
+        self.fetch_thumb = mem.read_16(self.get_r(15));
+        self.set_r(15, self.get_r(15) + 2);
     }
 
     pub fn decode_thumb(&mut self, mem: &mut Memory){

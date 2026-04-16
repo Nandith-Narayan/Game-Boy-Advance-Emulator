@@ -12,8 +12,8 @@ impl Cpu{
         let is_sub = (inst >> 9) & 0x1 != 0;
         let is_immediate = (inst >> 10) & 0x1 != 0;
 
-        let operand1 = self.r[rs as usize];
-        let operand2 = if is_immediate { reg_or_offset as u32 } else { self.r[reg_or_offset as usize] };
+        let operand1 = self.get_r(rs as usize);
+        let operand2 = if is_immediate { reg_or_offset as u32 } else { self.get_r(reg_or_offset as usize) };
 
         if is_sub {
             let result = operand1 as i64 - operand2 as i64;
@@ -21,14 +21,14 @@ impl Cpu{
             self.n = (result & 0x80000000) != 0;
             self.c = !((result & 0x100000000) != 0); // Carry Flag on subtraction is reversed
             self.v = compute_overflow_on_sub(operand1 as i32, operand2 as i32, result as i32);
-            self.r[rd as usize] = result as u32;
+            self.set_r(rd as usize, result as u32);
         }else{
             let result = operand1 as i64 + operand2 as i64;
             self.z = result as u32 == 0;
             self.n = (result & 0x80000000) != 0;
             self.c = (result & 0x100000000) != 0;
             self.v = compute_overflow_on_add(operand1 as i32, operand2 as i32, result as i32);
-            self.r[rd as usize] = result as u32;
+            self.set_r(rd as usize, result as u32);
         }
 
     }
@@ -38,8 +38,8 @@ impl Cpu{
         let rs = (inst >> 3) & 0b111;
         let op = (inst >> 6) & 0xF;
 
-        let operand1 = self.r[rd as usize];
-        let operand2 = self.r[rs as usize];
+        let operand1 = self.get_r(rd as usize);
+        let operand2 = self.get_r(rs as usize);
 
         let result: u32;
 
@@ -203,7 +203,7 @@ impl Cpu{
             _ => { result = operand1;},
         };
 
-        self.r[rd as usize] = result;
+        self.set_r(rd as usize, result);
 
     }
 
@@ -215,16 +215,16 @@ impl Cpu{
         match op{
             0 => {
                 // ADD
-                self.r[rd as usize] = self.r[rd as usize].wrapping_add(self.r[rs as usize]);
+                self.set_r(rd as usize, self.get_r(rd as usize).wrapping_add(self.get_r(rs as usize)));
                 if rd == 15{
-                    self.r[15] &= !0x1;
+                    self.set_r(15, self.get_r(15) & (!0x1));
                     self.flush_pipeline();
                 }
             },
             1 => {
                 // CMP
-                let operand1 = self.r[rd as usize];
-                let operand2 = self.r[rs as usize];
+                let operand1 = self.get_r(rd as usize);
+                let operand2 = self.get_r(rs as usize);
                 let result = operand1 as i64 - operand2 as i64;
 
                 self.z = result as u32 == 0;
@@ -234,9 +234,9 @@ impl Cpu{
             },
             2 => {
                 // MOV
-                self.r[rd as usize] = self.r[rs as usize];
+                self.set_r(rd as usize, self.get_r(rs as usize));
                 if rd == 15{
-                    self.r[15] &= !0x1;
+                    self.set_r(15, self.get_r(15) & (!0x1));
                     self.flush_pipeline();
                 }
             },

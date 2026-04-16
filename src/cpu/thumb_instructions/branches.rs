@@ -26,16 +26,16 @@ impl Cpu {
         };
 
         if condition {
-            self.r[15] = ((self.r[15]) as i64 + (offset << 1)) as u32;
+            self.set_r(15, ((self.get_r(15)) as i64 + (offset << 1)) as u32);
             self.flush_pipeline();
         }
     }
     pub fn thumb_branch_and_exchange(&mut self, inst: u16, mem: &mut Memory) {
         let rs = ((inst >> 3) & 0b1000)| ((inst >> 3) & 0b111);
-        self.r[15] = self.r[rs as usize] & 0xFFFFFFFE;
-        if self.r[rs as usize] & 0x1 == 0{
+        self.set_r(15, self.get_r(rs as usize) & 0xFFFFFFFE);
+        if self.get_r(rs as usize) & 0x1 == 0{
 
-            self.r[15] -= 2;
+            self.set_r(15, self.get_r(15) - 2);
 
 
             self.instruction_set = ARM;
@@ -51,7 +51,7 @@ impl Cpu {
             offset |= 0xF000;
         }
 
-        self.r[15] = ((self.r[15] as i32) + (offset as i16 as i32)) as u32;
+        self.set_r(15, ((self.get_r(15) as i32) + (offset as i16 as i32)) as u32);
         self.flush_pipeline();
     }
 
@@ -60,17 +60,17 @@ impl Cpu {
         let h_bit = (inst >> 11) & 0x1 != 0;
 
         if h_bit {
-            let address = ((offset as u32) << 1) + self.r[14];
-            self.r[14] = self.r[15]-2 | 0x1;
-            self.r[15] = address;
+            let address = ((offset as u32) << 1) + self.get_r(14);
+            self.set_r(14, self.get_r(15)-2 | 0x1);
+            self.set_r(15, address);
             self.flush_pipeline();
         }else{
             let mut sign_extended_offset = offset;
             if offset & 0x400 !=0{
                 sign_extended_offset |= 0xF800;
             }
-            let address = ((sign_extended_offset as i16 as i32) << 12 )+ (self.r[15] as i32);
-            self.r[14] = address as u32;
+            let address = ((sign_extended_offset as i16 as i32) << 12 )+ (self.get_r(15) as i32);
+            self.set_r(14, address as u32);
         }
     }
 }
