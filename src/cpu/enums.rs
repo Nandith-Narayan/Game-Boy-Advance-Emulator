@@ -126,4 +126,8 @@ pub enum RegisterName {
     R14SVC,
     R13IRQ,
     R14IRQ,
+    R13ABT,
+    R14ABT,
+    R13UND,
+    R14UND,
 }

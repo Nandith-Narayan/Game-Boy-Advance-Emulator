@@ -81,6 +81,32 @@ impl Cpu {
                 self.set_cpsr(self.spsr_svc);
                 self.spsr_svc = temp;
             },
+            ABORT => {
+                self.reg_map[8] = R8 as usize;
+                self.reg_map[9] = R9 as usize;
+                self.reg_map[10] = R10 as usize;
+                self.reg_map[11] = R11 as usize;
+                self.reg_map[12] = R12 as usize;
+                self.reg_map[13] = R13ABT as usize;
+                self.reg_map[14] = R14ABT as usize;
+
+                let temp = self.get_cpsr();
+                self.set_cpsr(self.spsr_abt);
+                self.spsr_abt = temp;
+            },
+            UNDEFINED => {
+                self.reg_map[8] = R8 as usize;
+                self.reg_map[9] = R9 as usize;
+                self.reg_map[10] = R10 as usize;
+                self.reg_map[11] = R11 as usize;
+                self.reg_map[12] = R12 as usize;
+                self.reg_map[13] = R13UND as usize;
+                self.reg_map[14] = R14UND as usize;
+
+                let temp = self.get_cpsr();
+                self.set_cpsr(self.spsr_und);
+                self.spsr_und = temp;
+            },
 
             _ => {println!("Failed to switch to mode {:?}", new_mode);}
         }

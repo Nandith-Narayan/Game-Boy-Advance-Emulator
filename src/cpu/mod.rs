@@ -15,7 +15,7 @@ mod thumb_decode;
 mod helper_functions;
 
 pub struct Cpu{
-    pub regs: [u32; 27],
+    pub regs: [u32; 31],
     pub reg_map: [usize; 16],
     pub instruction_set: InstructionSet,
 
@@ -38,12 +38,11 @@ pub struct Cpu{
     pub mode: CPUMode,
 
     // Banked registers
-    pub r_irq: [u32; 16],
     pub spsr_irq: u32,
-    pub r_fiq: [u32; 16],
     pub spsr_fiq: u32,
-    pub r_svc: [u32; 16],
     pub spsr_svc: u32,
+    pub spsr_abt: u32,
+    pub spsr_und: u32,
 
 }
 
@@ -55,7 +54,7 @@ pub fn init() -> Cpu{
         R12 as usize, R13 as usize, R14 as usize, R15 as usize];
 
     let mut cpu = Cpu{
-        regs: [0; 27],
+        regs: [0; 31],
         reg_map,
         instruction_set: ARM,
         //memory: memory::init(),
@@ -75,12 +74,11 @@ pub fn init() -> Cpu{
         v: false,
 
         mode: SUPERVISOR,
-        r_irq: [0; 16],
         spsr_irq: 0,
-        r_fiq: [0; 16],
         spsr_fiq: 0,
-        r_svc: [0; 16],
         spsr_svc: 0,
+        spsr_abt: 0,
+        spsr_und: 0,
     };
     /*if(path.to_string().eq("skip")){
         //println!("Skipping ROM Loading");

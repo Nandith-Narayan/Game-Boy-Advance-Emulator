@@ -4,7 +4,7 @@ mod run_tests {
     use serde::{Deserialize, Serialize};
     use crate::{cpu, memory, ppu};
     use crate::cpu::Cpu;
-    use crate::cpu::enums::CPUMode::{FIQ, IRQ, SUPERVISOR, SYSTEM, USER};
+    use crate::cpu::enums::CPUMode::*;
     use crate::cpu::enums::RegisterName::*;
 
     #[derive(Serialize, Deserialize)]
@@ -171,6 +171,10 @@ mod run_tests {
         display_reg(&*format!("{:?}", R14IRQ).to_string(), cpu.regs[R14IRQ as usize], expected.r_irq[1], initial.r_irq[1]);
         display_reg(&*format!("{:?}", R13SVC).to_string(), cpu.regs[R13SVC as usize], expected.r_svc[0], initial.r_svc[0]);
         display_reg(&*format!("{:?}", R14SVC).to_string(), cpu.regs[R14SVC as usize], expected.r_svc[1], initial.r_svc[1]);
+        display_reg(&*format!("{:?}", R13ABT).to_string(), cpu.regs[R13ABT as usize], expected.r_abt[0], initial.r_abt[0]);
+        display_reg(&*format!("{:?}", R14ABT).to_string(), cpu.regs[R14ABT as usize], expected.r_abt[1], initial.r_abt[1]);
+        display_reg(&*format!("{:?}", R13UND).to_string(), cpu.regs[R13UND as usize], expected.r_und[0], initial.r_und[0]);
+        display_reg(&*format!("{:?}", R14UND).to_string(), cpu.regs[R14UND as usize], expected.r_und[1], initial.r_und[1]);
         display_reg("CPSR", cpu.get_cpsr(), expected.cpsr, initial.cpsr);
 
         display_bool("N", cpu.n, (expected.cpsr & (1 << 31)) != 0, (initial.cpsr & (1 << 31)) != 0);
@@ -219,8 +223,26 @@ mod run_tests {
                 cpu.reg_map[14] = R14SVC as usize;
 
             },
+            ABORT => {
+                cpu.reg_map[8] = R8 as usize;
+                cpu.reg_map[9] = R9 as usize;
+                cpu.reg_map[10] = R10 as usize;
+                cpu.reg_map[11] = R11 as usize;
+                cpu.reg_map[12] = R12 as usize;
+                cpu.reg_map[13] = R13ABT as usize;
+                cpu.reg_map[14] = R14ABT as usize;
 
-            _ => {println!("Failed to load mode {:?}", mode);}
+            },
+            UNDEFINED => {
+                cpu.reg_map[8] = R8 as usize;
+                cpu.reg_map[9] = R9 as usize;
+                cpu.reg_map[10] = R10 as usize;
+                cpu.reg_map[11] = R11 as usize;
+                cpu.reg_map[12] = R12 as usize;
+                cpu.reg_map[13] = R13UND as usize;
+                cpu.reg_map[14] = R14UND as usize;
+
+            },
         }
         cpu.mode = mode;
         
@@ -251,6 +273,10 @@ mod run_tests {
         cpu.regs[R14IRQ as usize] = data.r_irq[1];
         cpu.regs[R13SVC as usize] = data.r_svc[0];
         cpu.regs[R14SVC as usize] = data.r_svc[1];
+        cpu.regs[R13ABT as usize] = data.r_abt[0];
+        cpu.regs[R14ABT as usize] = data.r_abt[1];
+        cpu.regs[R13UND as usize] = data.r_und[0];
+        cpu.regs[R14UND as usize] = data.r_und[1];
     }
     
     fn compare_regs(cpu: &mut Cpu, data: State) -> bool{
@@ -283,6 +309,10 @@ mod run_tests {
         cpu.regs[R14IRQ as usize] != data.r_irq[1]||
         cpu.regs[R13SVC as usize] != data.r_svc[0]||
         cpu.regs[R14SVC as usize] != data.r_svc[1]||
+        cpu.regs[R13ABT as usize] != data.r_abt[0]||
+        cpu.regs[R14ABT as usize] != data.r_abt[1]||
+        cpu.regs[R13UND as usize] != data.r_und[0]||
+        cpu.regs[R14UND as usize] != data.r_und[1]||
         (cpu.get_cpsr()&0xF0000000) != (data.cpsr&0xF0000000);
 
         return !result;
