@@ -1,4 +1,5 @@
 use crate::cpu::enums::CPUMode;
+use crate::cpu::enums::RegisterName::*;
 use crate::memory::Memory;
 use super::Cpu;
 
@@ -150,8 +151,8 @@ impl Cpu{
         return match (self.mode, reg) {
             (_, 0..=7) => self.get_r(reg),
             (CPUMode::USER|CPUMode::SYSTEM, _) => self.get_r(reg),
-            (CPUMode::FIQ, 8..=14) => self.r_fiq[reg],
-            (CPUMode::IRQ, 13|14) => self.r_irq[reg],
+            (CPUMode::FIQ, 8..=14) => self.regs[(R8FIQ as usize) + (reg-8)],
+            (CPUMode::IRQ, 13|14) => self.regs[(R13IRQ as usize) + (reg-13)],
             _ => self.get_r(reg),
         };
     }
@@ -160,8 +161,8 @@ impl Cpu{
         match (self.mode, reg) {
             (_, 0..=7) => self.set_r(reg, value),
             (CPUMode::USER|CPUMode::SYSTEM, _) => self.set_r(reg, value),
-            (CPUMode::FIQ, 8..=14) => self.r_fiq[reg] = value,
-            (CPUMode::IRQ, 13|14) => self.r_irq[reg] = value,
+            (CPUMode::FIQ, 8..=14) => self.regs[(R8FIQ as usize) + (reg-8)] = value,
+            (CPUMode::IRQ, 13|14) => self.regs[(R13IRQ as usize) + (reg-13)] = value,
             _ => self.set_r(reg, value),
         };
     }
