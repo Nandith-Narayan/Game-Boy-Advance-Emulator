@@ -20,7 +20,7 @@ impl Cpu{
         let use_carry_from_barrel_shifter = match alu_op {
             2 /*SUB*/| 4 /*ADD*/| 5 /*ADC*/| 6 /*SBC*/| 7 /*RSC*/| 10 /*CMP*/| 11 /*CMN*/ => false,
             _ => true,
-        };
+        } && set_flags;
 
         // register shift
         let shift_inst = (inst & 0xFF0) >> 4;
@@ -70,7 +70,7 @@ impl Cpu{
         let use_carry_from_barrel_shifter = match alu_op {
             2 /*SUB*/| 4 /*ADD*/| 5 /*ADC*/| 6 /*SBC*/| 7 /*RSC*/| 10 /*CMP*/| 11 /*CMN*/ => false,
             _ => true,
-        };
+        } && set_flags;
         if use_carry_from_barrel_shifter {
             // update the carry flag only if the shifter was used to rotate the immediate value & the operation wasn't arithmetic
             if rotate != 0 {
@@ -250,8 +250,10 @@ impl Cpu{
             15 => {
                 // MVN
                 let result = !operand2;
-                self.z = result == 0;
-                self.n = (result & 0x80000000) != 0;
+                if set_flags {
+                    self.z = result == 0;
+                    self.n = (result & 0x80000000) != 0;
+                }
                 self.set_r(rd as usize, result);
             },
             _ => {}
