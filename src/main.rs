@@ -6,9 +6,7 @@ mod ppu;
 mod run_tests;
 
 
-use std::time::Instant;
-use std::thread;
-use std::time::Duration;
+
 use minifb::{Key, Scale, ScaleMode, Window, WindowOptions};
 
 const WIDTH: usize = 240;
@@ -38,7 +36,7 @@ fn main() {
         });
     window.set_target_fps(60);
     let mut mem = memory::init();
-    mem.load_rom(String::from("C:/GBA roms/main.gba"));
+    mem.load_rom(String::from("C:/GBA roms/pageflip.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();

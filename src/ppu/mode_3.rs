@@ -1,4 +1,3 @@
-use std::cmp::max;
 use crate::memory::Memory;
 use crate::ppu::Ppu;
 
