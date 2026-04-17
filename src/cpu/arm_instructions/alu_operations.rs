@@ -1,4 +1,3 @@
-use std::process::exit;
 use crate::cpu::enums::CPUMode::FIQ;
 use crate::cpu::enums::ShiftType;
 use crate::cpu::enums::ShiftType::*;
@@ -89,9 +88,10 @@ impl Cpu{
             0 => {
                 // AND
                 let result = operand1 & operand2;
-
-                self.z = result == 0;
-                self.n = (result & 0x80000000) != 0;
+                if set_flags {
+                    self.z = result == 0;
+                    self.n = (result & 0x80000000) != 0;
+                }
                 self.set_r(rd as usize, result);
             }
             1 => {
