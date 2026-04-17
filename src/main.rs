@@ -36,7 +36,7 @@ fn main() {
         });
     window.set_target_fps(60);
     let mut mem = memory::init();
-    mem.load_rom(String::from("C:/GBA roms/pageflip.gba"));
+    mem.load_rom(String::from("C:/GBA roms/arm.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
@@ -49,7 +49,7 @@ fn main() {
     while true {
         for _i in 1..n {
             //println!("R[7] = {:#4x} ({})", cpu.r[7], cpu.r[7]);
-            //println!("R[12] = {:#4x} ({})", cpu.r[12], cpu.r[12]);
+            println!("R[12] = {:#4x} ({})", cpu.get_r(12), cpu.get_r(12));
             /*if cpu.r[15] == 0x0800048A {
                 flag = 5;
             }*/
