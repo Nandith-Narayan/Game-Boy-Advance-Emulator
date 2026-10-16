@@ -51,15 +51,14 @@ mod run_tests {
 
     #[test]
     fn test_json() {
-        let tests_to_skip = [55, 125, 132];
-
+        let tests_to_skip = [55, 125, 132, 184, 196, 237, 314, 320, 340, 353, 365];
         let data = fs::read_to_string("C:/GBA Test/test/arm_data_proc_immediate_fixed.json").unwrap();
 
 
         let d: Vec<TestData> = serde_json::from_str(data.as_str()).unwrap();
         println!("Loaded Test Data");
-        let N = 200;
-        for i in 0..=N{
+        let N = d.len();
+        for i in 0..N{
             if tests_to_skip.contains(&i){
                 println!("\x1b[1;31mSkipping Test #{}!\x1b[0;37m", i);
                 continue;

@@ -36,7 +36,7 @@ fn main() {
         });
     window.set_target_fps(60);
     let mut mem = memory::init();
-    mem.load_rom(String::from("C:/GBA roms/arm.gba"));
+    mem.load_rom(String::from("C:/GBA roms/ARM_Any.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
@@ -49,15 +49,18 @@ fn main() {
     while true {
         for _i in 1..n {
             //println!("R[7] = {:#4x} ({})", cpu.r[7], cpu.r[7]);
-            println!("R[12] = {:#4x} ({})", cpu.get_r(12), cpu.get_r(12));
+            //println!("R[12] = {:#4x} ({})", cpu.get_r(12), cpu.get_r(12));
             /*if cpu.r[15] == 0x0800048A {
                 flag = 5;
             }*/
             if flag > 0 {
                 flag -= 1;
-                //println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[4] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, LR = {:#4x}, PC = {:#4x}, Carry Flag: {}, Neg Flag: {}, V Flag: {}", cpu.r[0], cpu.r[1], cpu.r[2], cpu.r[3], cpu.r[4], cpu.r[5], cpu.r[13], cpu.r[14], cpu.r[15], cpu.c, cpu.n, cpu.v);
+                println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[4] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, LR = {:#4x}, PC = {:#4x}, Carry Flag: {}, Neg Flag: {}, V Flag: {}, Zero Flag: {}",
+                         cpu.regs[0], cpu.regs[1], cpu.regs[2], cpu.regs[3], cpu.regs[4], cpu.regs[5], cpu.get_r(13), cpu.regs[14], cpu.regs[15], cpu.c, cpu.n, cpu.v, cpu.z);
                 //println!("{}", mem.vertical_count);
             }
+
+
             /*if cpu.r[7]>200{
                 break;
             }*/
@@ -68,7 +71,6 @@ fn main() {
         }
         for i in 0..(240 * 160) {
             buffer[i] = ((ppu.r[i] as u32) << 16) | ((ppu.g[i] as u32) << 8) | ((ppu.b[i] as u32)) | 0xFF000000;
-
         }
         //break;
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
