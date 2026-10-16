@@ -53,10 +53,10 @@ impl Cpu{
                 result = result.wrapping_add(((self.get_r(rd_high as usize) as u64) << 32) | self.get_r(rd_low as usize) as u64);
             }
         }
-
+        println!("mul result: {}", result);
         if set_flags{
             self.z = result == 0;
-            self.n = (result & (1 << 31)) != 0;
+            self.n = (result & (1 << 61)) != 0;
         }
 
         self.set_r(rd_high as usize, ((result >> 32) & 0xFFFFFFFF) as u32);
