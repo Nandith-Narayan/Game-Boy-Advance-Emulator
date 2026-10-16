@@ -84,6 +84,8 @@ impl Cpu{
 
     pub fn alu_operations(&mut self, inst:u32, operand1:u32, operand2:u32, rd:u32, set_flags:bool){
         let opcode = (inst & 0x1E00000) >> 21;
+        //println!("N:{}, Z:{}, C:{}, V:{}", self.n, self.z, self.c, self.v);
+        //println!("Opcode: {}",opcode);
         match opcode{
             0 => {
                 // AND
@@ -214,6 +216,9 @@ impl Cpu{
             11 => {
                 // CMN
                 let result = operand1 as i64 + operand2 as i64;
+                println!("{:x}", operand1 as i64);
+                println!("{:x}", operand2 as i64);
+                println!("{result:x}");
                 if set_flags {
 
                     self.z = result as u32 == 0;
@@ -242,6 +247,7 @@ impl Cpu{
             },
             14 => {
                 // BIC (Bit Clear)
+                println!("{:?}", self.c);
                 let result = operand1 & (!operand2);
                 if set_flags {
                     self.z = result == 0;
@@ -263,15 +269,17 @@ impl Cpu{
 
         if rd == 15{
             if set_flags{
-                match self.mode{
-                    FIQ =>{
-                        self.set_cpsr(self.spsr_fiq);
-                        let new_mode = self.num_to_cpu_mode(self.spsr_fiq & 0x1F);
-                        self.switch_mode(new_mode);
-                    },
-                    _ => {println!("Unimplemented situation: Rd = 15, S-bit is set, and CPU is in {:?} mode.", self.mode);}
-                }
-
+                // TEST, TEQ, CMP, CMN don't switch modes
+                //if opcode != 8 && opcode != 9 && opcode != 10 && opcode != 11 {
+                    match self.mode {
+                        FIQ => {
+                            self.set_cpsr(self.spsr_fiq);
+                            let new_mode = self.num_to_cpu_mode(self.spsr_fiq & 0x1F);
+                            self.switch_mode(new_mode);
+                        },
+                        _ => { println!("Unimplemented situation: Rd = 15, S-bit is set, and CPU is in {:?} mode.", self.mode); }
+                    }
+                //}
             }
             // TEST, TEQ, CMP, CMN don't flush the pipeline
             if opcode != 8 && opcode != 9 && opcode != 10 && opcode != 11 {
@@ -290,7 +298,9 @@ impl Cpu{
                 shifted_val <<= shift_amount;
                 if set_flags {
                     // carry flag is maintained for special case of LSL #0
-                    self.c = (shifted_val & 0x100000000) != 0;
+                    if shift_amount != 0 {
+                        self.c = (shifted_val & 0x100000000) != 0;
+                    }
                 }
                 return shifted_val as u32;
             },
