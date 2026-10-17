@@ -36,7 +36,7 @@ fn main() {
         });
     window.set_target_fps(60);
     let mut mem = memory::init();
-    mem.load_rom(String::from("C:/GBA roms/ARM_Any.gba"));
+    mem.load_rom(String::from("C:/GBA roms/pageflip.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
