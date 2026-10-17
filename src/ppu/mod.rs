@@ -45,7 +45,7 @@ impl Ppu {
                 mem.v_blank = false;
             }
             if mem.vertical_count > 160 && mem.vertical_count < 227{
-                mem.h_blank = true;
+                mem.v_blank = true;
             }
             if mem.vertical_count >= 227{
                 mem.v_blank = false;
