@@ -46,14 +46,14 @@ fn main() {
     }
     println!("\n {:#x}",cpu.memory.read_32(0x8000000));*/
     let mut flag=0;
-    //while true {
+    while true {
         for _i in 1..n {
             //println!("R[7] = {:#4x} ({})", cpu.r[7], cpu.r[7]);
             //println!("R[12] = {:#4x} ({})", cpu.get_r(12), cpu.get_r(12));
             //println!("R[11] = {:#4x} ({})", cpu.get_r(11), cpu.get_r(11));
-            if cpu.get_r(11) != 0 {
+            /*if cpu.get_r(11) != 0 {
                 flag = 5;
-            }
+            }*/
             if flag > 0 {
                 flag -= 1;
                 println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[11] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, LR = {:#4x}, PC = {:#4x}, Carry Flag: {}, Neg Flag: {}, V Flag: {}, Zero Flag: {}",
@@ -75,10 +75,10 @@ fn main() {
         }
         //break;
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
-    //}
-    while window.is_open() && !window.is_key_down(Key::Escape) {
-        window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
     }
+    /*while window.is_open() && !window.is_key_down(Key::Escape) {
+        window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
+    }*/
 
     /*let val = now.elapsed().as_nanos();
     println!("Took {} ns to execute {} instructions. ({} ns per instruction)", val, n, val/n);*/
