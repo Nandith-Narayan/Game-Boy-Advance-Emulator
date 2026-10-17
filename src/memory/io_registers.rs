@@ -5,7 +5,11 @@ impl Memory{
     pub fn read_io_register(&self, address: usize) -> u8{
         return match address {
             0x0 => {if self.frame_select{0b10000}else{0}},
-            0x4 => {0},
+            // DISPSTAT - Display Status Register
+            0x4 => {
+                (self.v_blank as u8) |
+                ((self.h_blank as u8) << 1)
+            },
             0x5 => {0},
             0x6 => {self.vertical_count}, 0x7 => {0},
 
