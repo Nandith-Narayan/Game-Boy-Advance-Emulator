@@ -105,7 +105,7 @@ impl Cpu{
 
             },
             THUMB => {
-                self. execute_thumb(mem);
+                self.execute_thumb(mem);
 
                 self.decode_thumb(mem);
 
