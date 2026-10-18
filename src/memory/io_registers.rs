@@ -4,7 +4,11 @@ impl Memory{
 
     pub fn read_io_register(&self, address: usize) -> u8{
         return match address {
-            0x0 => {if self.frame_select{0b10000}else{0}},
+            // DISPCNT - Display Control Register
+            0x0 => {
+                (self.lcd_bg_mode & 0b111) | // B0-B2 - video mode
+                ((self.frame_select as u8) << 4) // B4 - bitmap frame select
+            },
             // DISPSTAT - Display Status Register
             0x4 => {
                 (self.v_blank as u8) |
@@ -22,7 +26,12 @@ impl Memory{
     }
     pub fn write_io_register(&mut self, address: usize, val: u8){
         match address {
-            0x0 => {self.frame_select = (val & 0b10000) != 0;println!("{}",self.frame_select);},
+            0x0 => {
+                self.frame_select = (val & 0b10000) != 0;
+                self.lcd_bg_mode = val & 0b111;
+
+                println!("{}",self.frame_select);
+            },
             //0x6 => {}, 0x7 => {},
 
             _ => {println!("Writing to unimplemented IO Reg @ {:#4x}, with value {:#x} ({})", address, val, val);},

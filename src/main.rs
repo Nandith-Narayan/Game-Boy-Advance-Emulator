@@ -36,11 +36,11 @@ fn main() {
         });
     window.set_target_fps(60);
     let mut mem = memory::init();
-    mem.load_rom(String::from("C:/GBA roms/arm.gba"));
+    mem.load_rom(String::from("C:/GBA roms/first.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
-    let n = 2_000;//447795;//447795;
+    let n = 20_000;//447795;//447795;
     /*for address in 0..4{
         print!("{:#4x}", cpu.memory.read_8(address+0x8000000))
     }
