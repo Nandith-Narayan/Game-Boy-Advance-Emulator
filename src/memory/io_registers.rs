@@ -30,7 +30,7 @@ impl Memory{
                 self.frame_select = (val & 0b10000) != 0;
                 self.lcd_bg_mode = val & 0b111;
 
-                println!("{}",self.frame_select);
+                println!("BG mode: {}",self.lcd_bg_mode);
             },
             //0x6 => {}, 0x7 => {},
 

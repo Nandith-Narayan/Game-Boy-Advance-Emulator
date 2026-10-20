@@ -41,7 +41,7 @@ pub fn init() -> Memory{
         vram: [0; 3*(1<<15)],
         oam: [0; 1<<10],
 
-        lcd_bg_mode: 4,
+        lcd_bg_mode: 3,
         frame_select: false,
         vertical_count: 0,
         v_blank: false,

@@ -2,10 +2,12 @@ use crate::memory::Memory;
 
 mod mode_3;
 mod mode_4;
+mod mode_5;
 
 pub struct Ppu{
     x: usize,
     idx: usize,
+    m5_idx: usize,
 
     pub r: Vec<u8>,
     pub g: Vec<u8>,
@@ -18,6 +20,7 @@ pub fn init() -> Ppu{
     return Ppu{
         x: 0,
         idx: 0,
+        m5_idx: 0,
         r: vec![0; 240*160],
         g: vec![0; 240*160],
         b: vec![0; 240*160],
@@ -31,6 +34,7 @@ impl Ppu {
             match mem.lcd_bg_mode {
                 3 => self.draw_mode_3(mem),
                 4 => self.draw_mode_4(mem),
+                5 => self.draw_mode_5(mem),
                 _ => {},
             }
         }
@@ -51,6 +55,7 @@ impl Ppu {
                 mem.v_blank = false;
                 mem.vertical_count = 0;
                 self.idx = 0;
+                self.m5_idx = 0;
 
             }
         }else{
