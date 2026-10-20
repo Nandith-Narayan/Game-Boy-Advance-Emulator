@@ -36,22 +36,23 @@ fn main() {
         });
     window.set_target_fps(60);
     let mut mem = memory::init();
-    mem.load_rom(String::from("C:/GBA roms/thumb.gba"));
+    //mem.load_rom(String::from("C:/GBA Test/test_asm/test.gba"));
+    mem.load_rom(String::from("C:/GBA roms/m3_demo.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
-    let n = 200_000;//447795;//447795;
+    let n =2_000;//447795;//447795;
     /*for address in 0..4{
         print!("{:#4x}", cpu.memory.read_8(address+0x8000000))
     }
     println!("\n {:#x}",cpu.memory.read_32(0x8000000));*/
-    let mut flag=0;
+    let mut flag= 0;
     while true {
         for _i in 1..n {
             //println!("R[7] = {:#4x} ({})", cpu.get_r(7), cpu.get_r(7));
             //println!("R[11] = {:#4x} ({})", cpu.get_r(11), cpu.get_r(11));
-            /*if cpu.get_r(11) != 0 {
-                flag = 5;
+            /*if cpu.get_r(15) == 0x080002AC {
+                flag = 50;
             }*/
             if flag > 0 {
                 flag -= 1;
