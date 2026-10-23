@@ -89,7 +89,10 @@ pub fn init() -> Cpu{
     // Set PC to cartridge entry point
     cpu.set_r(15,  0x8000000);
     // Init Stack Pointer
-    cpu.set_r(13,  0x3007F00);
+    //cpu.set_r(13,  0x3007F00);
+    cpu.regs[R13 as usize] = 0x3007F00;
+    cpu.regs[R13IRQ as usize] = 0x3007FA0;
+    cpu.regs[R13SVC as usize] = 0x3007FE0;
     return cpu;
 }
 impl Cpu{
