@@ -83,6 +83,7 @@ pub enum THUMBInstruction {
     PopRegisters,
     MultipleStore,
     MultipleLoad,
+    SoftwareInterrupt,
     ConditionalBranch,
 
     Branch,
