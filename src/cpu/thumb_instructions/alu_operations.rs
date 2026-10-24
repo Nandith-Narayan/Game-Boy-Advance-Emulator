@@ -65,7 +65,6 @@ impl Cpu{
                 }else {
                     result = operand1;
                 }
-
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
             },
@@ -188,7 +187,6 @@ impl Cpu{
             14 => {
                 // BIC
                 result = operand1 & (!operand2);
-
                 self.z = result == 0;
                 self.n = (result & 0x80000000) != 0;
             },

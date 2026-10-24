@@ -16,6 +16,7 @@ impl Cpu {
             0 =>{
                 let val = self.perform_shift_op_immediate_shift(LogicalShiftLeft, offset as u32, op1, true);
                 self.z = val == 0;
+                self.n = (val & 0x80000000) != 0;
                 self.set_r(rd as usize, val);
             },
 
@@ -23,6 +24,7 @@ impl Cpu {
             1 =>{
                 let val = self.perform_shift_op_immediate_shift(LogicalShiftRight, offset as u32, op1, true);
                 self.z = val == 0;
+                self.n = (val & 0x80000000) != 0;
                 self.set_r(rd as usize, val);
             },
 
@@ -30,6 +32,7 @@ impl Cpu {
             2 =>{
                 let val = self.perform_shift_op_immediate_shift(ArithmeticShiftRight, offset as u32, op1, true);
                 self.z = val == 0;
+                self.n = (val & 0x80000000) != 0;
                 self.set_r(rd as usize, val);
             },
             _ => {}
