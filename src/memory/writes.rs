@@ -5,7 +5,7 @@ impl Memory{
         match address{
             // =============== General Memory ===============
             // 0x00000000-0x00003FFF   BIOS - System ROM         (16 KBytes)
-            0x00000000..=0x00003FFF => set_u32(&mut self.bios, address as usize, value), // TODO: prohibit writing to bios ROM
+            0x00000000..=0x00003FFF => {eprintln!("Attempted 32-bit Write to Bios at {:#08x} with {:#08x}", address, value);},
             // 0x02000000-0x0203FFFF   WRAM - On-board Work RAM  (256 KBytes)
             0x02000000..=0x0203FFFF => set_u32(&mut self.wram_on_board, (address - 0x02000000) as usize, value),
             // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
@@ -34,7 +34,7 @@ impl Memory{
         match address{
             // =============== General Memory ===============
             // 0x00000000-0x00003FFF   BIOS - System ROM         (16 KBytes)
-            0x00000000..=0x00003FFF => set_u16(&mut self.bios, address as usize, value),
+            0x00000000..=0x00003FFF => {eprintln!("Attempted 16-bit Write to Bios at {:#08x} with {:#04x}", address, value);}
             // 0x02000000-0x0203FFFF   WRAM - On-board Work RAM  (256 KBytes)
             0x02000000..=0x0203FFFF => set_u16(&mut self.wram_on_board, (address - 0x02000000) as usize, value),
             // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
@@ -63,7 +63,7 @@ impl Memory{
         match address{
             // =============== General Memory ===============
             // 0x00000000-0x00003FFF   BIOS - System ROM         (16 KBytes)
-            0x00000000..=0x00003FFF => set_u8(&mut self.bios, address as usize, value),
+            0x00000000..=0x00003FFF => {eprintln!("Attempted 8-bit Write to Bios at {:#08x} with {:#02x}", address, value);}
             // 0x02000000-0x0203FFFF   WRAM - On-board Work RAM  (256 KBytes)
             0x02000000..=0x0203FFFF => set_u8(&mut self.wram_on_board, (address - 0x02000000) as usize, value),
             // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
