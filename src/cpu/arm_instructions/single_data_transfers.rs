@@ -32,8 +32,6 @@ impl Cpu{
         // compute offset
         let rm = inst & 0xF;
 
-        let set_flags = true;
-
         // register shift
         let shift = (inst & 0xFF0) >> 4;
         let shift_amount = (shift & 0xF8) >> 3;
@@ -47,7 +45,7 @@ impl Cpu{
             3 => RotateRight,
             _ => LogicalShiftLeft,
         };
-        offset = self.perform_shift_op_immediate_shift(shift_type, shift_amount, offset, set_flags);
+        offset = self.perform_shift_op_immediate_shift(shift_type, shift_amount, offset, false);
 
         /*
         // Handle 4 shift types
