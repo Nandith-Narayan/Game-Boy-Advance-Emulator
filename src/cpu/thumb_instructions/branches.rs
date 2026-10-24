@@ -76,10 +76,10 @@ impl Cpu {
 
     pub fn software_interrupt(&mut self, inst: u16, mem: &mut Memory){
         let next_instr_addr = self.get_r(15) - 2;
-        self.set_r(14, next_instr_addr);
+
 
         self.switch_mode(SUPERVISOR);
-
+        self.set_r(14, next_instr_addr);
         self.instruction_set = ARM;
         // software interrupt vector = 0x8, compensate for extra thumb-mode fetch incrementing PC by 2
         self.set_r(15, 0x8 -2);
