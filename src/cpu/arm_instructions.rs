@@ -41,7 +41,7 @@ impl Cpu {
                 self.reg_map[12] = R12 as usize;
                 self.reg_map[13] = R13 as usize;
                 self.reg_map[14] = R14 as usize;
-            }
+            },
             FIQ => {
                 self.reg_map[8] = R8FIQ as usize;
                 self.reg_map[9] = R9FIQ as usize;
