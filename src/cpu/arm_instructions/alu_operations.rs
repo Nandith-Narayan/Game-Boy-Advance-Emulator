@@ -244,7 +244,6 @@ impl Cpu{
             },
             14 => {
                 // BIC (Bit Clear)
-                println!("{:?}", self.c);
                 let result = operand1 & (!operand2);
                 if set_flags {
                     self.z = result == 0;
