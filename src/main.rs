@@ -42,7 +42,7 @@ fn main() {
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
-    let n =200_000;//447795;//447795;
+    let n = 200000;//447795;//447795;
     /*for address in 0..4{
         print!("{:#4x}", cpu.memory.read_8(address+0x8000000))
     }
@@ -57,8 +57,8 @@ fn main() {
             }*/
             if flag > 0 {
                 flag -= 1;
-                println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[7] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, LR = {:#4x}, PC = {:#4x}, Carry Flag: {}, Neg Flag: {}, V Flag: {}, Zero Flag: {}, {:?}",
-                         cpu.regs[0], cpu.regs[1], cpu.regs[2], cpu.regs[3],cpu.get_r(7), cpu.regs[5], cpu.get_r(13), cpu.regs[14], cpu.regs[15], cpu.c, cpu.n, cpu.v, cpu.z, cpu.instruction_set);
+                println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[4] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, LR = {:#4x}, PC = {:#4x}, Carry Flag: {}, Neg Flag: {}, V Flag: {}, Zero Flag: {}, {:?}",
+                         cpu.regs[0], cpu.regs[1], cpu.regs[2], cpu.regs[3],cpu.get_r(4), cpu.regs[5], cpu.get_r(13), cpu.regs[14], cpu.regs[15], cpu.c, cpu.n, cpu.v, cpu.z, cpu.instruction_set);
                 //println!("{}", mem.vertical_count);
             }
 
