@@ -1,4 +1,4 @@
-use crate::cpu::enums::CPUMode::FIQ;
+use crate::cpu::enums::CPUMode::*;
 use crate::cpu::enums::ShiftType;
 use crate::cpu::enums::ShiftType::*;
 use crate::cpu::helper_functions::{compute_overflow_on_add, compute_overflow_on_sub};
@@ -216,9 +216,6 @@ impl Cpu{
             11 => {
                 // CMN
                 let result = operand1 as i64 + operand2 as i64;
-                println!("{:x}", operand1 as i64);
-                println!("{:x}", operand2 as i64);
-                println!("{result:x}");
                 if set_flags {
 
                     self.z = result as u32 == 0;
@@ -275,6 +272,11 @@ impl Cpu{
                         FIQ => {
                             self.set_cpsr(self.spsr_fiq);
                             let new_mode = self.num_to_cpu_mode(self.spsr_fiq & 0x1F);
+                            self.switch_mode(new_mode);
+                        },
+                        SUPERVISOR => {
+                            self.set_cpsr(self.spsr_svc);
+                            let new_mode = self.num_to_cpu_mode(self.spsr_svc & 0x1F);
                             self.switch_mode(new_mode);
                         },
                         _ => { println!("Unimplemented situation: Rd = 15, S-bit is set, and CPU is in {:?} mode.", self.mode); }
