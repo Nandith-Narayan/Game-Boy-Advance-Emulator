@@ -65,8 +65,8 @@ impl Cpu {
                 self.reg_map[14] = R14IRQ as usize;
 
                 let temp = self.get_cpsr();
-                self.set_cpsr(self.spsr_fiq);
-                self.spsr_fiq = temp;
+                self.set_cpsr(self.spsr_irq);
+                self.spsr_irq = temp;
             },
             SUPERVISOR => {
                 self.reg_map[8] = R8 as usize;
