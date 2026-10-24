@@ -54,6 +54,13 @@ pub fn init() -> Memory{
 }
 
 impl Memory{
+    pub fn load_bios(&mut self, rom_file: String) {
+        println!("Loading Open Source BIOS File [{}]", rom_file);
+        let data = std::fs::read(rom_file).unwrap();
+        for (i,val) in data.iter().enumerate(){
+            self.bios[i] = *val;
+        }
+    }
     pub fn load_rom(&mut self, rom_file: String) {
         println!("Loading Rom File [{}]", rom_file);
         let data = std::fs::read(rom_file).unwrap();
