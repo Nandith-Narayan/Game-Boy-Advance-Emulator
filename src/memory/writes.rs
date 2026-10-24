@@ -5,7 +5,7 @@ impl Memory{
         match address{
             // =============== General Memory ===============
             // 0x00000000-0x00003FFF   BIOS - System ROM         (16 KBytes)
-            0x00000000..=0x00003FFF => set_u32(&mut self.bios, address as usize, value),
+            0x00000000..=0x00003FFF => set_u32(&mut self.bios, address as usize, value), // TODO: prohibit writing to bios ROM
             // 0x02000000-0x0203FFFF   WRAM - On-board Work RAM  (256 KBytes)
             0x02000000..=0x0203FFFF => set_u32(&mut self.wram_on_board, (address - 0x02000000) as usize, value),
             // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
