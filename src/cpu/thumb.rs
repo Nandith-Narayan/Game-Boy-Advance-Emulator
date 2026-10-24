@@ -66,6 +66,7 @@ impl Cpu{
             MultipleStore => self.store_registers(self.inst_thumb, mem),
             MultipleLoad => self.load_registers(self.inst_thumb, mem),
             ConditionalBranch => self.conditional_branch(self.inst_thumb, mem),
+            SoftwareInterrupt => self.software_interrupt(self.inst_thumb, mem),
 
             Branch => self.thumb_branch(self.inst_thumb, mem),
             BranchWithLink => self.branch_and_link(self.inst_thumb, mem),

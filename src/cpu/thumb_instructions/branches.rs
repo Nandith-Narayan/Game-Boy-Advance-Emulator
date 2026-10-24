@@ -1,3 +1,4 @@
+use crate::cpu::enums::CPUMode::{SUPERVISOR, SYSTEM, USER};
 use crate::cpu::enums::InstructionSet::{ARM};
 use crate::memory::Memory;
 use super::Cpu;
@@ -71,5 +72,18 @@ impl Cpu {
             let address = ((sign_extended_offset as i16 as i32) << 12 )+ (self.get_r(15) as i32);
             self.set_r(14, address as u32);
         }
+    }
+
+    pub fn software_interrupt(&mut self, inst: u16, mem: &mut Memory){
+        let next_instr_addr = self.get_r(15) - 2;
+        self.set_r(14, next_instr_addr);
+
+        self.switch_mode(SUPERVISOR);
+
+        self.instruction_set = ARM;
+        // software interrupt vector = 0x8, compensate for extra thumb-mode fetch incrementing PC by 2
+        self.set_r(15, 0x8 -2);
+        self.flush_pipeline();
+
     }
 }
