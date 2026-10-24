@@ -38,17 +38,17 @@ fn main() {
     let mut mem = memory::init();
     mem.load_bios(String::from("C:/GBA roms/open_source_gba_bios.bin"));
     //mem.load_rom(String::from("C:/GBA Test/test_asm/test.gba"));
-    mem.load_rom(String::from("C:/GBA roms/emerald.gba"));
+    mem.load_rom(String::from("C:/GBA roms/armwrestler-gba-fixed.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
-    let n =200;//447795;//447795;
+    let n =200_000;//447795;//447795;
     /*for address in 0..4{
         print!("{:#4x}", cpu.memory.read_8(address+0x8000000))
     }
     println!("\n {:#x}",cpu.memory.read_32(0x8000000));*/
-    let mut flag= 5000;
-    //while true {
+    let mut flag= 0;
+    while true {
         for _i in 1..n {
             //println!("R[7] = {:#4x} ({})", cpu.get_r(7), cpu.get_r(7));
             //println!("R[11] = {:#4x} ({})", cpu.get_r(11), cpu.get_r(11));
@@ -57,8 +57,8 @@ fn main() {
             }*/
             if flag > 0 {
                 flag -= 1;
-                println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[7] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, LR = {:#4x}, PC = {:#4x}, Carry Flag: {}, Neg Flag: {}, V Flag: {}, Zero Flag: {}",
-                         cpu.regs[0], cpu.regs[1], cpu.regs[2], cpu.regs[3],cpu.get_r(7), cpu.regs[5], cpu.get_r(13), cpu.regs[14], cpu.regs[15], cpu.c, cpu.n, cpu.v, cpu.z);
+                println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[7] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, LR = {:#4x}, PC = {:#4x}, Carry Flag: {}, Neg Flag: {}, V Flag: {}, Zero Flag: {}, {:?}",
+                         cpu.regs[0], cpu.regs[1], cpu.regs[2], cpu.regs[3],cpu.get_r(7), cpu.regs[5], cpu.get_r(13), cpu.regs[14], cpu.regs[15], cpu.c, cpu.n, cpu.v, cpu.z, cpu.instruction_set);
                 //println!("{}", mem.vertical_count);
             }
 
@@ -74,9 +74,41 @@ fn main() {
         for i in 0..(240 * 160) {
             buffer[i] = ((ppu.r[i] as u32) << 16) | ((ppu.g[i] as u32) << 8) | ((ppu.b[i] as u32)) | 0xFF000000;
         }
+        mem.keypad = 0xFFFF;
+        if window.is_key_down(Key::A){
+            mem.keypad ^= 0b1;
+        }
+        if window.is_key_down(Key::B){
+            mem.keypad ^= 0b10;
+        }
+        if window.is_key_down(Key::Enter){
+            mem.keypad ^= 0b100;
+        }
+        if window.is_key_down(Key::RightShift){
+            mem.keypad ^= 0b1000;
+        }
+        if window.is_key_down(Key::Right){
+            mem.keypad ^= 0b1_0000;
+        }
+        if window.is_key_down(Key::Left){
+            mem.keypad ^= 0b10_0000;
+        }
+        if window.is_key_down(Key::Up){
+            mem.keypad ^= 0b100_0000;
+        }
+        if window.is_key_down(Key::Down){
+            mem.keypad ^= 0b1000_0000;
+        }
+        if window.is_key_down(Key::E){
+            mem.keypad ^= 0b1_0000_0000;
+        }
+        if window.is_key_down(Key::Q){
+            mem.keypad ^= 0b10_0000_0000;
+        }
+
         //break;
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
-    //}
+    }
     while window.is_open() && !window.is_key_down(Key::Escape) {
         window.update_with_buffer(&buffer, WIDTH, HEIGHT).unwrap();
     }

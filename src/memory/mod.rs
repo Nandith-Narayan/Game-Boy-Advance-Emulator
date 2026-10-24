@@ -23,6 +23,9 @@ pub struct Memory{
     // Vertical Counter (0x4000006)
     pub vertical_count: u8,
 
+    // Keypad Inputs
+    pub keypad: u16,
+
     // Game Pak
     pub rom: Vec<u8>,
     sram: [u8; 1<<16],
@@ -46,6 +49,8 @@ pub fn init() -> Memory{
         vertical_count: 0,
         v_blank: false,
         h_blank: false,
+
+        keypad: 0xFFFF,
 
         // Game Pak Memory
         rom: vec![0; 3*(1<<25)],
