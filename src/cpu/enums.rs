@@ -1,3 +1,4 @@
+#[derive(Debug, PartialEq)]
 pub enum InstructionSet {
     ARM,
     THUMB,

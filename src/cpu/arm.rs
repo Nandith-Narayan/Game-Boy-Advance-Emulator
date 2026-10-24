@@ -1,6 +1,7 @@
 use crate::cpu::arm_decode::decode_instruction;
 use crate::cpu::enums::ARMCondition::*;
 use crate::cpu::enums::ARMInstruction::*;
+use crate::cpu::enums::InstructionSet::{ARM, THUMB};
 use crate::cpu::enums::THUMBInstruction;
 use crate::memory::Memory;
 use super::Cpu;
@@ -136,6 +137,11 @@ impl Cpu{
         self.c = (cpsr & (1 << 29)) != 0;
         self.v = (cpsr & (1 << 28)) != 0;
 
+        if (cpsr & (1 << 5)) != 0{
+            self.instruction_set = THUMB;
+        }else{
+            self.instruction_set = ARM;
+        }
 
     }
     // Helper function to convert CPU status into a bit field
@@ -146,6 +152,8 @@ impl Cpu{
         if self.z {cpsr |= 1<<30;}
         if self.c {cpsr |= 1<<29;}
         if self.v {cpsr |= 1<<28;}
+
+        if self.instruction_set == THUMB {cpsr |= 1<<5;}
 
         cpsr |= self.mode as u32;
 
