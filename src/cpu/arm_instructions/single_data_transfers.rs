@@ -133,9 +133,9 @@ impl Cpu{
         let load_data = (inst & (1 << 20)) != 0;
         if add_before_transfer{
             if add_offset{
-                address += offset;
+                address = address.wrapping_add(offset);
             }else{
-                address -= offset;
+                address = address.wrapping_sub(offset)
             }
         }
         // Do transfer
@@ -171,9 +171,9 @@ impl Cpu{
 
         if !add_before_transfer{
             if add_offset{
-                address += offset;
+                address = address.wrapping_add(offset);
             }else{
-                address -= offset;
+                address = address.wrapping_sub(offset)
             }
         }
 
