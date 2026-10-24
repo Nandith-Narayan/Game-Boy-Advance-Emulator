@@ -74,7 +74,7 @@ impl Cpu{
                 }
             },
             2 => {
-                let mut val = mem.read_8(address & 0xFFFFFFFE) as u32;
+                let mut val = mem.read_8(address) as u32;
                 if val & 0x80 != 0{
                     val |= 0xFFFFFF00;
                 }
