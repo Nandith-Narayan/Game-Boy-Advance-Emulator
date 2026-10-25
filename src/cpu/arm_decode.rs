@@ -1,3 +1,4 @@
+use std::process::exit;
 use crate::cpu::enums::ARMInstruction;
 use crate::cpu::enums::ARMInstruction::*;
 
@@ -26,6 +27,8 @@ pub fn decode_instruction(inst: u32) -> ARMInstruction {
     if (inst & 0x0E_00_00_00) == 0b0000_0000__0000_0000__0000_0000__0000_0000 {return DataProcessingReg;}
     if (inst & 0x0C_00_00_00) == 0b0000_0000__0000_0000__0000_0000__0000_0000 {return DataProcessingImmediate;}
 
+    if (inst & 0x0F_00_00_00) == 0b0000_1111__0000_0000__0000_0000__0000_0000 {return SoftwareInterrupt;}
+    
     return UNREACHABLE;
 
 }

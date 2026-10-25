@@ -37,6 +37,7 @@ pub enum ARMInstruction {
     HalfWordTransferImmediate,
     BlockDataTransferLoad,
     BlockDataTransferStore,
+    SoftwareInterrupt,
 }
 
 #[derive(Debug)]
