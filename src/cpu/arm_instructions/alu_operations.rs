@@ -1,4 +1,5 @@
 use crate::cpu::enums::CPUMode::*;
+use crate::cpu::enums::InstructionSet::THUMB;
 use crate::cpu::enums::ShiftType;
 use crate::cpu::enums::ShiftType::*;
 use crate::cpu::helper_functions::{compute_overflow_on_add, compute_overflow_on_sub};
@@ -274,9 +275,14 @@ impl Cpu{
                             self.switch_mode(new_mode);
                         },
                         SUPERVISOR => {
+
                             self.set_cpsr(self.spsr_svc);
+                            let should_enter_thumb_mode = (self.spsr_svc & (1<<5)) != 0;
                             let new_mode = self.num_to_cpu_mode(self.spsr_svc & 0x1F);
                             self.switch_mode(new_mode);
+                            if should_enter_thumb_mode {
+                                self.instruction_set = THUMB;
+                            }
                         },
                         _ => { println!("Unimplemented situation: Rd = 15, S-bit is set, and CPU is in {:?} mode.", self.mode); }
                     }
