@@ -136,12 +136,7 @@ impl Cpu{
         self.z = (cpsr & (1 << 30)) != 0;
         self.c = (cpsr & (1 << 29)) != 0;
         self.v = (cpsr & (1 << 28)) != 0;
-
-        if (cpsr & (1 << 5)) != 0{
-            self.instruction_set = THUMB;
-        }else{
-            self.instruction_set = ARM;
-        }
+        
 
     }
     // Helper function to convert CPU status into a bit field
