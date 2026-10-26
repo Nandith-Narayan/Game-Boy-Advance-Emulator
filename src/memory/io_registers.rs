@@ -17,6 +17,9 @@ impl Memory{
             0x5 => {0},
             0x6 => {self.vertical_count}, 0x7 => {0},
 
+            // DMA Registers
+            0xB0..=0xDF => {self.read_dma_register(address)},
+
 
             0x130 => {(self.keypad & 0xFF) as u8},
             0x131 => {((self.keypad >> 8 )& 0xFF) as u8},
@@ -37,6 +40,32 @@ impl Memory{
 
             _ => {println!("Writing to unimplemented IO Reg @ {:#4x}, with value {:#x} ({})", address, val, val);},
         };
+    }
+
+    pub fn read_dma_register(&self, address: usize) -> u8{
+        let dma_channel = (address - 0xB0) / 0xC;
+
+        match (address - 0xB0) / 4{
+            0x0 => { (self.dma_source_addr[dma_channel] & 0xFF) as u8 },
+            0x1 => { ((self.dma_source_addr[dma_channel] >> 8) & 0xFF) as u8 },
+            0x2 => { ((self.dma_source_addr[dma_channel] >> 16) & 0xFF) as u8 },
+            0x3 => { ((self.dma_source_addr[dma_channel] >> 24) & 0xFF) as u8 },
+
+            0x4 => { (self.dma_destination_addr[dma_channel] & 0xFF) as u8 },
+            0x5 => { ((self.dma_destination_addr[dma_channel] >> 8) & 0xFF) as u8 },
+            0x6 => { ((self.dma_destination_addr[dma_channel] >> 16) & 0xFF) as u8 },
+            0x7 => { ((self.dma_destination_addr[dma_channel] >> 24) & 0xFF) as u8 },
+
+            0x8 => { (self.dma_control[dma_channel] & 0xFF) as u8 },
+            0x9 => { ((self.dma_control[dma_channel] >> 8) & 0xFF) as u8 },
+            0x10 => { ((self.dma_control[dma_channel] >> 16) & 0xFF) as u8 },
+            0x11 => { ((self.dma_control[dma_channel] >> 24) & 0xFF) as u8 },
+
+            _ => {eprintln!("Impossible to reach!"); 0}
+
+        }
+
+
     }
 
 
