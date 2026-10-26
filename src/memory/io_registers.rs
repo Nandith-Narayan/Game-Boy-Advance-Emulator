@@ -45,7 +45,7 @@ impl Memory{
     pub fn read_dma_register(&self, address: usize) -> u8{
         let dma_channel = (address - 0xB0) / 0xC;
 
-        match (address - 0xB0) / 4{
+        match (address - 0xB0) % 0xC{
             0x0 => { (self.dma_source_addr[dma_channel] & 0xFF) as u8 },
             0x1 => { ((self.dma_source_addr[dma_channel] >> 8) & 0xFF) as u8 },
             0x2 => { ((self.dma_source_addr[dma_channel] >> 16) & 0xFF) as u8 },
