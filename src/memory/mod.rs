@@ -23,6 +23,10 @@ pub struct Memory{
     // Vertical Counter (0x4000006)
     pub vertical_count: u8,
 
+    pub dma_source_addr: [u32; 4],
+    pub dma_destination_addr: [u32; 4],
+    pub dma_control: [u32; 4],
+
     // Keypad Inputs
     pub keypad: u16,
 
@@ -49,6 +53,10 @@ pub fn init() -> Memory{
         vertical_count: 0,
         v_blank: false,
         h_blank: false,
+
+        dma_source_addr: [0; 4],
+        dma_destination_addr: [0; 4],
+        dma_control: [0; 4],
 
         keypad: 0xFFFF,
 
