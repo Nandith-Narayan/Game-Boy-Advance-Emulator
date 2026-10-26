@@ -1,3 +1,4 @@
+use std::process::exit;
 use crate::cpu::arm_decode::decode_instruction;
 use crate::cpu::enums::ARMCondition::*;
 use crate::cpu::enums::ARMInstruction::*;
@@ -114,7 +115,7 @@ impl Cpu{
             TransferFromPSR => self.transfer_from_program_status_register(self.inst_arm),
             Multiply => self.multiply(self.inst_arm),
             MultiplyLong => self.multiply_long(self.inst_arm),
-            _ => println!("Unimplemented ARM instruction: {:?}", self.decode_arm),
+            _ =>{ println!("Unimplemented ARM instruction: {:?}", self.decode_arm); exit(6);},
         };
     }
 
@@ -136,7 +137,7 @@ impl Cpu{
         self.z = (cpsr & (1 << 30)) != 0;
         self.c = (cpsr & (1 << 29)) != 0;
         self.v = (cpsr & (1 << 28)) != 0;
-        
+
 
     }
     // Helper function to convert CPU status into a bit field

@@ -1,3 +1,4 @@
+use std::io::Write;
 mod cpu;
 mod memory;
 mod ppu;
@@ -5,9 +6,11 @@ mod ppu;
 #[cfg(test)]
 mod run_tests;
 
-
-
+use std::fs;
 use minifb::{Key, Scale, ScaleMode, Window, WindowOptions};
+use crate::cpu::enums::ARMInstruction::EMPTY;
+use crate::cpu::enums::InstructionSet::THUMB;
+use crate::cpu::enums::THUMBInstruction;
 
 const WIDTH: usize = 240;
 const HEIGHT: usize = 160;
@@ -38,16 +41,25 @@ fn main() {
     let mut mem = memory::init();
     mem.load_bios(String::from("C:/GBA roms/open_source_gba_bios.bin"));
     //mem.load_rom(String::from("C:/GBA Test/test_asm/test.gba"));
-    mem.load_rom(String::from("C:/GBA roms/armwrestler-gba-fixed.gba"));
+    mem.load_rom(String::from("C:/GBA roms/thumb.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
-    let n = 200000;//447795;//447795;
+    let n = 200_000;//447795;//447795;
     /*for address in 0..4{
         print!("{:#4x}", cpu.memory.read_8(address+0x8000000))
     }
     println!("\n {:#x}",cpu.memory.read_32(0x8000000));*/
+
+    let mut log_file = fs::OpenOptions::new()
+                                .write(true)
+                                .create(true)
+                                .open("log.txt")
+                                .unwrap();
+
+
     let mut flag= 0;
+    let LOG = false;
     while true {
         for _i in 1..n {
             //println!("R[7] = {:#4x} ({})", cpu.get_r(7), cpu.get_r(7));
@@ -55,10 +67,26 @@ fn main() {
             /*if cpu.get_r(15) == 0x080002AC {
                 flag = 50;
             }*/
+            if LOG && (cpu.decode_arm != EMPTY || cpu.decode_thumb != THUMBInstruction::EMPTY){
+                let mut s = String::new();
+                for i in 0..=15{
+                    s += format!("R{}:{:08X} ", i, cpu.get_r(i)).as_str();
+                }
+
+                writeln!(log_file, "{}CPSR:{}{}{}{}{}", s,
+                    if cpu.n {"N"} else {"n"},
+                    if cpu.z {"Z"} else {"z"},
+                    if cpu.c {"C"} else {"c"},
+                    if cpu.v {"V"} else {"v"},
+                    if cpu.instruction_set == THUMB {"T"} else {"t"},
+                );
+
+            }
+
             if flag > 0 {
                 flag -= 1;
                 println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[4] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, LR = {:#4x}, PC = {:#4x}, Carry Flag: {}, Neg Flag: {}, V Flag: {}, Zero Flag: {}, {:?}",
-                         cpu.regs[0], cpu.regs[1], cpu.regs[2], cpu.regs[3],cpu.get_r(4), cpu.regs[5], cpu.get_r(13), cpu.regs[14], cpu.regs[15], cpu.c, cpu.n, cpu.v, cpu.z, cpu.instruction_set);
+                         cpu.regs[0], cpu.regs[1], cpu.regs[2], cpu.regs[3],cpu.get_r(4), cpu.regs[5], cpu.get_r(13), cpu.get_r(14), cpu.regs[15], cpu.c, cpu.n, cpu.v, cpu.z, cpu.instruction_set);
                 //println!("{}", mem.vertical_count);
             }
 
@@ -122,3 +150,4 @@ fn main() {
     }
     println!();
 }
+

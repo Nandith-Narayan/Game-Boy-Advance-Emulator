@@ -70,7 +70,7 @@ impl Cpu{
 
             Branch => self.thumb_branch(self.inst_thumb, mem),
             BranchWithLink => self.branch_and_link(self.inst_thumb, mem),
-            _ => println!("Unimplemented THUMB instruction: {:?}", self.decode_thumb),
+            _ => println!("Unimplemented THUMB instruction: {:?} PC: {:x}", self.decode_thumb, self.get_r(15)),
         };
     }
 }
