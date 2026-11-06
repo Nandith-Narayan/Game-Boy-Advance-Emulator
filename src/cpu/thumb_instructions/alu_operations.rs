@@ -145,7 +145,7 @@ impl Cpu{
 
                 self.z = result_64_bit as u32 == 0;
                 self.n = (result_64_bit & 0x80000000) != 0;
-                self.c = (result_64_bit & 0x100000000) != 0;
+                self.c = !((result_64_bit & 0x100000000) != 0); // Carry Flag on subtraction is reversed
                 self.v = compute_overflow_on_sub(0, operand2 as i32, result_64_bit as i32);
 
                 result = result_64_bit as u32;

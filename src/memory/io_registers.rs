@@ -39,6 +39,10 @@ impl Memory{
                 println!("BG mode: {}",self.lcd_bg_mode);
             },
 
+            // Background Control Registers
+            0x8..=0xF=>{
+                println!("Writing to Background Control Register {:x} with {:x}", address, val);
+            }
 
             // DMA Registers
             0xB0..=0xDF => {self.write_dma_register(address, val);},
