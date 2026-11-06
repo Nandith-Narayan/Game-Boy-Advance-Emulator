@@ -1,3 +1,5 @@
+use crate::memory::dma_transfers::{DMADestinationAdjustment, DMASourceAdjustment, DMATransfer};
+use crate::memory::dma_transfers::DMATimingMode::{HBLANK, IMMEDIATE, SPECIAL, VBLANK};
 use super::Memory;
 
 impl Memory{
@@ -36,7 +38,10 @@ impl Memory{
 
                 println!("BG mode: {}",self.lcd_bg_mode);
             },
-            //0x6 => {}, 0x7 => {},
+
+
+            // DMA Registers
+            0xB0..=0xDF => {self.write_dma_register(address, val);},
 
             _ => {println!("Writing to unimplemented IO Reg @ {:#4x}, with value {:#x} ({})", address, val, val);},
         };
@@ -58,14 +63,88 @@ impl Memory{
 
             0x8 => { (self.dma_control[dma_channel] & 0xFF) as u8 },
             0x9 => { ((self.dma_control[dma_channel] >> 8) & 0xFF) as u8 },
-            0x10 => { ((self.dma_control[dma_channel] >> 16) & 0xFF) as u8 },
-            0x11 => { ((self.dma_control[dma_channel] >> 24) & 0xFF) as u8 },
+            0xA => { ((self.dma_control[dma_channel] >> 16) & 0xFF) as u8 },
+            0xB => { ((self.dma_control[dma_channel] >> 24) & 0xFF) as u8 },
 
             _ => {eprintln!("Impossible to reach!"); 0}
 
         }
+    }
 
+    pub fn write_dma_register(&mut self, address: usize, value: u8){
+        let dma_channel = (address - 0xB0) / 0xC;
 
+        match (address - 0xB0) % 0xC{
+            0x0 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF) & (value as u32); },
+            0x1 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF00) & ((value as u32) << 8); },
+            0x2 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF0000) & ((value as u32) << 16); },
+            0x3 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF000000) & ((value as u32) << 24); },
+
+            0x4 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF) & (value as u32); },
+            0x5 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF00) & ((value as u32) << 8); },
+            0x6 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF0000) & ((value as u32) << 16); },
+            0x7 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF000000) & ((value as u32) << 24); },
+
+            0x8 => { self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF) & (value as u32); },
+            0x9 => { self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF00) & ((value as u32) << 8); },
+            0xA => { self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF0000) & ((value as u32) << 16); },
+            0xB => {
+                // Highest bit of dma_control register initiates DMA transfer
+                self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF000000) & ((value as u32) << 24);
+
+                let dma_control = self.dma_control[dma_channel];
+
+                let enable_bit = (dma_control & (1 << 31)) != 0;
+                println!("DMA TRANSFER: {:32b}", dma_control);
+                if enable_bit{
+                    let num_transfers = dma_control & 0xFFFF;
+                    let destination_adjustment = (dma_control >> 21) & 0b11;
+                    let source_adjustment = (dma_control >> 23) & 0b11;
+                    let repeat = (dma_control & (1 << 25)) != 0;
+                    let transfer_word = (dma_control & (1 << 26)) != 0;
+                    let timing_mode = (dma_control >> 28) & 0b11;
+                    let raise_irq = (dma_control & (1 << 30)) != 0;
+
+                    let dma_transfer = DMATransfer{
+                        channel: dma_channel,
+                        num_transfers: num_transfers as usize,
+                        destination_adjustment: match destination_adjustment{
+                            0 => DMADestinationAdjustment::INCREMENT,
+                            1 => DMADestinationAdjustment::DECREMENT,
+                            2 => DMADestinationAdjustment::FIXED,
+                            3 => DMADestinationAdjustment::RELOAD,
+                            _ => DMADestinationAdjustment::INCREMENT
+                        },
+                        source_adjustment: match source_adjustment{
+                            0 => DMASourceAdjustment::INCREMENT,
+                            1 => DMASourceAdjustment::DECREMENT,
+                            2 => DMASourceAdjustment::FIXED,
+                            _ => DMASourceAdjustment::INCREMENT
+                        },
+                        repeat,
+                        transfer_word,
+                        timing_mode: match timing_mode {
+                            0 => IMMEDIATE,
+                            1 => VBLANK,
+                            2 => HBLANK,
+                            _ => SPECIAL
+                        },
+                        raise_irq,
+                    };
+
+                    println!("Initiated DMA Transfer {:?}",dma_transfer);
+
+                    if dma_transfer.timing_mode == IMMEDIATE{
+                        dma_transfer.start(self);
+                    }
+
+                }
+
+            },
+
+            _ => {eprintln!("Impossible to reach!");}
+
+        }
     }
 
 

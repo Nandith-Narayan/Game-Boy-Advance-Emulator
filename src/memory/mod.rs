@@ -1,6 +1,7 @@
 mod writes;
 mod reads;
 mod io_registers;
+mod dma_transfers;
 
 pub struct Memory{
     // General Memory

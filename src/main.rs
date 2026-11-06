@@ -41,7 +41,7 @@ fn main() {
     let mut mem = memory::init();
     mem.load_bios(String::from("C:/GBA roms/open_source_gba_bios.bin"));
     //mem.load_rom(String::from("C:/GBA Test/test_asm/test.gba"));
-    mem.load_rom(String::from("C:/GBA roms/thumb.gba"));
+    mem.load_rom(String::from("C:/GBA roms/emerald.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
@@ -59,7 +59,7 @@ fn main() {
 
 
     let mut flag= 0;
-    let LOG = false;
+    let LOG = true;
     while true {
         for _i in 1..n {
             //println!("R[7] = {:#4x} ({})", cpu.get_r(7), cpu.get_r(7));

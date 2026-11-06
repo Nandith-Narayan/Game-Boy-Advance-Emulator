@@ -35,7 +35,7 @@ impl Memory{
         match address{
             // =============== General Memory ===============
             // 0x00000000-0x00003FFF   BIOS - System ROM         (16 KBytes)
-            0x00000000..=0x00003FFF => {eprintln!("Attempted 16-bit Write to Bios at {:#08x} with {:#04x}", address, value);}
+            0x00000000..=0x00003FFF => {eprintln!("Attempted 16-bit Write to Bios at {:#08x} with {:#04x}", address, value);exit(7);}
             // 0x02000000-0x0203FFFF   WRAM - On-board Work RAM  (256 KBytes)
             0x02000000..=0x0203FFFF => set_u16(&mut self.wram_on_board, (address - 0x02000000) as usize, value),
             // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
