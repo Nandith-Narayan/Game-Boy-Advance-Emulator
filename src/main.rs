@@ -59,7 +59,7 @@ fn main() {
 
 
     let mut flag= 0;
-    let LOG = true;
+    let LOG = false;
     while true {
         for _i in 1..n {
             //println!("R[7] = {:#4x} ({})", cpu.get_r(7), cpu.get_r(7));

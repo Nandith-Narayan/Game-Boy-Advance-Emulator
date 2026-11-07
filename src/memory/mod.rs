@@ -2,6 +2,7 @@ mod writes;
 mod reads;
 mod io_registers;
 mod dma_transfers;
+mod interrupts;
 
 pub struct Memory{
     // General Memory
@@ -30,6 +31,12 @@ pub struct Memory{
 
     // Keypad Inputs
     pub keypad: u16,
+
+    // Interrupt Control Registers
+    pub interrupt_master_enable: bool,
+    pub interrupt_enable: u16,
+    pub interrupt_flags: u16,
+    pub interrupt_ready: bool,
 
     // Game Pak
     pub rom: Vec<u8>,
@@ -60,6 +67,11 @@ pub fn init() -> Memory{
         dma_control: [0; 4],
 
         keypad: 0xFFFF,
+
+        interrupt_master_enable: false,
+        interrupt_enable: 0,
+        interrupt_flags: 0,
+        interrupt_ready: false,
 
         // Game Pak Memory
         rom: vec![0; 3*(1<<25)],

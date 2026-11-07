@@ -134,3 +134,20 @@ pub enum RegisterName {
     R13UND,
     R14UND,
 }
+
+pub enum InterruptType{
+    VBLANK = 0b1,
+    HBLANK = 0b10,
+    VCOUNT = 0b100,
+    TIMER0 = 0b1000,
+    TIMER1 = 0b10000,
+    TIMER2 = 0b100000,
+    TIMER3 = 0b1000000,
+    SERIAL = 0b10000000,
+    DMA0   = 0b100000000,
+    DMA1   = 0b1000000000,
+    DMA2   = 0b10000000000,
+    DMA3   = 0b100000000000,
+    KEYPAD = 0b1000000000000,
+    GAMEPAK= 0b10000000000000,
+}

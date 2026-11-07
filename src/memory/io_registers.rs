@@ -47,6 +47,36 @@ impl Memory{
             // DMA Registers
             0xB0..=0xDF => {self.write_dma_register(address, val);},
 
+            // Interrupt Enable Register
+            0x200 => {
+                self.interrupt_enable = (self.interrupt_enable & 0xFF00) | val as u16;
+                self.check_for_interrupt();
+            },
+            0x201 => {
+                self.interrupt_enable = (self.interrupt_enable & 0x00FF) | ((val as u16) << 8);
+                self.check_for_interrupt();
+            },
+
+            // Interrupt Flags Register
+            0x202 => {
+                self.interrupt_flags &= !(val as u16);
+                self.check_for_interrupt();
+            },
+            0x203 => {
+                self.interrupt_flags &= !((val as u16) << 8);
+                self.check_for_interrupt();
+                println!("Interrupt flags: {:b}", self.interrupt_flags);
+                println!("Interrupt enable: {:b}", self.interrupt_enable);
+                println!("Interrupt master enable: {}", self.interrupt_master_enable);
+            },
+
+            // Interrupt Master Enable
+            0x208 => {
+                self.interrupt_master_enable = (val & 0x1) != 0;
+                self.check_for_interrupt();
+                println!("Interrupt master enable: {}", self.interrupt_master_enable);
+            },
+
             _ => {println!("Writing to unimplemented IO Reg @ {:#4x}, with value {:#x} ({})", address, val, val);},
         };
     }

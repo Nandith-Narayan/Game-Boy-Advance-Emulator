@@ -1,3 +1,4 @@
+use crate::cpu::enums::InterruptType;
 use crate::memory::Memory;
 
 mod mode_3;
@@ -39,6 +40,10 @@ impl Ppu {
             }
         }
         if self.x >= 240 && self.x < (240+68){
+            // If just entered H Blank, set the H Blank flag in the IF reg
+            if mem.h_blank == false{
+                mem.request_interrupt(InterruptType::HBLANK);
+            }
             mem.h_blank = true;
         }
         if self.x >= (240+68){
@@ -49,6 +54,10 @@ impl Ppu {
                 mem.v_blank = false;
             }
             if mem.vertical_count > 160 && mem.vertical_count < 227{
+                // If just entered V Blank, set the V Blank flag in the IF reg
+                if mem.v_blank == false{
+                    mem.request_interrupt(InterruptType::VBLANK);
+                }
                 mem.v_blank = true;
             }
             if mem.vertical_count >= 227{
