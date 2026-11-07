@@ -1,6 +1,10 @@
 <component name="ProjectDictionaryState">
   <dictionary name="project">
     <words>
+      <w>GAMEPAK</w>
+      <w>HBLANK</w>
+      <w>VBLANK</w>
+      <w>VCOUNT</w>
       <w>cpsr</w>
       <w>spsr</w>
     </words>
