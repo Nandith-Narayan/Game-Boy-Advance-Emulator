@@ -27,6 +27,11 @@ impl Memory{
             0x131 => {((self.keypad >> 8 )& 0xFF) as u8},
             0x132 | 0x133 => {0},
 
+            // Interrupt Master Enable
+            0x208 => {
+              self.interrupt_master_enable as u8
+            },
+
             _ => {println!("Reading from unimplemented IO Reg @ {:#4x}", address); 0},
         }
     }

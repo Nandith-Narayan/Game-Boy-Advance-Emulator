@@ -41,7 +41,7 @@ fn main() {
     let mut mem = memory::init();
     mem.load_bios(String::from("C:/GBA roms/open_source_gba_bios.bin"));
     //mem.load_rom(String::from("C:/GBA Test/test_asm/test.gba"));
-    mem.load_rom(String::from("C:/GBA roms/emerald.gba"));
+    mem.load_rom(String::from("C:/GBA roms/thumb.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
