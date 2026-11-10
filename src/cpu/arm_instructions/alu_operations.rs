@@ -282,7 +282,6 @@ impl Cpu{
                             self.switch_mode(new_mode);
                             if should_enter_thumb_mode {
                                 self.instruction_set = THUMB;
-                                self.regs[15] -= 4; // Compensate for extra ARM fetch incrementing the PC before switch to thumb
                             }
 
                         },

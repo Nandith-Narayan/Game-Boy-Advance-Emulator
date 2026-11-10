@@ -11,7 +11,7 @@ use super::Cpu;
 impl Cpu{
     // Fetch ARM instruction
     pub fn fetch_arm(&mut self, mem: &mut Memory) {
-        if self.fetch_arm != 0{
+        if self.fetch_arm != 0 || self.instruction_set == THUMB {
             return;
         }
         self.fetch_arm = mem.read_32(self.get_r(15));

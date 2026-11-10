@@ -7,7 +7,6 @@ impl Cpu{
         let mut rn: usize = (inst & 0xF) as usize;
         self.set_r(15, self.get_r(rn) & 0xFFFFFFFE);
         if self.get_r(rn) & 0x1 != 0{
-            self.set_r(15, self.get_r(15) - 4);
             self.instruction_set = THUMB;
         }
 

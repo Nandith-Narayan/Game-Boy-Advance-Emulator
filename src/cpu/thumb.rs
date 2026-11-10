@@ -1,12 +1,13 @@
 use crate::cpu::thumb_decode::decode_instruction;
 use crate::cpu::Cpu;
+use crate::cpu::enums::InstructionSet::ARM;
 use crate::cpu::enums::THUMBInstruction::*;
 use crate::memory::Memory;
 
 // Implementation of functions related to THUMB mode of the CPU
 impl Cpu{
     pub fn fetch_thumb(&mut self, mem: &mut Memory){
-        if self.fetch_thumb != 0{
+        if self.fetch_thumb != 0 || self.instruction_set == ARM{
             return;
         }
         self.fetch_thumb = mem.read_16(self.get_r(15));

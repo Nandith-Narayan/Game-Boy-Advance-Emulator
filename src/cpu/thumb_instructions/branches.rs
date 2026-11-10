@@ -35,9 +35,7 @@ impl Cpu {
         let rs = ((inst >> 3) & 0b1000)| ((inst >> 3) & 0b111);
         self.set_r(15, self.get_r(rs as usize) & 0xFFFFFFFE);
         if self.get_r(rs as usize) & 0x1 == 0{
-
-            self.decrement_r(15, 2);
-
+            
             self.instruction_set = ARM;
         }
         self.flush_pipeline();
@@ -81,8 +79,8 @@ impl Cpu {
         self.switch_mode(SUPERVISOR);
         self.set_r(14, next_instr_addr);
         self.instruction_set = ARM;
-        // software interrupt vector = 0x8, compensate for extra thumb-mode fetch incrementing PC by 2
-        self.set_r(15, 0x8 -2);
+        // software interrupt vector = 0x8
+        self.set_r(15, 0x8);
         self.flush_pipeline();
 
     }
