@@ -138,6 +138,7 @@ impl Cpu{
         self.c = (cpsr & (1 << 29)) != 0;
         self.v = (cpsr & (1 << 28)) != 0;
 
+        self.irq_disable = (cpsr & (1 << 7)) != 0;
 
     }
     // Helper function to convert CPU status into a bit field
@@ -148,6 +149,8 @@ impl Cpu{
         if self.z {cpsr |= 1<<30;}
         if self.c {cpsr |= 1<<29;}
         if self.v {cpsr |= 1<<28;}
+
+        if self.irq_disable {cpsr |= 1<<7;}
 
         if self.instruction_set == THUMB {cpsr |= 1<<5;}
 

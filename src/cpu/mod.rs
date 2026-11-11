@@ -35,6 +35,7 @@ pub struct Cpu{
     pub c: bool,
     pub n: bool,
     pub v: bool,
+    pub irq_disable: bool,
     pub mode: CPUMode,
 
     // Banked registers
@@ -72,6 +73,7 @@ pub fn init() -> Cpu{
         c: false,
         n: false,
         v: false,
+        irq_disable: false,
 
         mode: SUPERVISOR,
         spsr_irq: 0,

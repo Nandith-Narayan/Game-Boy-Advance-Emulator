@@ -7,6 +7,7 @@ mod ppu;
 mod run_tests;
 
 use std::fs;
+use std::process::exit;
 use minifb::{Key, Scale, ScaleMode, Window, WindowOptions};
 use crate::cpu::enums::ARMInstruction::EMPTY;
 use crate::cpu::enums::InstructionSet::THUMB;
@@ -41,7 +42,7 @@ fn main() {
     let mut mem = memory::init();
     mem.load_bios(String::from("C:/GBA roms/open_source_gba_bios.bin"));
     //mem.load_rom(String::from("C:/GBA Test/test_asm/test.gba"));
-    mem.load_rom(String::from("C:/GBA roms/thumb.gba"));
+    mem.load_rom(String::from("C:/GBA roms/emerald.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
@@ -62,6 +63,7 @@ fn main() {
     let LOG = false;
     while true {
         for _i in 1..n {
+            println!("User handler: {:x}", mem.read_32(0x03007FFC));
             //println!("R[7] = {:#4x} ({})", cpu.get_r(7), cpu.get_r(7));
             //println!("R[11] = {:#4x} ({})", cpu.get_r(11), cpu.get_r(11));
             /*if cpu.get_r(15) == 0x080002AC {
