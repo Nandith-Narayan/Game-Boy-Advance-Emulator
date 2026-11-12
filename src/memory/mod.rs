@@ -1,8 +1,11 @@
+use crate::memory::background_control::BackgroundControl;
+
 mod writes;
 mod reads;
 mod io_registers;
 mod dma_transfers;
 mod interrupts;
+mod background_control;
 
 pub struct Memory{
     // General Memory
@@ -24,6 +27,9 @@ pub struct Memory{
 
     // Vertical Counter (0x4000006)
     pub vertical_count: u8,
+
+    // Display Control Registers (0x4000008 to 0x400000F)
+    pub bg_control: [BackgroundControl; 4],
 
     pub dma_source_addr: [u32; 4],
     pub dma_destination_addr: [u32; 4],
@@ -61,6 +67,11 @@ pub fn init() -> Memory{
         vertical_count: 0,
         v_blank: false,
         h_blank: false,
+
+        bg_control: [BackgroundControl::new(),
+                     BackgroundControl::new(),
+                     BackgroundControl::new(),
+                     BackgroundControl::new()],
 
         dma_source_addr: [0; 4],
         dma_destination_addr: [0; 4],
