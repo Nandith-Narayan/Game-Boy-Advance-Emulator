@@ -31,6 +31,7 @@ impl Memory{
             0x208 => {
               self.interrupt_master_enable as u8
             },
+            0x209 => {0},
 
             _ => {println!("Reading from unimplemented IO Reg @ {:#4x}", address); 0},
         }
