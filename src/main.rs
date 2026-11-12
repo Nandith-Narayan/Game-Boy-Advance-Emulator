@@ -63,7 +63,6 @@ fn main() {
     let LOG = false;
     while true {
         for _i in 1..n {
-            println!("User handler: {:x}", mem.read_32(0x03007FFC));
             //println!("R[7] = {:#4x} ({})", cpu.get_r(7), cpu.get_r(7));
             //println!("R[11] = {:#4x} ({})", cpu.get_r(11), cpu.get_r(11));
             /*if cpu.get_r(15) == 0x080002AC {
