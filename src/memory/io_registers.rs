@@ -19,6 +19,16 @@ impl Memory{
             0x5 => {0},
             0x6 => {self.vertical_count}, 0x7 => {0},
 
+            // Background Control Registers
+            0x8..=0xF=>{
+                let bg_idx = (address - 0x8) / 2;
+                return if address % 2 == 0 {
+                    self.bg_control[bg_idx].get_lower_byte()
+                } else {
+                    self.bg_control[bg_idx].get_upper_byte()
+                }
+            }
+
             // DMA Registers
             0xB0..=0xDF => {self.read_dma_register(address)},
 
@@ -47,7 +57,12 @@ impl Memory{
 
             // Background Control Registers
             0x8..=0xF=>{
-                println!("Writing to Background Control Register {:x} with {:x}", address, val);
+                let bg_idx = (address - 0x8) / 2;
+                if address % 2 == 0 {
+                    self.bg_control[bg_idx].set_lower_byte(val);
+                } else {
+                    self.bg_control[bg_idx].set_upper_byte(val);
+                }
             }
 
             // DMA Registers

@@ -22,6 +22,19 @@ impl BackgroundControl {
         }
     }
 
+    pub fn set_lower_byte(&mut self, byte: u8){
+        self.priority = (byte & 0b11) as usize;
+        self.tile_block = ((byte & 0b1100) >> 2) as usize;
+        self.mosaic = (byte & 0b100_0000) != 0;
+        self.use_8_bits_per_pixel = (byte & 0b1000_0000) != 0;
+    }
+
+    pub fn set_upper_byte(&mut self, byte: u8){
+        self.map_block = (byte & 0b1_1111) as usize;
+        self.wraparound = (byte & 0b10_0000) != 0;
+        self.map_size = ((byte & 0b1100_0000) >> 6) as usize;
+    }
+
     pub fn get_lower_byte(&self) -> u8{
         let mut byte = 0;
         byte |= self.priority as u8;
