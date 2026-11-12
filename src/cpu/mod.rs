@@ -73,7 +73,7 @@ pub fn init() -> Cpu{
         c: false,
         n: false,
         v: false,
-        irq_disable: false,
+        irq_disable: true,
 
         mode: SUPERVISOR,
         spsr_irq: 0,
