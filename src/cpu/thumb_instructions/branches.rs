@@ -35,7 +35,7 @@ impl Cpu {
         let rs = ((inst >> 3) & 0b1000)| ((inst >> 3) & 0b111);
         self.set_r(15, self.get_r(rs as usize) & 0xFFFFFFFE);
         if self.get_r(rs as usize) & 0x1 == 0{
-            
+
             self.instruction_set = ARM;
         }
         self.flush_pipeline();
@@ -72,10 +72,9 @@ impl Cpu {
         }
     }
 
-    pub fn software_interrupt(&mut self, inst: u16, mem: &mut Memory){
+    pub fn thumb_software_interrupt(&mut self, inst: u16, mem: &mut Memory){
         let next_instr_addr = self.get_r(15) - 2;
-
-
+        
         self.switch_mode(SUPERVISOR);
         self.set_r(14, next_instr_addr);
         self.instruction_set = ARM;
