@@ -2,6 +2,7 @@ use std::process::exit;
 use crate::cpu::arm_decode::decode_instruction;
 use crate::cpu::enums::ARMCondition::*;
 use crate::cpu::enums::ARMInstruction::*;
+use crate::cpu::enums::CPUMode::{IRQ, SUPERVISOR};
 use crate::cpu::enums::InstructionSet::{ARM, THUMB};
 use crate::cpu::enums::THUMBInstruction;
 use crate::memory::Memory;
@@ -14,6 +15,29 @@ impl Cpu{
         if self.fetch_arm != 0 || self.instruction_set == THUMB {
             return;
         }
+
+        // Perform IRQ if applicable
+        if !self.irq_disable && mem.interrupt_ready{
+
+            let next_instr_addr;
+            // Check to see how full the pipeline is, and compute address of next instruction
+            if self.decode_arm == EMPTY {
+                next_instr_addr = self.get_r(15);
+            }else{
+                next_instr_addr = self.get_r(15)-4;
+            }
+            self.switch_mode(IRQ);
+            self.set_r(14, next_instr_addr);
+            self.irq_disable = true;
+            self.instruction_set = ARM;
+            // IRQ BIOS interrupt vector = 0x18
+            self.set_r(15, 0x18);
+
+            self.flush_pipeline();
+            return;
+        }
+
+
         self.fetch_arm = mem.read_32(self.get_r(15));
         self.increment_r(15, 4);
     }
@@ -115,7 +139,8 @@ impl Cpu{
             TransferFromPSR => self.transfer_from_program_status_register(self.inst_arm),
             Multiply => self.multiply(self.inst_arm),
             MultiplyLong => self.multiply_long(self.inst_arm),
-            _ =>{ println!("Unimplemented ARM instruction: {:?}", self.decode_arm); exit(6);},
+            SoftwareInterrupt => self.software_interrupt(self.inst_arm),
+            _ =>{ println!("Unimplemented ARM instruction: {:?}", self.decode_arm);println!("PC: {:x}", self.regs[15]); exit(6);},
         };
     }
 
