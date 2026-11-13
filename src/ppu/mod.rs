@@ -4,6 +4,7 @@ use crate::memory::Memory;
 mod mode_3;
 mod mode_4;
 mod mode_5;
+mod mode_0;
 
 pub struct Ppu{
     x: usize,
@@ -30,6 +31,8 @@ impl Ppu {
         // Scanline start
         if self.x == 0 && mem.vertical_count < 160{
             match mem.lcd_bg_mode{
+                0 => {self.render_mode_0_scanline(mem);},
+                
                 3 => {self.render_mode_3_scanline(mem);},
                 4 => {self.render_mode_4_scanline(mem);},
                 5 => {self.render_mode_5_scanline(mem);},
