@@ -7,8 +7,6 @@ mod mode_5;
 
 pub struct Ppu{
     x: usize,
-    idx: usize,
-    m5_idx: usize,
 
     pub r: Vec<u8>,
     pub g: Vec<u8>,
@@ -20,8 +18,6 @@ pub fn init() -> Ppu{
 
     return Ppu{
         x: 0,
-        idx: 0,
-        m5_idx: 0,
         r: vec![0; 240*160],
         g: vec![0; 240*160],
         b: vec![0; 240*160],
@@ -31,47 +27,44 @@ pub fn init() -> Ppu{
 
 impl Ppu {
     pub fn tick_cycle(&mut self, mem: &mut Memory){
-        if self.x < 240 && mem.vertical_count < 160{
-            match mem.lcd_bg_mode {
-                3 => self.draw_mode_3(mem),
-                4 => self.draw_mode_4(mem),
-                5 => self.draw_mode_5(mem),
-                _ => {},
+        // Scanline start
+        if self.x == 0 && mem.vertical_count < 160{
+            match mem.lcd_bg_mode{
+                3 => {self.render_mode_3_scanline(mem);},
+                4 => {self.render_mode_4_scanline(mem);},
+                5 => {self.render_mode_5_scanline(mem);},
+                _ => {}
             }
         }
-        if self.x >= 240 && self.x < (240+68){
-            // If just entered H Blank, set the H Blank flag in the IF reg
-            if mem.h_blank == false{
-                mem.request_interrupt(InterruptType::HBLANK);
-            }
+
+        // Enter H-Blank
+        if self.x == 240{
             mem.h_blank = true;
+            mem.request_interrupt(InterruptType::HBLANK);
+            self.x += 1;
+            return;
         }
+        // Exit H-Blank
         if self.x >= (240+68){
-            self.x = 0;
             mem.h_blank = false;
-            mem.vertical_count+=1;
-            if mem.vertical_count < 160{
-                mem.v_blank = false;
-            }
-            if mem.vertical_count > 160 && mem.vertical_count < 227{
-                // If just entered V Blank, set the V Blank flag in the IF reg
-                if mem.v_blank == false{
-                    mem.request_interrupt(InterruptType::VBLANK);
-                }
+            self.x = 0;
+            mem.vertical_count += 1;
+
+            // Enter V-Blank
+            if mem.vertical_count == 160{
                 mem.v_blank = true;
+                mem.request_interrupt(InterruptType::VBLANK);
             }
-            if mem.vertical_count >= 227{
+
+            // Exit V-Blank
+            if mem.vertical_count >= (160+68){
                 mem.v_blank = false;
                 mem.vertical_count = 0;
-                self.idx = 0;
-                self.m5_idx = 0;
-
             }
-        }else{
-            self.x += 1;
+
+            return;
         }
 
-
+        self.x += 1;
     }
-
 }
