@@ -11,6 +11,13 @@ impl Memory{
                 (self.lcd_bg_mode & 0b111) | // B0-B2 - video mode
                 ((self.frame_select as u8) << 4) // B4 - bitmap frame select
             },
+            0x1 => {
+                (self.bg_enabled[0] as u8) |
+                ((self.bg_enabled[1] as u8) << 1) |
+                ((self.bg_enabled[2] as u8) << 2) |
+                ((self.bg_enabled[3] as u8) << 3)
+            },
+
             // DISPSTAT - Display Status Register
             0x4 => {
                 (self.v_blank as u8) |
@@ -54,15 +61,32 @@ impl Memory{
 
                 println!("BG mode: {}",self.lcd_bg_mode);
             },
+            0x1 => {
+                self.bg_enabled[0] = (val & 0b1) != 0;
+                self.bg_enabled[1] = (val & 0b10) != 0;
+                self.bg_enabled[2] = (val & 0b100) != 0;
+                self.bg_enabled[3] = (val & 0b1000) != 0;
+            },
 
             // Background Control Registers
-            0x8..=0xF=>{
+            0x8..=0xF => {
                 let bg_idx = (address - 0x8) / 2;
                 if address % 2 == 0 {
                     self.bg_control[bg_idx].set_lower_byte(val);
                 } else {
                     self.bg_control[bg_idx].set_upper_byte(val);
                 }
+            }
+            // Background Scroll Registers
+            0x10..=0x1E => {
+                if address % 2 == 0 {
+                    self.bg_scroll_regs[(address-0x10)/2] &= 0xFF00;
+                    self.bg_scroll_regs[(address-0x10)/2] |= val as u16;
+                }else{
+                    self.bg_scroll_regs[(address-0x10)/2] &= 0x00FF;
+                    self.bg_scroll_regs[(address-0x10)/2] |= (val as u16)<<8;
+                }
+
             }
 
             // DMA Registers

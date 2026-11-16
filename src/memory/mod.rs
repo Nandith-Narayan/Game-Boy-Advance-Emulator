@@ -22,6 +22,9 @@ pub struct Memory{
     // LCD Control (0x4000000)
     pub lcd_bg_mode: u8,
     pub frame_select: bool,
+    pub bg_enabled: [bool; 4],
+
+    // LCD Status (0x4000002)
     pub v_blank: bool,
     pub h_blank: bool,
 
@@ -30,6 +33,8 @@ pub struct Memory{
 
     // Display Control Registers (0x4000008 to 0x400000F)
     pub bg_control: [BackgroundControl; 4],
+
+    pub bg_scroll_regs: [u16; 8],
 
     pub dma_source_addr: [u32; 4],
     pub dma_destination_addr: [u32; 4],
@@ -64,6 +69,7 @@ pub fn init() -> Memory{
 
         lcd_bg_mode: 3,
         frame_select: false,
+        bg_enabled: [false; 4],
         vertical_count: 0,
         v_blank: false,
         h_blank: false,
@@ -72,6 +78,7 @@ pub fn init() -> Memory{
                      BackgroundControl::new(),
                      BackgroundControl::new(),
                      BackgroundControl::new()],
+        bg_scroll_regs: [0; 8],
 
         dma_source_addr: [0; 4],
         dma_destination_addr: [0; 4],
