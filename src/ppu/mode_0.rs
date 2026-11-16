@@ -47,8 +47,10 @@ impl Ppu{
                         map_block_height = 32;
                     }
                 }
-                let map_x = x % (map_block_width*8);
-                let map_y = (mem.vertical_count as usize) % (map_block_height*8);
+                let x_scroll =  mem.bg_scroll_regs[bg_idx*2] as usize;
+                let y_scroll = mem.bg_scroll_regs[bg_idx*2 + 1] as usize;
+                let map_x = (x + x_scroll) % (map_block_width*8);
+                let map_y = (mem.vertical_count as usize + y_scroll) % (map_block_height*8);
 
                 let tile_x = map_x / 8;
                 let tile_y = map_y / 8;
@@ -68,16 +70,16 @@ impl Ppu{
 
                 let px;
                 if flip_x{
-                    px = 7 - (x % 8);
+                    px = 7 - ((x + x_scroll) % 8);
                 }else{
-                    px = x % 8;
+                    px = (x + x_scroll) % 8;
                 }
 
                 let py;
                 if flip_y {
-                    py = 7 - (mem.vertical_count as usize % 8);
+                    py = 7 - ((mem.vertical_count as usize + y_scroll) % 8);
                 } else{
-                    py = mem.vertical_count as usize % 8;
+                    py = (mem.vertical_count as usize + y_scroll) % 8;
                 }
 
                 let byte_addr = tile_addr + 4*py + px/2;
