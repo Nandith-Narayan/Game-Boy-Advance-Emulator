@@ -43,6 +43,8 @@ impl Memory{
             // DMA Registers
             0xB0..=0xDF => {self.read_dma_register(address)},
 
+            // Timers
+            0x100..=0x10E => {0x0},
 
             0x130 => {(self.keypad & 0xFF) as u8},
             0x131 => {((self.keypad >> 8 )& 0xFF) as u8},
@@ -103,6 +105,9 @@ impl Memory{
 
             // DMA Registers
             0xB0..=0xDF => {self.write_dma_register(address, val);},
+
+            // Serial Port control
+            0x134..=0x135 => {}
 
             // Interrupt Enable Register
             0x200 => {
