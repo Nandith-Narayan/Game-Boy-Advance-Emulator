@@ -60,7 +60,7 @@ impl Ppu{
 
                 let map_entry_addr = 0x800*block + offset;
 
-                let map_entry = u16::from_le_bytes([mem.vram[map_entry_addr],mem.vram[map_entry_addr+1]]);
+                let map_entry = (mem.vram[map_entry_addr] as u16) | ((mem.vram[map_entry_addr+1] as u16) << 8);
                 let tile_number =  (map_entry & 0b11_1111_1111) as usize;
                 let flip_x = (tile_number & (1 << 10)) != 0;
                 let flip_y = (tile_number & (1 << 11)) != 0;
