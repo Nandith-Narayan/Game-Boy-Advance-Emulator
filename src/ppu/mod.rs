@@ -1,3 +1,4 @@
+use std::time::Instant;
 use crate::cpu::enums::InterruptType;
 use crate::memory::Memory;
 
@@ -52,6 +53,10 @@ impl Ppu {
             mem.h_blank = false;
             self.x = 0;
             mem.vertical_count += 1;
+            // Check if VCOUNT interrupt should occur
+            if mem.vertical_count == mem.v_count_trigger{
+                mem.request_interrupt(InterruptType::VCOUNT);
+            }
 
             // Enter V-Blank
             if mem.vertical_count == 160{

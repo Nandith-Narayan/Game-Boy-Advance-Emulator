@@ -23,7 +23,7 @@ impl Memory{
                 (self.v_blank as u8) |
                 ((self.h_blank as u8) << 1)
             },
-            0x5 => {0},
+            0x5 => {self.v_count_trigger},
             0x6 => {self.vertical_count}, 0x7 => {0},
 
             // Background Control Registers
@@ -67,6 +67,8 @@ impl Memory{
                 self.bg_enabled[2] = (val & 0b100) != 0;
                 self.bg_enabled[3] = (val & 0b1000) != 0;
             },
+
+            0x5 => {self.v_count_trigger = val;},
 
             // Background Control Registers
             0x8..=0xF => {
@@ -174,7 +176,6 @@ impl Memory{
                 let dma_control = self.dma_control[dma_channel];
 
                 let enable_bit = (dma_control & (1 << 31)) != 0;
-                println!("DMA TRANSFER: {:32b}", dma_control);
                 if enable_bit{
                     let num_transfers = dma_control & 0xFFFF;
                     let destination_adjustment = (dma_control >> 21) & 0b11;

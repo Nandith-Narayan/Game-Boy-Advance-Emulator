@@ -27,6 +27,7 @@ pub struct Memory{
     // LCD Status (0x4000002)
     pub v_blank: bool,
     pub h_blank: bool,
+    pub v_count_trigger: u8,
 
     // Vertical Counter (0x4000006)
     pub vertical_count: u8,
@@ -73,6 +74,7 @@ pub fn init() -> Memory{
         vertical_count: 0,
         v_blank: false,
         h_blank: false,
+        v_count_trigger: 0,
 
         bg_control: [BackgroundControl::new(),
                      BackgroundControl::new(),
