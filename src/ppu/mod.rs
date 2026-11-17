@@ -55,6 +55,7 @@ impl Ppu {
             mem.h_blank = false;
             self.x = 0;
             mem.vertical_count += 1;
+            mem.v_count_triggered = mem.vertical_count == mem.v_count_trigger;
             // Check if VCOUNT interrupt should occur
             if mem.enable_v_count_irq && mem.vertical_count == mem.v_count_trigger{
                 mem.request_interrupt(InterruptType::VCOUNT);
