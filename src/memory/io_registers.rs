@@ -21,7 +21,11 @@ impl Memory{
             // DISPSTAT - Display Status Register
             0x4 => {
                 (self.v_blank as u8) |
-                ((self.h_blank as u8) << 1)
+                ((self.h_blank as u8) << 1) |
+                ((self.v_count_triggered as u8) << 2) |
+                ((self.enable_h_blank_irq as u8) << 3) |
+                ((self.enable_v_blank_irq as u8) << 4) |
+                ((self.enable_v_count_irq as u8) << 5)
             },
             0x5 => {self.v_count_trigger},
             0x6 => {self.vertical_count}, 0x7 => {0},
@@ -68,6 +72,12 @@ impl Memory{
                 self.bg_enabled[3] = (val & 0b1000) != 0;
             },
 
+            // DISPSTAT - Display Status Register
+            0x4 => {
+                self.enable_h_blank_irq = (val & (1 << 3)) != 0;
+                self.enable_v_blank_irq = (val & (1 << 4)) != 0;
+                self.enable_v_count_irq = (val & (1 << 5)) != 0;
+            },
             0x5 => {self.v_count_trigger = val;},
 
             // Background Control Registers

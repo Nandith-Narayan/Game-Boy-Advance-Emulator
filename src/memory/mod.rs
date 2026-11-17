@@ -24,10 +24,14 @@ pub struct Memory{
     pub frame_select: bool,
     pub bg_enabled: [bool; 4],
 
-    // LCD Status (0x4000002)
+    // LCD Status (0x4000004)
     pub v_blank: bool,
     pub h_blank: bool,
     pub v_count_trigger: u8,
+    pub v_count_triggered: bool,
+    pub enable_v_blank_irq: bool,
+    pub enable_h_blank_irq: bool,
+    pub enable_v_count_irq: bool,
 
     // Vertical Counter (0x4000006)
     pub vertical_count: u8,
@@ -75,6 +79,10 @@ pub fn init() -> Memory{
         v_blank: false,
         h_blank: false,
         v_count_trigger: 0,
+        v_count_triggered: false,
+        enable_v_blank_irq: false,
+        enable_h_blank_irq: false,
+        enable_v_count_irq: false,
 
         bg_control: [BackgroundControl::new(),
                      BackgroundControl::new(),

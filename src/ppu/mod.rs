@@ -44,7 +44,9 @@ impl Ppu {
         // Enter H-Blank
         if self.x == 240{
             mem.h_blank = true;
-            mem.request_interrupt(InterruptType::HBLANK);
+            if mem.enable_h_blank_irq {
+                mem.request_interrupt(InterruptType::HBLANK);
+            }
             self.x += 1;
             return;
         }
@@ -54,14 +56,16 @@ impl Ppu {
             self.x = 0;
             mem.vertical_count += 1;
             // Check if VCOUNT interrupt should occur
-            if mem.vertical_count == mem.v_count_trigger{
+            if mem.enable_v_count_irq && mem.vertical_count == mem.v_count_trigger{
                 mem.request_interrupt(InterruptType::VCOUNT);
             }
 
             // Enter V-Blank
             if mem.vertical_count == 160{
                 mem.v_blank = true;
-                mem.request_interrupt(InterruptType::VBLANK);
+                if mem.enable_v_blank_irq {
+                    mem.request_interrupt(InterruptType::VBLANK);
+                }
             }
 
             // Exit V-Blank

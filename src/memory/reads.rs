@@ -6,10 +6,12 @@ impl Memory{
             // =============== General Memory ===============
             // 0x00000000-0x00003FFF   BIOS - System ROM         (16 KBytes)
             0x00000000..=0x00003FFF => get_u32(&self.bios, address as usize),
-            // 0x02000000-0x0203FFFF   WRAM - On-board Work RAM  (256 KBytes)
-            0x02000000..=0x0203FFFF => get_u32(&self.wram_on_board, (address - 0x02000000) as usize),
-            // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
-            0x03000000..=0x03007FFF => get_u32(&self.wram_on_chip, (address - 0x03000000) as usize),
+            // 0x02000000-0x0203FFFF   EWRAM - On-board Work RAM  (256 KBytes)
+            // Mirrored up to 0x02FFFFFF
+            0x02000000..=0x02FFFFFF => get_u32(&self.wram_on_board, ((address & 0x0203FFFF) - 0x02000000) as usize),
+            // 0x03000000-0x03007FFF   IWRAM - On-chip Work RAM   (32 KBytes)
+            // Mirrored up to 0x03FFFFF
+            0x03000000..=0x03FFFFFF => get_u32(&mut self.wram_on_chip, ((address & 0x3007FFF) - 0x03000000) as usize),
 
             // =============== IO Registers ===============
             0x04000000..=0x040003FE => self.get_io_reg_32bit((address - 0x04000000) as usize),
@@ -35,10 +37,12 @@ impl Memory{
             // =============== General Memory ===============
             // 0x00000000-0x00003FFF   BIOS - System ROM         (16 KBytes)
             0x00000000..=0x00003FFF => get_u16(&self.bios, address as usize),
-            // 0x02000000-0x0203FFFF   WRAM - On-board Work RAM  (256 KBytes)
-            0x02000000..=0x0203FFFF => get_u16(&self.wram_on_board, (address - 0x02000000) as usize),
-            // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
-            0x03000000..=0x03007FFF => get_u16(&self.wram_on_chip, (address - 0x03000000) as usize),
+            // 0x02000000-0x0203FFFF   EWRAM - On-board Work RAM  (256 KBytes)
+            // Mirrored up to 0x02FFFFFF
+            0x02000000..=0x02FFFFFF => get_u16(&self.wram_on_board, ((address & 0x0203FFFF) - 0x02000000) as usize),
+            // 0x03000000-0x03007FFF   IWRAM - On-chip Work RAM   (32 KBytes)
+            // Mirrored up to 0x03FFFFF
+            0x03000000..=0x03FFFFFF => get_u16(&mut self.wram_on_chip, ((address & 0x3007FFF) - 0x03000000) as usize),
 
             // =============== IO Registers ===============
             0x04000000..=0x040003FE => self.get_io_reg_16bit((address - 0x04000000) as usize),
@@ -64,10 +68,12 @@ impl Memory{
             // =============== General Memory ===============
             // 0x00000000-0x00003FFF   BIOS - System ROM         (16 KBytes)
             0x00000000..=0x00003FFF => get_u8(&self.bios, address as usize),
-            // 0x02000000-0x0203FFFF   WRAM - On-board Work RAM  (256 KBytes)
-            0x02000000..=0x0203FFFF => get_u8(&self.wram_on_board, (address - 0x02000000) as usize),
-            // 0x03000000-0x03007FFF   WRAM - On-chip Work RAM   (32 KBytes)
-            0x03000000..=0x03007FFF => get_u8(&self.wram_on_chip, (address - 0x03000000) as usize),
+            // 0x02000000-0x0203FFFF   EWRAM - On-board Work RAM  (256 KBytes)
+            // Mirrored up to 0x02FFFFFF
+            0x02000000..=0x02FFFFFF => get_u8(&self.wram_on_board, ((address & 0x0203FFFF) - 0x02000000) as usize),
+            // 0x03000000-0x03007FFF   IWRAM - On-chip Work RAM   (32 KBytes)
+            // Mirrored up to 0x03FFFFF
+            0x03000000..=0x03FFFFFF => get_u8(&mut self.wram_on_chip, ((address & 0x3007FFF) - 0x03000000) as usize),
 
             // =============== IO Registers ===============
             0x04000000..=0x040003FE => self.read_io_register((address - 0x04000000) as usize),
