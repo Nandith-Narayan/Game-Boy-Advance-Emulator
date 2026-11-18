@@ -140,7 +140,7 @@ impl Cpu{
             Multiply => self.multiply(self.inst_arm),
             MultiplyLong => self.multiply_long(self.inst_arm),
             SoftwareInterrupt => self.software_interrupt(self.inst_arm),
-            _ =>{ println!("Unimplemented ARM instruction: {:?}", self.decode_arm);println!("PC: {:x}", self.regs[15]); exit(6);},
+            _ =>{ println!("Unimplemented ARM instruction: {:?}", self.decode_arm);println!("PC: {:x}", self.regs[15]);println!("OP: {:x}", mem.read_32(self.regs[15]-4)); exit(6);},
         };
     }
 
