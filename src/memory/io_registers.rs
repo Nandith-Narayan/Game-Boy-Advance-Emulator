@@ -44,6 +44,7 @@ impl Memory{
             0xB0..=0xDF => {self.read_dma_register(address)},
 
             // Timers
+            0x10C => {0x20},
             0x100..=0x10E => {0x0},
 
             0x130 => {(self.keypad & 0xFF) as u8},
@@ -171,22 +172,22 @@ impl Memory{
         let dma_channel = (address - 0xB0) / 0xC;
 
         match (address - 0xB0) % 0xC{
-            0x0 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF) & (value as u32); },
-            0x1 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF00) & ((value as u32) << 8); },
-            0x2 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF0000) & ((value as u32) << 16); },
-            0x3 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF000000) & ((value as u32) << 24); },
+            0x0 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF) | (value as u32); },
+            0x1 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF00) | ((value as u32) << 8); },
+            0x2 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF0000) | ((value as u32) << 16); },
+            0x3 => { self.dma_source_addr[dma_channel] = (self.dma_source_addr[dma_channel] & !0xFF000000) | ((value as u32) << 24); },
 
-            0x4 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF) & (value as u32); },
-            0x5 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF00) & ((value as u32) << 8); },
-            0x6 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF0000) & ((value as u32) << 16); },
-            0x7 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF000000) & ((value as u32) << 24); },
+            0x4 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF) | (value as u32); },
+            0x5 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF00) | ((value as u32) << 8); },
+            0x6 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF0000) | ((value as u32) << 16); },
+            0x7 => { self.dma_destination_addr[dma_channel] = (self.dma_destination_addr[dma_channel] & !0xFF000000) | ((value as u32) << 24); },
 
-            0x8 => { self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF) & (value as u32); },
-            0x9 => { self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF00) & ((value as u32) << 8); },
-            0xA => { self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF0000) & ((value as u32) << 16); },
+            0x8 => { self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF) | (value as u32); },
+            0x9 => { self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF00) | ((value as u32) << 8); },
+            0xA => { self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF0000) | ((value as u32) << 16); },
             0xB => {
                 // Highest bit of dma_control register initiates DMA transfer
-                self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF000000) & ((value as u32) << 24);
+                self.dma_control[dma_channel] = (self.dma_control[dma_channel] & !0xFF000000) | ((value as u32) << 24);
 
                 let dma_control = self.dma_control[dma_channel];
 
