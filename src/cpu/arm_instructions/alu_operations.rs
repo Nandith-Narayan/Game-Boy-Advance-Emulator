@@ -285,6 +285,17 @@ impl Cpu{
                             }
 
                         },
+                        IRQ => {
+
+                            self.set_cpsr(self.spsr_irq);
+                            let should_enter_thumb_mode = (self.spsr_irq & (1<<5)) != 0;
+                            let new_mode = self.num_to_cpu_mode(self.spsr_irq & 0x1F);
+                            self.switch_mode(new_mode);
+                            if should_enter_thumb_mode {
+                                self.instruction_set = THUMB;
+                            }
+
+                        },
                         _ => { println!("Unimplemented situation: Rd = 15, S-bit is set, and CPU is in {:?} mode.", self.mode); }
                     }
                 //}
