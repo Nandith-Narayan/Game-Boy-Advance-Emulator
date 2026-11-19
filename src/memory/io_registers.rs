@@ -51,6 +51,13 @@ impl Memory{
             0x131 => {((self.keypad >> 8 )& 0xFF) as u8},
             0x132 | 0x133 => {0},
 
+            // Interrupt Enable
+            0x200 => {
+                (self.interrupt_enable & 0xFF) as u8
+            },
+            0x201 => {
+                ((self.interrupt_enable & 0xFF00) >> 8) as u8
+            }
             // Interrupt Master Enable
             0x208 => {
               self.interrupt_master_enable as u8
@@ -80,6 +87,8 @@ impl Memory{
                 self.enable_h_blank_irq = (val & (1 << 3)) != 0;
                 self.enable_v_blank_irq = (val & (1 << 4)) != 0;
                 self.enable_v_count_irq = (val & (1 << 5)) != 0;
+
+                println!("IRQ enambles: {},{},{}", self.enable_h_blank_irq, self.enable_v_count_irq, self.enable_v_count_irq);
             },
             0x5 => {self.v_count_trigger = val;},
 
