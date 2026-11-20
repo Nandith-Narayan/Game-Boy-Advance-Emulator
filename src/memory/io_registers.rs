@@ -59,10 +59,10 @@ impl Memory{
                 ((self.interrupt_enable & 0xFF00) >> 8) as u8
             }
             // Interrupt Flags Register
-            0x200 => {
+            0x202 => {
                 (self.interrupt_flags & 0xFF) as u8
             },
-            0x201 => {
+            0x203 => {
                 ((self.interrupt_flags & 0xFF00) >> 8) as u8
             },
             // Interrupt Master Enable
