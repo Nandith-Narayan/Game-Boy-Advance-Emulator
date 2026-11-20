@@ -18,7 +18,7 @@ impl Cpu{
 
         // Perform IRQ if applicable
         if !self.irq_disable && mem.interrupt_ready{
-
+            println!("IRQ Triggered from ARM");
             let next_instr_addr;
             // Check to see how full the pipeline is, and compute address of next instruction
             if self.decode_arm == EMPTY {
@@ -26,7 +26,11 @@ impl Cpu{
             }else{
                 next_instr_addr = self.get_r(15)-4;
             }
+
+            // Save CPSR to SPSR
+            self.set_spsr(IRQ, self.get_cpsr());
             self.switch_mode(IRQ);
+
             self.set_r(14, next_instr_addr);
             self.irq_disable = true;
             self.instruction_set = ARM;
@@ -154,33 +158,5 @@ impl Cpu{
         self.fetch_thumb = 0;
         self.inst_thumb = 0;
         self.decode_thumb = THUMBInstruction::EMPTY;
-    }
-
-    // Helper function to populate CPU flags & control bits based on CPSR bytes
-    pub fn set_cpsr(&mut self, cpsr: u32){
-        self.n = (cpsr & (1 << 31)) != 0;
-        self.z = (cpsr & (1 << 30)) != 0;
-        self.c = (cpsr & (1 << 29)) != 0;
-        self.v = (cpsr & (1 << 28)) != 0;
-
-        self.irq_disable = (cpsr & (1 << 7)) != 0;
-
-    }
-    // Helper function to convert CPU status into a bit field
-    pub fn get_cpsr(&self) -> u32{
-        let mut cpsr = 0;
-
-        if self.n {cpsr |= 1<<31;}
-        if self.z {cpsr |= 1<<30;}
-        if self.c {cpsr |= 1<<29;}
-        if self.v {cpsr |= 1<<28;}
-
-        if self.irq_disable {cpsr |= 1<<7;}
-
-        if self.instruction_set == THUMB {cpsr |= 1<<5;}
-
-        cpsr |= self.mode as u32;
-
-        return cpsr;
     }
  }

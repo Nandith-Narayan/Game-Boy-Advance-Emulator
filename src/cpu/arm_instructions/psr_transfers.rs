@@ -1,4 +1,5 @@
 use crate::cpu::enums::CPUMode::{FIQ, IRQ, SUPERVISOR, USER};
+use crate::cpu::helper_functions::num_to_cpu_mode;
 use super::Cpu;
 
 impl Cpu{
@@ -27,8 +28,8 @@ impl Cpu{
                 self.v = (operand & (1 << 28)) != 0;
             }
             if write_to_control_bits {
-                println!("operand = {:#4x}", operand);
-                let new_mode = self.num_to_cpu_mode(operand & 0x01F);
+                self.irq_disable = (operand & (1<<7)) != 0;
+                let new_mode = num_to_cpu_mode(operand & 0x01F);
                 self.switch_mode(new_mode);
             }
 
@@ -42,20 +43,8 @@ impl Cpu{
                 mask |= 0x000000FF
             }
 
-
-            match self.mode{
-                USER => {println!("CPU user mode doesn't have a SPSR");},
-                FIQ => {
-                    self.spsr_fiq = (self.spsr_fiq & (!mask)) | (operand & mask);
-                },
-                IRQ => {
-                    self.spsr_irq = (self.spsr_irq & (!mask)) | (operand & mask);
-                },
-                SUPERVISOR => {
-                    self.spsr_svc = (self.spsr_svc & (!mask)) | (operand & mask);
-                },
-                _ => {println!("failed to set CPU {:?} mode's SPSR.", self.mode);},
-            }
+            let old_spsr_value = self.get_spsr(self.mode);
+            self.set_spsr(self.mode, (old_spsr_value & (!mask)) | (operand & mask));
         }
     }
 
@@ -64,16 +53,8 @@ impl Cpu{
         let rd = (inst >> 12) & 0xF;
 
         if !source_is_cpsr {
-            //println!("TRANSFER FROM SPSR NOT IMPLEMENTED");
-            if self.mode == IRQ{
-                self.set_r(rd as usize, self.spsr_irq);
-            }else if self.mode == FIQ {
-                self.set_r(rd as usize, self.spsr_fiq);
-            }else if self.mode == SUPERVISOR {
-                self.set_r(rd as usize, self.spsr_svc);
-            }else{
-                println!("TRANSFER FROM SPSR NOT IMPLEMENTED FOR MODE {:?}", self.mode);
-            }
+            let spsr_val = self.get_spsr(self.mode);
+            self.set_r(rd as usize, spsr_val);
         }else {
             self.set_r(rd as usize, self.get_cpsr());
         }

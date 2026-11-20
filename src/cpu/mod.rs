@@ -12,7 +12,7 @@ mod arm_decode;
 mod thumb_instructions;
 mod thumb;
 mod thumb_decode;
-mod helper_functions;
+pub(crate) mod helper_functions;
 
 pub struct Cpu{
     pub regs: [u32; 31],

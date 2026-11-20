@@ -6,6 +6,7 @@ mod run_tests {
     use crate::cpu::Cpu;
     use crate::cpu::enums::CPUMode::*;
     use crate::cpu::enums::RegisterName::*;
+    use crate::cpu::helper_functions::num_to_cpu_mode;
 
     #[derive(Serialize, Deserialize)]
     struct TransactionData {
@@ -182,7 +183,7 @@ mod run_tests {
         display_bool("V", cpu.v, (expected.cpsr & (1 << 28)) != 0, (initial.cpsr & (1 << 28)) != 0);
     }
     fn load_cpu(cpu: &mut Cpu, data: State){
-        let mode = cpu.num_to_cpu_mode(data.cpsr & 0b1_1111);
+        let mode = num_to_cpu_mode(data.cpsr & 0b1_1111);
         match mode{
             USER | SYSTEM => {
                 cpu.reg_map[8] = R8 as usize;

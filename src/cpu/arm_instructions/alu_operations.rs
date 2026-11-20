@@ -269,32 +269,9 @@ impl Cpu{
                 // TEST, TEQ, CMP, CMN don't switch modes
                 //if opcode != 8 && opcode != 9 && opcode != 10 && opcode != 11 {
                     match self.mode {
-                        FIQ => {
-                            self.set_cpsr(self.spsr_fiq);
-                            let new_mode = self.num_to_cpu_mode(self.spsr_fiq & 0x1F);
-                            self.switch_mode(new_mode);
-                        },
-                        SUPERVISOR => {
-
-                            self.set_cpsr(self.spsr_svc);
-                            let should_enter_thumb_mode = (self.spsr_svc & (1<<5)) != 0;
-                            let new_mode = self.num_to_cpu_mode(self.spsr_svc & 0x1F);
-                            self.switch_mode(new_mode);
-                            if should_enter_thumb_mode {
-                                self.instruction_set = THUMB;
-                            }
-
-                        },
-                        IRQ => {
-
-                            self.set_cpsr(self.spsr_irq);
-                            let should_enter_thumb_mode = (self.spsr_irq & (1<<5)) != 0;
-                            let new_mode = self.num_to_cpu_mode(self.spsr_irq & 0x1F);
-                            self.switch_mode(new_mode);
-                            if should_enter_thumb_mode {
-                                self.instruction_set = THUMB;
-                            }
-
+                        FIQ | SUPERVISOR | IRQ => {
+                            let spsr_val = self.get_spsr(self.mode);
+                            self.set_cpsr_and_switch_mode(spsr_val);
                         },
                         _ => { println!("Unimplemented situation: Rd = 15, S-bit is set, and CPU is in {:?} mode.", self.mode); }
                     }

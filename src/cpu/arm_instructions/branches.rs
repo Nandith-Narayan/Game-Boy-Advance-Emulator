@@ -35,8 +35,10 @@ impl Cpu{
 
     pub fn software_interrupt(&mut self, inst: u32){
         let next_instr_addr = self.get_r(15) - 4;
-
+        // Save CPSR to SPSR
+        self.set_spsr(SUPERVISOR, self.get_cpsr());
         self.switch_mode(SUPERVISOR);
+        
         self.set_r(14, next_instr_addr);
         self.instruction_set = ARM;
         // software interrupt vector = 0x8

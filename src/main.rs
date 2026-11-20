@@ -68,6 +68,8 @@ fn main() {
             /*if cpu.get_r(15) == 0x080002AC {
                 flag = 50;
             }*/
+            //println!("PC= {:x}, IE= {:16b}, IF= {:16b}, IME= {}, IRQ_disable= {}", cpu.regs[15], mem.interrupt_enable, mem.interrupt_flags, mem.interrupt_master_enable, cpu.irq_disable);
+
             if LOG && (cpu.decode_arm != EMPTY || cpu.decode_thumb != THUMBInstruction::EMPTY){
                 let mut s = String::new();
                 for i in 0..=15{

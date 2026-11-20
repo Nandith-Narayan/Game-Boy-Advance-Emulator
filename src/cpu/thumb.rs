@@ -14,7 +14,7 @@ impl Cpu{
 
         // Perform IRQ if applicable
         if !self.irq_disable && mem.interrupt_ready{
-
+            println!("IRQ Triggered from THUMB");
             let next_instr_addr;
             // Check to see how full the pipeline is, and compute address of next instruction
             if self.decode_thumb == EMPTY {
@@ -22,7 +22,11 @@ impl Cpu{
             }else{
                 next_instr_addr = self.get_r(15)-2;
             }
+
+            // Save CPSR to SPSR
+            self.set_spsr(IRQ, self.get_cpsr());
             self.switch_mode(IRQ);
+
             self.set_r(14, next_instr_addr);
             self.irq_disable = true;
             self.instruction_set = ARM;
