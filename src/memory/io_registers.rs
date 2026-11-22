@@ -23,8 +23,8 @@ impl Memory{
                 (self.v_blank as u8) |
                 ((self.h_blank as u8) << 1) |
                 ((self.v_count_triggered as u8) << 2) |
-                ((self.enable_h_blank_irq as u8) << 3) |
-                ((self.enable_v_blank_irq as u8) << 4) |
+                ((self.enable_v_blank_irq as u8) << 3) |
+                ((self.enable_h_blank_irq as u8) << 4) |
                 ((self.enable_v_count_irq as u8) << 5)
             },
             0x5 => {self.v_count_trigger},
@@ -91,8 +91,8 @@ impl Memory{
 
             // DISPSTAT - Display Status Register
             0x4 => {
-                self.enable_h_blank_irq = (val & (1 << 3)) != 0;
-                self.enable_v_blank_irq = (val & (1 << 4)) != 0;
+                self.enable_v_blank_irq = (val & (1 << 3)) != 0;
+                self.enable_h_blank_irq = (val & (1 << 4)) != 0;
                 self.enable_v_count_irq = (val & (1 << 5)) != 0;
 
                 println!("IRQ enambles: {},{},{}", self.enable_h_blank_irq, self.enable_v_count_irq, self.enable_v_count_irq);
@@ -144,9 +144,6 @@ impl Memory{
             0x203 => {
                 self.interrupt_flags &= !((val as u16) << 8);
                 self.check_for_interrupt();
-                println!("Interrupt flags: {:b}", self.interrupt_flags);
-                println!("Interrupt enable: {:b}", self.interrupt_enable);
-                println!("Interrupt master enable: {}", self.interrupt_master_enable);
             },
 
             // Interrupt Master Enable
@@ -155,6 +152,7 @@ impl Memory{
                 self.check_for_interrupt();
                 println!("Interrupt master enable: {}", self.interrupt_master_enable);
             },
+            0x209 => {},
 
             _ => {println!("Writing to unimplemented IO Reg @ {:#4x}, with value {:#x} ({})", address, val, val);},
         };
@@ -248,6 +246,8 @@ impl Memory{
 
                     if dma_transfer.timing_mode == IMMEDIATE{
                         dma_transfer.start(self);
+                        // Clear enable bit after DMA finishes
+                        self.dma_control[dma_channel] &= !(1<<31);
                     }
 
                 }
