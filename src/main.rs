@@ -68,8 +68,6 @@ fn main() {
             /*if cpu.get_r(15) == 0x080002AC {
                 flag = 50;
             }*/
-            //println!("PC= {:x}, IE= {:16b}, IF= {:16b}, IME= {}, IRQ_disable= {}", cpu.regs[15], mem.interrupt_enable, mem.interrupt_flags, mem.interrupt_master_enable, cpu.irq_disable);
-
             if LOG && (cpu.decode_arm != EMPTY || cpu.decode_thumb != THUMBInstruction::EMPTY){
                 let mut s = String::new();
                 for i in 0..=15{
@@ -91,6 +89,13 @@ fn main() {
                 println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[4] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, LR = {:#4x}, PC = {:#4x}, Carry Flag: {}, Neg Flag: {}, V Flag: {}, Zero Flag: {}, {:?}",
                          cpu.regs[0], cpu.regs[1], cpu.regs[2], cpu.regs[3],cpu.get_r(4), cpu.regs[5], cpu.get_r(13), cpu.get_r(14), cpu.regs[15], cpu.c, cpu.n, cpu.v, cpu.z, cpu.instruction_set);
                 //println!("{}", mem.vertical_count);
+                if flag == 0{
+                    for b in 0..1000{
+                        print!("{:x} ", mem.read_32(0x06000000+b));
+                    }
+
+                    exit(5);
+                }
             }
 
 

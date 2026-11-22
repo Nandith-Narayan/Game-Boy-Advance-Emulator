@@ -67,6 +67,7 @@ impl Ppu {
                 if mem.enable_v_blank_irq {
                     mem.request_interrupt(InterruptType::VBLANK);
                 }
+                println!("DISPSTAT: {:x}, IF: {:x}", mem.read_16(0x04000004), mem.read_16(0x04000202));
             }
 
             // Exit V-Blank

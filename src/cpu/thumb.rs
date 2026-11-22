@@ -22,6 +22,7 @@ impl Cpu{
             }else{
                 next_instr_addr = self.get_r(15)-2;
             }
+            println!("next instr addr: {:#x}", next_instr_addr);
 
             // Save CPSR to SPSR
             self.set_spsr(IRQ, self.get_cpsr());
