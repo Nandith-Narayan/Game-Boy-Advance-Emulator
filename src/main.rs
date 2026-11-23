@@ -57,8 +57,8 @@ fn main() {
                                 .create(true)
                                 .open("log.txt")
                                 .unwrap();
-
-
+    mem.write_8(0x0E000000, 0xC2);
+    mem.write_8(0x0E000001, 0x09);
     let mut flag= 0;
     let LOG = false;
     while true {
@@ -112,7 +112,6 @@ fn main() {
         }
         mem.keypad = 0xFFFF;
         if window.is_key_down(Key::A){
-            exit(0);
             mem.keypad ^= 0b1;
         }
         if window.is_key_down(Key::B){
