@@ -56,7 +56,7 @@ pub struct Memory{
 
     // Game Pak
     pub rom: Vec<u8>,
-    sram: [u8; 1<<16],
+    pub sram: [u8; 1<<16],
 }
 
 pub fn init() -> Memory{

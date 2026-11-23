@@ -251,7 +251,6 @@ impl Memory{
                     }
 
                 }
-
             },
 
             _ => {eprintln!("Impossible to reach!");}

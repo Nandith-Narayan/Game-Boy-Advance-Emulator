@@ -74,10 +74,6 @@ impl Cpu {
     }
 
     pub fn thumb_software_interrupt(&mut self, inst: u16, mem: &mut Memory){
-        println!("SWI Called from THUMB: {:x}", inst & 0xFF);
-        if (inst & 0xFF) == 0x12{
-            exit(7);
-        }
         let next_instr_addr = self.get_r(15) - 2;
         // Save CPSR to SPSR
         self.set_spsr(SUPERVISOR, self.get_cpsr());
