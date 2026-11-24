@@ -19,7 +19,8 @@ impl Memory{
 
             // =============== Display Memory ===============
             // 0x05000000-0x050003FF   BG/OBJ Palette RAM        (1 KByte)
-            0x05000000..=0x050003FF => set_u32(&mut self.palette_ram, (address - 0x05000000) as usize, value),
+            // Mirrored up to 0x05FFFFFF
+            0x05000000..=0x05FFFFFF => set_u32(&mut self.palette_ram, ((address & 0x050003FF) - 0x05000000) as usize, value),
             // 0x06000000-0x06017FFF   VRAM - Video RAM          (96 KBytes)
             0x06000000..=0x06017FFF => set_u32(&mut self.vram, (address - 0x06000000) as usize, value),
             // 0x07000000-0x070003FF   OAM - OBJ Attributes      (1 KByte)
@@ -50,7 +51,8 @@ impl Memory{
 
             // =============== Display Memory ===============
             // 0x05000000-0x050003FF   BG/OBJ Palette RAM        (1 KByte)
-            0x05000000..=0x050003FF => set_u16(&mut self.palette_ram, (address - 0x05000000) as usize, value),
+            // Mirrored up to 0x05FFFFFF
+            0x05000000..=0x05FFFFFF => set_u16(&mut self.palette_ram, ((address & 0x050003FF) - 0x05000000) as usize, value),
             // 0x06000000-0x06017FFF   VRAM - Video RAM          (96 KBytes)
             0x06000000..=0x06017FFF => set_u16(&mut self.vram, (address - 0x06000000) as usize, value),
             // 0x07000000-0x070003FF   OAM - OBJ Attributes      (1 KByte)
@@ -81,7 +83,8 @@ impl Memory{
 
             // =============== Display Memory ===============
             // 0x05000000-0x050003FF   BG/OBJ Palette RAM        (1 KByte)
-            0x05000000..=0x050003FF => set_u8(&mut self.palette_ram, (address - 0x05000000) as usize, value),
+            // Mirrored up to 0x05FFFFFF
+            0x05000000..=0x05FFFFFF => set_u8(&mut self.palette_ram, ((address & 0x050003FF) - 0x05000000) as usize, value),
             // 0x06000000-0x06017FFF   VRAM - Video RAM          (96 KBytes)
             0x06000000..=0x06017FFF => set_u8(&mut self.vram, (address - 0x06000000) as usize, value),
             // 0x07000000-0x070003FF   OAM - OBJ Attributes      (1 KByte)

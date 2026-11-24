@@ -1,7 +1,7 @@
 use super::Memory;
 
 impl Memory{
-    pub fn read_32(&mut self, address:u32) -> u32{
+    pub fn read_32(&self, address:u32) -> u32{
         match address{
             // =============== General Memory ===============
             // 0x00000000-0x00003FFF   BIOS - System ROM         (16 KBytes)
@@ -11,14 +11,15 @@ impl Memory{
             0x02000000..=0x02FFFFFF => get_u32(&self.wram_on_board, ((address & 0x0203FFFF) - 0x02000000) as usize),
             // 0x03000000-0x03007FFF   IWRAM - On-chip Work RAM   (32 KBytes)
             // Mirrored up to 0x03FFFFF
-            0x03000000..=0x03FFFFFF => get_u32(&mut self.wram_on_chip, ((address & 0x3007FFF) - 0x03000000) as usize),
+            0x03000000..=0x03FFFFFF => get_u32(&self.wram_on_chip, ((address & 0x3007FFF) - 0x03000000) as usize),
 
             // =============== IO Registers ===============
             0x04000000..=0x040003FE => self.get_io_reg_32bit((address - 0x04000000) as usize),
 
             // =============== Display Memory ===============
             // 0x05000000-0x050003FF   BG/OBJ Palette RAM        (1 KByte)
-            0x05000000..=0x050003FF => get_u32(&self.palette_ram, (address - 0x05000000) as usize),
+            // Mirrored up to 0x05FFFFFF
+            0x05000000..=0x05FFFFFF => get_u32(&self.palette_ram, ((address & 0x050003FF) - 0x05000000) as usize),
             // 0x06000000-0x06017FFF   VRAM - Video RAM          (96 KBytes)
             0x06000000..=0x06017FFF => get_u32(&self.vram, (address - 0x06000000) as usize),
             // 0x07000000-0x070003FF   OAM - OBJ Attributes      (1 KByte)
@@ -32,7 +33,7 @@ impl Memory{
             _ => {eprintln!("32-bit Read at {:#08x}", address); 0},
         }
     }
-    pub fn read_16(&mut self, address:u32) -> u16{
+    pub fn read_16(&self, address:u32) -> u16{
         match address{
             // =============== General Memory ===============
             // 0x00000000-0x00003FFF   BIOS - System ROM         (16 KBytes)
@@ -42,14 +43,15 @@ impl Memory{
             0x02000000..=0x02FFFFFF => get_u16(&self.wram_on_board, ((address & 0x0203FFFF) - 0x02000000) as usize),
             // 0x03000000-0x03007FFF   IWRAM - On-chip Work RAM   (32 KBytes)
             // Mirrored up to 0x03FFFFF
-            0x03000000..=0x03FFFFFF => get_u16(&mut self.wram_on_chip, ((address & 0x3007FFF) - 0x03000000) as usize),
+            0x03000000..=0x03FFFFFF => get_u16(&self.wram_on_chip, ((address & 0x3007FFF) - 0x03000000) as usize),
 
             // =============== IO Registers ===============
             0x04000000..=0x040003FE => self.get_io_reg_16bit((address - 0x04000000) as usize),
 
             // =============== Display Memory ===============
             // 0x05000000-0x050003FF   BG/OBJ Palette RAM        (1 KByte)
-            0x05000000..=0x050003FF => get_u16(&self.palette_ram, (address - 0x05000000) as usize),
+            // Mirrored up to 0x05FFFFFF
+            0x05000000..=0x05FFFFFF => get_u16(&self.palette_ram, ((address & 0x050003FF) - 0x05000000) as usize),
             // 0x06000000-0x06017FFF   VRAM - Video RAM          (96 KBytes)
             0x06000000..=0x06017FFF => get_u16(&self.vram, (address - 0x06000000) as usize),
             // 0x07000000-0x070003FF   OAM - OBJ Attributes      (1 KByte)
@@ -63,7 +65,7 @@ impl Memory{
             _ => {eprintln!("16-bit Read at {:#08x}", address); 0},
         }
     }
-    pub fn read_8(&mut self, address:u32) -> u8{
+    pub fn read_8(&self, address:u32) -> u8{
         match address{
             // =============== General Memory ===============
             // 0x00000000-0x00003FFF   BIOS - System ROM         (16 KBytes)
@@ -73,14 +75,15 @@ impl Memory{
             0x02000000..=0x02FFFFFF => get_u8(&self.wram_on_board, ((address & 0x0203FFFF) - 0x02000000) as usize),
             // 0x03000000-0x03007FFF   IWRAM - On-chip Work RAM   (32 KBytes)
             // Mirrored up to 0x03FFFFF
-            0x03000000..=0x03FFFFFF => get_u8(&mut self.wram_on_chip, ((address & 0x3007FFF) - 0x03000000) as usize),
+            0x03000000..=0x03FFFFFF => get_u8(&self.wram_on_chip, ((address & 0x3007FFF) - 0x03000000) as usize),
 
             // =============== IO Registers ===============
             0x04000000..=0x040003FE => self.read_io_register((address - 0x04000000) as usize),
 
             // =============== Display Memory ===============
             // 0x05000000-0x050003FF   BG/OBJ Palette RAM        (1 KByte)
-            0x05000000..=0x050003FF => get_u8(&self.palette_ram, (address - 0x05000000) as usize),
+            // Mirrored up to 0x05FFFFFF
+            0x05000000..=0x05FFFFFF => get_u8(&self.palette_ram, ((address & 0x050003FF) - 0x05000000) as usize),
             // 0x06000000-0x06017FFF   VRAM - Video RAM          (96 KBytes)
             0x06000000..=0x06017FFF => get_u8(&self.vram, (address - 0x06000000) as usize),
             // 0x07000000-0x070003FF   OAM - OBJ Attributes      (1 KByte)
