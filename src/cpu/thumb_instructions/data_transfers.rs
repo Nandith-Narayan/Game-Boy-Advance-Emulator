@@ -48,7 +48,7 @@ impl Cpu {
                 mem.write_16(address, self.get_r(rd as usize) as u16);
             },
             (false, true)=>{
-                self.set_r(rd as usize, (mem.read_16(address & 0xFFFFFFFE) as u32).rotate_right((address & 0b11) * 8));
+                self.set_r(rd as usize, (mem.read_16(address & 0xFFFFFFFE) as u32).rotate_right((address & 0b1) * 8));
             },
             (true, false)=>{
                 self.set_r(rd as usize, mem.read_8(address) as i8 as i32 as u32);
