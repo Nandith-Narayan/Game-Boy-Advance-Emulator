@@ -38,7 +38,8 @@ impl Cpu{
         // Save CPSR to SPSR
         self.set_spsr(SUPERVISOR, self.get_cpsr());
         self.switch_mode(SUPERVISOR);
-        
+        self.irq_disable = true;
+
         self.set_r(14, next_instr_addr);
         self.instruction_set = ARM;
         // software interrupt vector = 0x8
