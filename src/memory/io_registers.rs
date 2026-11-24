@@ -44,7 +44,7 @@ impl Memory{
             0xB0..=0xDF => {self.read_dma_register(address)},
 
             // Timers
-            0x10C => {0x20},
+            0x10C => {0xFF},
             0x100..=0x10E => {0x0},
 
             0x130 => {(self.keypad & 0xFF) as u8},
@@ -150,7 +150,6 @@ impl Memory{
             0x208 => {
                 self.interrupt_master_enable = (val & 0x1) != 0;
                 self.check_for_interrupt();
-                println!("Interrupt master enable: {}", self.interrupt_master_enable);
             },
             0x209 => {},
 
