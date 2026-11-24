@@ -65,7 +65,7 @@ fn main() {
         for _i in 1..n {
             //println!("R[7] = {:#4x} ({})", cpu.get_r(7), cpu.get_r(7));
             //println!("R[11] = {:#4x} ({})", cpu.get_r(11), cpu.get_r(11));
-            /*if cpu.get_r(15) == 0x080002AC {
+            /*if cpu.get_r(15) == 0x0000035A && cpu.get_r(14) == 0x1E{
                 flag = 50;
             }*/
             if LOG && (cpu.decode_arm != EMPTY || cpu.decode_thumb != THUMBInstruction::EMPTY){
@@ -90,10 +90,6 @@ fn main() {
                          cpu.regs[0], cpu.regs[1], cpu.regs[2], cpu.regs[3],cpu.get_r(4), cpu.regs[5], cpu.get_r(13), cpu.get_r(14), cpu.regs[15], cpu.c, cpu.n, cpu.v, cpu.z, cpu.instruction_set);
                 //println!("{}", mem.vertical_count);
                 if flag == 0{
-                    for b in 0..1000{
-                        print!("{:x} ", mem.read_32(0x06000000+b));
-                    }
-
                     exit(5);
                 }
             }
@@ -112,9 +108,24 @@ fn main() {
         }
         mem.keypad = 0xFFFF;
         if window.is_key_down(Key::A){
+            for i in 0..32{
+                print!("{:2x} ", mem.palette_ram[i]);
+            }
+            println!();
+            for i in 0x37714..0x37734{
+                print!("{:2x} ", mem.wram_on_board[i]);
+            }
+            exit(50);
             mem.keypad ^= 0b1;
         }
         if window.is_key_down(Key::B){
+
+            let vals = [00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x10, 0xE3, 0x1C, 0x46, 0x29, 0xAA, 0x35, 0x0D, 0x42, 0x71, 0x4E, 0xD4, 0x5A, 0x38, 0x67, 0x9B, 0x73, 0xFF, 0x7F];
+
+            for i in 0..vals.len(){
+                mem.palette_ram[i] = vals[i];
+            }
+            //exit(40);
             mem.keypad ^= 0b10;
         }
         if window.is_key_down(Key::Enter){
