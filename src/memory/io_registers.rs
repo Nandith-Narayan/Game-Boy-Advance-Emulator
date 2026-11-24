@@ -120,6 +120,9 @@ impl Memory{
 
             }
 
+            // Audio Registers TODO: implement Audio IO Registers
+            0xA0..=0xA7 => {},
+
             // DMA Registers
             0xB0..=0xDF => {self.write_dma_register(address, val);},
 
@@ -242,6 +245,7 @@ impl Memory{
                     };
 
                     println!("Initiated DMA Transfer {:?}",dma_transfer);
+                    println!("DMA Transfer Dest {:#x}", self.dma_destination_addr[dma_channel]);
 
                     if dma_transfer.timing_mode == IMMEDIATE{
                         dma_transfer.start(self);
