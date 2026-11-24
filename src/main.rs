@@ -108,24 +108,17 @@ fn main() {
         }
         mem.keypad = 0xFFFF;
         if window.is_key_down(Key::A){
-            for i in 0..32{
-                print!("{:2x} ", mem.palette_ram[i]);
+            for i in 0x20..0x40{
+                print!("{:2x} ", mem.vram[i]);
             }
             println!();
-            for i in 0x37714..0x37734{
-                print!("{:2x} ", mem.wram_on_board[i]);
+            for i in 0x8140..0x8160{
+                print!("{:2x} ", mem.vram[i]);
             }
-            exit(50);
+            exit(40);
             mem.keypad ^= 0b1;
         }
         if window.is_key_down(Key::B){
-
-            let vals = [00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x80, 0x10, 0xE3, 0x1C, 0x46, 0x29, 0xAA, 0x35, 0x0D, 0x42, 0x71, 0x4E, 0xD4, 0x5A, 0x38, 0x67, 0x9B, 0x73, 0xFF, 0x7F];
-
-            for i in 0..vals.len(){
-                mem.palette_ram[i] = vals[i];
-            }
-            //exit(40);
             mem.keypad ^= 0b10;
         }
         if window.is_key_down(Key::Enter){
