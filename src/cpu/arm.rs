@@ -18,7 +18,7 @@ impl Cpu{
 
         // Perform IRQ if applicable
         if !self.irq_disable && mem.interrupt_ready{
-            println!("IRQ Triggered from ARM");
+            //println!("IRQ Triggered from ARM");
             let next_instr_addr;
             // Check to see how full the pipeline is, and compute address of next instruction
             if self.decode_arm == EMPTY {
