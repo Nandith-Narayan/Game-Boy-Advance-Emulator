@@ -22,7 +22,7 @@ impl Memory{
             0x05000000..=0x05FFFFFF => get_u32(&self.palette_ram, ((address & 0x050003FF) - 0x05000000) as usize),
             // 0x06000000-0x06017FFF   VRAM - Video RAM          (96 KBytes)
             // Mirrored first up to 0x0601FFFF and then up to 0x06FFFFFF
-            0x06000000..=0x06FFFFFF => get_u32(&self.vram, ((address & 0x06017FFF) - 0x06000000) as usize),
+            0x06000000..=0x06FFFFFF => get_u32(&self.vram, (address - 0x06000000) as usize),
             // 0x07000000-0x070003FF   OAM - OBJ Attributes      (1 KByte)
             0x07000000..=0x070003FF => get_u32(&self.oam, (address - 0x07000000) as usize),
 
@@ -55,7 +55,7 @@ impl Memory{
             0x05000000..=0x05FFFFFF => get_u16(&self.palette_ram, ((address & 0x050003FF) - 0x05000000) as usize),
             // 0x06000000-0x06017FFF   VRAM - Video RAM          (96 KBytes)
             // Mirrored first up to 0x0601FFFF and then up to 0x06FFFFFF
-            0x06000000..=0x06FFFFFF => get_u16(&self.vram, ((address & 0x06017FFF) - 0x06000000) as usize),
+            0x06000000..=0x06FFFFFF => get_u16(&self.vram, (address - 0x06000000) as usize),
             // 0x07000000-0x070003FF   OAM - OBJ Attributes      (1 KByte)
             0x07000000..=0x070003FF => get_u16(&self.oam, (address - 0x07000000) as usize),
 
@@ -88,7 +88,7 @@ impl Memory{
             0x05000000..=0x05FFFFFF => get_u8(&self.palette_ram, ((address & 0x050003FF) - 0x05000000) as usize),
             // 0x06000000-0x06017FFF   VRAM - Video RAM          (96 KBytes)
             // Mirrored first up to 0x0601FFFF and then up to 0x06FFFFFF
-            0x06000000..=0x06FFFFFF => get_u8(&self.vram, ((address & 0x06017FFF) - 0x06000000) as usize),
+            0x06000000..=0x06FFFFFF => get_u8(&self.vram, (address - 0x06000000) as usize),
             // 0x07000000-0x070003FF   OAM - OBJ Attributes      (1 KByte)
             0x07000000..=0x070003FF => get_u8(&self.oam, (address - 0x07000000) as usize),
 
