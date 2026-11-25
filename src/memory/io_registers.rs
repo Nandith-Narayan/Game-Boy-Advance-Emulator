@@ -115,7 +115,7 @@ impl Memory{
                     self.bg_scroll_regs[(address-0x10)/2] |= val as u16;
                 }else{
                     self.bg_scroll_regs[(address-0x10)/2] &= 0x00FF;
-                    self.bg_scroll_regs[(address-0x10)/2] |= (val as u16)<<8;
+                    self.bg_scroll_regs[(address-0x10)/2] |= ((val as u16) & 0x1)<<8;
                 }
 
             }
@@ -244,8 +244,10 @@ impl Memory{
                         raise_irq,
                     };
 
-                    println!("Initiated DMA Transfer {:?}",dma_transfer);
-                    println!("DMA Transfer Dest {:#x}", self.dma_destination_addr[dma_channel]);
+                    if dma_channel > 2 {
+                        println!("Initiated DMA Transfer {:?}", dma_transfer);
+                        println!("DMA Transfer Dest {:#x}", self.dma_destination_addr[dma_channel]);
+                    }
 
                     if dma_transfer.timing_mode == IMMEDIATE{
                         dma_transfer.start(self);
