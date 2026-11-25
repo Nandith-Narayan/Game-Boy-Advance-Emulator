@@ -31,7 +31,7 @@ impl Cpu{
             self.set_spsr(IRQ, self.get_cpsr());
             self.switch_mode(IRQ);
 
-            self.set_r(14, next_instr_addr);
+            self.set_r(14, next_instr_addr+4);
             self.irq_disable = true;
             self.instruction_set = ARM;
             // IRQ BIOS interrupt vector = 0x18

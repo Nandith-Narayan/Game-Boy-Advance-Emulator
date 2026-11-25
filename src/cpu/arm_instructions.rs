@@ -19,7 +19,7 @@ impl Cpu {
 
     pub fn switch_mode(&mut self, new_mode: CPUMode){
 
-        //println!("Mode swap triggered: {:?} -> {:?}", self.mode, new_mode);
+        println!("Mode swap triggered: {:?} -> {:?}", self.mode, new_mode);
 
         match new_mode{
             USER | SYSTEM => {
