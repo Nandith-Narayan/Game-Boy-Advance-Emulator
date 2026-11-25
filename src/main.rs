@@ -42,11 +42,11 @@ fn main() {
     let mut mem = memory::init();
     mem.load_bios(String::from("C:/GBA roms/open_source_gba_bios.bin"));
     //mem.load_rom(String::from("C:/GBA Test/test_asm/test.gba"));
-    mem.load_rom(String::from("C:/GBA roms/emerald.gba"));
+    mem.load_rom(String::from("C:/GBA roms/mandel.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
-    let n = 200_000;//447795;//447795;
+    let n = 200_000;//280_896;//447795;//447795;
     /*for address in 0..4{
         print!("{:#4x}", cpu.memory.read_8(address+0x8000000))
     }
@@ -68,6 +68,12 @@ fn main() {
             /*if cpu.get_r(15) == 0x0000035A && cpu.get_r(14) == 0x1E{
                 flag = 50;
             }*/
+            /*if cpu.get_r(15) == 0x000006F8{
+                //println!("R1: {:x}, R2: {:x}, R5: {:x}", cpu.get_r(1), cpu.get_r(2), cpu.get_r(5));
+                if flag == 0 && cpu.get_r(0) == 0x85e2de9{
+                    flag = 50;
+                }
+            }*/
             if LOG && (cpu.decode_arm != EMPTY || cpu.decode_thumb != THUMBInstruction::EMPTY){
                 let mut s = String::new();
                 for i in 0..=15{
@@ -86,8 +92,8 @@ fn main() {
 
             if flag > 0 {
                 flag -= 1;
-                println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[4] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, LR = {:#4x}, PC = {:#4x}, Carry Flag: {}, Neg Flag: {}, V Flag: {}, Zero Flag: {}, {:?}",
-                         cpu.regs[0], cpu.regs[1], cpu.regs[2], cpu.regs[3],cpu.get_r(4), cpu.regs[5], cpu.get_r(13), cpu.get_r(14), cpu.regs[15], cpu.c, cpu.n, cpu.v, cpu.z, cpu.instruction_set);
+                println!("R[0] = {:#4x}, R[1] = {:#4x}, R[2] = {:#4x}, R[3] = {:#4x}, R[4] = {:#4x}, R[5] = {:#4x}, SP = {:#4x}, LR = {:#4x}, PC = {:#4x}, Carry Flag: {}, Neg Flag: {}, V Flag: {}, Zero Flag: {}, {:?}, {:?}",
+                         cpu.regs[0], cpu.regs[1], cpu.regs[2], cpu.regs[3],cpu.get_r(4), cpu.regs[5], cpu.get_r(13), cpu.get_r(14), cpu.regs[15], cpu.c, cpu.n, cpu.v, cpu.z, cpu.instruction_set, cpu.mode);
                 //println!("{}", mem.vertical_count);
                 if flag == 0{
                     exit(5);
@@ -108,14 +114,11 @@ fn main() {
         }
         mem.keypad = 0xFFFF;
         if window.is_key_down(Key::A){
-            for i in 0x20..0x40{
+            for i in 0..200{
                 print!("{:2x} ", mem.vram[i]);
             }
-            println!();
-            for i in 0x8140..0x8160{
-                print!("{:2x} ", mem.vram[i]);
-            }
-            exit(40);
+
+            //exit(40);
             mem.keypad ^= 0b1;
         }
         if window.is_key_down(Key::B){
