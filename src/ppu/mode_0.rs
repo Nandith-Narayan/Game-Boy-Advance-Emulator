@@ -66,8 +66,8 @@ impl Ppu{
 
                 let map_entry = (mem.vram[map_entry_addr] as u16) | ((mem.vram[map_entry_addr+1] as u16) << 8);
                 let tile_number =  (map_entry & 0b11_1111_1111) as usize;
-                let flip_x = (tile_number & (1 << 10)) != 0;
-                let flip_y = (tile_number & (1 << 11)) != 0;
+                let flip_x = (map_entry & (1 << 10)) != 0;
+                let flip_y = (map_entry & (1 << 11)) != 0;
                 let palette_bank = ((map_entry >> 12) & 0xF) as usize;
 
                 let tile_addr = 0x4000*mem.bg_control[bg_idx].tile_block + 32*tile_number;
