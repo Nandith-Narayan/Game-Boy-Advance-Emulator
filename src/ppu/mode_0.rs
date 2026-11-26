@@ -13,11 +13,15 @@ impl Ppu{
 
         let order = bg_order.map(|x| x.0);
 
+        let default_p =  (mem.palette_ram[0] as u16) | ((mem.palette_ram[1] as u16) << 8);
+        let default_r = ((default_p & 0b011111) as u8) << 3;
+        let default_g = (((default_p>>5) & 0b011111) as u8) << 3;
+        let default_b = (((default_p>>10) & 0b011111) as u8) << 3;
 
         for x in 0usize..240 {
-            self.r[x + base_idx] = 0;
-            self.g[x + base_idx] = 0;
-            self.b[x + base_idx] = 0;
+            self.r[x + base_idx] = default_r;
+            self.g[x + base_idx] = default_g;
+            self.b[x + base_idx] = default_b;
             for bg_idx in order{
                 if !mem.bg_enabled[bg_idx]{
                     continue;
