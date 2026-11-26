@@ -8,6 +8,7 @@ mod run_tests;
 
 use std::fs;
 use std::process::exit;
+use std::time::Instant;
 use minifb::{Key, Scale, ScaleMode, Window, WindowOptions};
 use crate::cpu::enums::ARMInstruction::EMPTY;
 use crate::cpu::enums::InstructionSet::THUMB;
@@ -38,7 +39,7 @@ fn main() {
         .unwrap_or_else(|e| {
             panic!("{}", e);
         });
-    window.set_target_fps(60);
+    //window.set_target_fps(60);
     let mut mem = memory::init();
     mem.load_bios(String::from("C:/GBA roms/open_source_gba_bios.bin"));
     //mem.load_rom(String::from("C:/GBA Test/test_asm/test.gba"));
@@ -62,7 +63,7 @@ fn main() {
     let mut flag= 0;
     let LOG = false;
     while true {
-        for _i in 1..n {
+        while !ppu.frame_done {
             //println!("R[7] = {:#4x} ({})", cpu.get_r(7), cpu.get_r(7));
             //println!("R[11] = {:#4x} ({})", cpu.get_r(11), cpu.get_r(11));
             /*if cpu.get_r(15) == 0x0000035A && cpu.get_r(14) == 0x1E{
@@ -109,6 +110,8 @@ fn main() {
             cpu.tick_cycle(&mut mem);
             ppu.tick_cycle(&mut mem);
         }
+        ppu.frame_done = false;
+
         for i in 0..(240 * 160) {
             buffer[i] = ((ppu.r[i] as u32) << 16) | ((ppu.g[i] as u32) << 8) | ((ppu.b[i] as u32)) | 0xFF000000;
         }

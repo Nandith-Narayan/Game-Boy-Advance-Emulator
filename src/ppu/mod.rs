@@ -13,7 +13,7 @@ pub struct Ppu{
     pub r: Vec<u8>,
     pub g: Vec<u8>,
     pub b: Vec<u8>,
-    pub max:usize,
+    pub frame_done: bool,
 }
 
 pub fn init() -> Ppu{
@@ -23,7 +23,7 @@ pub fn init() -> Ppu{
         r: vec![0; 240*160],
         g: vec![0; 240*160],
         b: vec![0; 240*160],
-        max:0,
+        frame_done: false,
     }
 }
 
@@ -74,6 +74,7 @@ impl Ppu {
             if mem.vertical_count >= (160+68){
                 mem.v_blank = false;
                 mem.vertical_count = 0;
+                self.frame_done = true;
             }
 
             return;
