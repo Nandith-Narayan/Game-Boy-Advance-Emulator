@@ -42,7 +42,7 @@ fn main() {
     let mut mem = memory::init();
     mem.load_bios(String::from("C:/GBA roms/open_source_gba_bios.bin"));
     //mem.load_rom(String::from("C:/GBA Test/test_asm/test.gba"));
-    mem.load_rom(String::from("C:/GBA roms/mandel.gba"));
+    mem.load_rom(String::from("C:/GBA roms/emerald.gba"));
     let mut cpu = cpu::init();
     let mut ppu = ppu::init();
     //let now = Instant::now();
@@ -114,11 +114,6 @@ fn main() {
         }
         mem.keypad = 0xFFFF;
         if window.is_key_down(Key::A){
-            for i in 0..200{
-                print!("{:2x} ", mem.vram[i]);
-            }
-
-            //exit(40);
             mem.keypad ^= 0b1;
         }
         if window.is_key_down(Key::B){

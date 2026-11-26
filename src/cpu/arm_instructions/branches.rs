@@ -34,9 +34,6 @@ impl Cpu{
     }
 
     pub fn software_interrupt(&mut self, inst: u32){
-        //if inst &0xFFFFFF == (0x12 << 16) {
-            println!("ARM SWI: {:x}, R0: {:x}", inst &0xFFFFFF, self.get_r(0));
-        //}
 
         let next_instr_addr = self.get_r(15) - 4;
         // Save CPSR to SPSR

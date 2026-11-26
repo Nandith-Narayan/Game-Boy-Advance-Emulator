@@ -71,7 +71,7 @@ impl Memory{
             },
             0x209 => {0},
 
-            _ => {println!("Reading from unimplemented IO Reg @ {:#4x}", address); 0},
+            _ => {/*println!("Reading from unimplemented IO Reg @ {:#4x}", address);*/ 0},
         }
     }
     pub fn write_io_register(&mut self, address: usize, val: u8){
@@ -156,7 +156,7 @@ impl Memory{
             },
             0x209 => {},
 
-            _ => {println!("Writing to unimplemented IO Reg @ {:#4x}, with value {:#x} ({})", address, val, val);},
+            _ => {/*println!("Writing to unimplemented IO Reg @ {:#4x}, with value {:#x} ({})", address, val, val);*/},
         };
     }
 
@@ -244,10 +244,9 @@ impl Memory{
                         raise_irq,
                     };
 
-                    if dma_channel > 2 {
-                        println!("Initiated DMA Transfer {:?}", dma_transfer);
-                        println!("DMA Transfer Dest {:#x}", self.dma_destination_addr[dma_channel]);
-                    }
+
+                    //println!("Initiated DMA Transfer {:?}", dma_transfer);
+                    //println!("DMA Transfer Dest {:#x}", self.dma_destination_addr[dma_channel]);
 
                     if dma_transfer.timing_mode == IMMEDIATE{
                         dma_transfer.start(self);

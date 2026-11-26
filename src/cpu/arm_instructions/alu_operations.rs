@@ -270,8 +270,6 @@ impl Cpu{
                 //if opcode != 8 && opcode != 9 && opcode != 10 && opcode != 11 {
                     match self.mode {
                         FIQ | SUPERVISOR | IRQ => {
-                            println!("Returning from {:?} mode", self.mode);
-                            println!("PC: {:x}", self.regs[15]);
                             let spsr_val = self.get_spsr(self.mode);
                             self.set_cpsr_and_switch_mode(spsr_val);
                             self.flush_pipeline();

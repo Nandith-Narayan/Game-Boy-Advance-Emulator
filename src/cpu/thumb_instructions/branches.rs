@@ -74,10 +74,6 @@ impl Cpu {
     }
 
     pub fn thumb_software_interrupt(&mut self, inst: u16, mem: &mut Memory){
-        //if inst &0xFF == 0x12 {
-            println!("THUMB SWI: {:x}, R0: {:x}", inst & 0xFF, self.get_r(0));
-        //}
-        println!("PC at: {:x}", self.regs[15]);
 
         let next_instr_addr = self.get_r(15) - 2;
         // Save CPSR to SPSR
